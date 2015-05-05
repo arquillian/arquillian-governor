@@ -1,0 +1,312 @@
+== Arquillian Governor Extension
+
+Arquillian Governor Extension and the implementations which use its API give 
+you the possibility to programmatically choose what test methods of your 
+Arquillian tests are going to be executed and what are going to be skipped 
+by putting your custom annotations on the test methods.
+
+The resolution of the test method execution is done during the test class 
+execution in `BeforeClass` phase.
+
+Currenly, there are two implementations which use API of the Arquillian 
+Governor extension - Arquillian JIRA Governor extension and Arquillian Skipper extension.
+
+=== Configuration of Arquillian Governor extension
+
+Arquillian Governor extension is an extension on top of which all other concrete _governors_ are 
+built. When you provide some custom Governor implementation, this extension is automatically behind it. 
+Arquillian Governor base implementation is configured by putting the following extension definition
+into +arquillian.xml+ like this:
+
+[source,xml]
+----
+<extension qualifier="governor">
+</extension>
+----
+
+Possible properties for +governor+ extension:
+
+|===
+|Configuration property|Description|Default value|Possible values
+
+|+ignore+
+|No test execution resolution will be done. All test methods, even annotated with +Governor+ annotation, will be executed as normally.
+|false
+|true / false
+|+ignoreOnly+
+|Fully qualified class name of +Governor+ annotation to ignore. When such annotation is put on a test method, no test execution resolution will be performed.
+|empty string
+|Fully qualified class name of an annotation you want to ignore.
+
+|===
+
+== Arquillian JIRA Governor Extension
+
+In order to use JIRA Governor extension, you have to put this dependency into your Arquillian test Maven build:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-governor-jira</artifactId>
+    <scope>test</scope>
+</dependency>    
+----
+
+As stated previously, JIRA Governor has the base implementation automatically bundled in it so you can configure +governor+ extension as well.
+
+=== Configuration of Arquillian JIRA Governor Extension
+
+Arquillian JIRA Governor extension is configured by putting the following extension definition into +arquillian.xml+ like this:
+
+[source,xml]
+----
+<extension qualifier="governor-jira">
+</extension>
+----
+
+Possible properties for +governor-jira+ extension:
+
+|===
+|Configuration property|Description|Default value|Possible values
+
+|+username+
+|your JIRA user name. This user name will be used to log in to JIRA instance
+|this property has to be set and has to be non-empty, otherwise it fails
+|
+|+password+
+|your JIRA password. This password will be used to log in to JIRA instance
+|this property has to be set and has to be non-empty, otherwise it fails
+|
+|+server+
+|JIRA server to connect to
+|https://issues.jboss.org
+|any address which is valid URI and URL
+|+force+
+|Even JIRA status is Unresolved or Open, this test method will be executed anyway
+|false
+|true / false
+|+closePassed+
+|If you force the execution for some test method which has status as 'Unresolved' or 'Open' and this test succeeds and this property is set to true, JIRA issue on +server+ will be automatically resolved as 'Done' and appropriate message about the issue resolving will be submitted to that JIRA issue as a comment posted by +username+.
+|false
+|true / false
+|+closingMessage+
+|Message which appears as a comment on a JIRA issue which was automatically closed.
+|This JIRA issue was automatically closed by %s with Arquillian Jira Governor extension. ('%s' is replaced by +username+ property).
+|Any string.
+
+|===
+
+Due to security reasons, when you do not specify +server+ and +username+ or +password+ properties in +arquillian.xml+ 
+for JIRA Governor, this extension looks for system properties +jira.governor.server+, +jira.governor.username+ and 
++jira.governor.password+ respectively.
+
+You can set properties +force+ and +closePassed+ by system properties +jira.governor.force+ and +jira.governor.closepassed+ by setting them to "true" or "false".
+
+== Usage
+
+Let's have this test case:
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+@RunAsClient
+public class TestCase
+{
+    @Test
+    @Jira("ARQ-1907")
+    public void test()
+    {
+        // this test will be run
+        // because ARQ-1907 is 'Done'
+        // so we assume that this test has to pass as well
+    }
+
+    @Test
+    @Jira("ARQ-5000")
+    public void test2()
+    {
+        // when this JIRA exists and its status is 'Unresolved' / 'Open'
+        // this test method will be skipped because you assume that
+        // if you run it, it would fail
+    }
+
+}
+----
+
+=== Automatic closing of your JIRA issues
+
+If some JIRA issue is unresolved, normally, it would be skipped from 
+execution. However if you force it to execute by +force+ flag on +@Jira+ annotation, and this test method
+passes with success, if you set property +closePassed+ in your +arquillian.xml+, that JIRA will be 
+automatically marked as +Done+ on JIRA server.
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class AutomaticClosingTestCase
+{
+    @Test
+    @Jira("ARQ-5000", force = true)
+    public void automaticClosingTest)
+    {   
+        // when this JIRA exists and its status is 'Unresolved' / 'Open'
+        // and you have forced its execution and you set 'closePassed'
+        // property in arquillian.xml to 'true',
+        // when this test method succeeds, it automatically resolves 
+        // respective JIRA issue as 'Done'
+    } 
+}
+----
+
+== Arquillian Governor Skipper extension
+
+This extension simply skips test methods which are annotated with +@TestSpec+. In order to use this extension, put this into +pom.xml+
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-governor-skipper</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-recorder-reporter-impl</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+Configuration of this extension is done via +governor-skipper+ qualifier:
+
+[source,xml]
+----
+<extension qualifier="governor-skipper">
+    <property name="plainAdoc">plain_table.adoc</property>
+</extension>
+----
+
+This extension introduces just one annotation you put on your test method. Let's see it in action:
+
+[source,java]
+----
+    @Test
+    @TestSpec(
+        author = "Stefan Miklosovic",
+        assertion = "this test should pass",
+        feature = "tests if true returns true",
+        issue = "ARQ-1",
+        prerequisites = "have java",
+        status = Status.AUTOMATED,
+        steps = "some steps in order to execute this",
+        test = "what does this step do"
+        )
+    public void someTest() {
+        Assert.assertTrue(true);
+    }
+----
+
+If +status+ is +Status.MANUAL+, test method will be skipped from the execution. The generated report gives you 
+better overview of your test cases, what they do, which methods are automated and which you have to execute manually.
+
+If +plainAdoc+ property is used, a report will be saved to plain asciidoc table as well. A report will be 
+added into the tree of Arquillian Report output file in every case.
+
+|===
+|Configuration property|Description|Default value|Possible values
+
+|+plainAdoc+
+|name of file where plain asciidoc table will be stored
+|if this is not set, report to plain adoc will be skipped
+|
+
+|===
+
+== How do I implement my own Governor?
+
+Glad you asked. Because of Arquillian Governor base extension, you are welcome to code 
+your own test method execution resolver as we did with Arquillian JIRA governor extension.
+
+The governor annotation you want to put on your test method (as we did with +@Jira+) have 
+to be annotated with +@Governor+ annotation. +@Jira+ annotation looks like this:
+
+[source,java]
+----
+@Governor // <--- you have to annotate your own annotation with this
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+@Documented
+public @interface Jira
+{
+    String value() default "";
+
+    boolean force() default false;
+}
+----
+
++force+ field is optional. This is only specific for JIRA extension, maybe your governor will use something 
+completely else.
+
+Once you have your governor annotation in your extension, you have to write your own https://github.com/arquillian/arquillian-core/blob/master/test/spi/src/main/java/org/jboss/arquillian/test/spi/execution/TestExecutionDecider.java[TestExecutionDecider]. +TestExecutionDecider+ implementation has to be registered as a service to your Arquillian extension like this:
+
+[source,java]
+----
+public class MyLoadableExtension implements LoadableExtension
+{
+    @Override
+    public void register(ExtensionBuilder builder)
+    {
+        builder.service(TestExecutionDecider.class, MyTestExecutionDecider.class);
+        builder.service(GovernorProvider.class, BugzillaProvider.class);
+    }
+}
+----
+
+The usage of this SPI is fully explained in official http://arquillian.org/blog/2015/01/26/arquillian-core-1-1-6-Final/[Arquillian Core 1.1.6 release blog post].
+
+As described above, you have to register as a service your own 'GovernorProvider' which provides the decoding annotation like this:
+
+[source,java]
+----
+public class BugzillaProvider implements GovernorProvider
+{
+    @Override
+    public Class<? extends Annotation> provides()
+    {
+        return Bugzilla.class;
+    }
+}
+----
+
+By doing so, you can use +@Bugzilla+ annotations on your test methods. +@Bugzilla+ annotation has to be itself annotated with +@Governor+ annotation the same way as +@Jira+ is.
+
+Finally, you have to observe +ExecutionDecisionEvent+ where you have to decide if the annotation in this event which is put on some test method is going to be executed or not.
+
+The example how we did this all for Jira Governor is in class +JiraTestExecutionDecider+.
+
+This is the minimal scenario. Of course, your resolution can be done in a completely different way, you could resolve it against database, file, properties or what ever. It is up to you.
+
+== How do I build this extension?
+
+[source,bash]
+----
+$ mvn clean install
+----
+
+== Releasing new version
+
+In order to release new version, execute following Maven command:
+
+[source,bash]
+----
+mvn clean release:prepare release:perform
+----
+
+Then:
+
+1. Verify the build from staging repository
+2. Make sure all JIRAs are closed
+3. Release version in JIRA and create next version if not available
+4. Promote the build to the stable Maven repository
+5. Push commits and tag created by +maven-release-plugin+ to the repository.
+

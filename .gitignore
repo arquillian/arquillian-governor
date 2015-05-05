@@ -1,0 +1,34 @@
+# Eclipse
+*.class
+.project
+.classpath
+.settings/
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea
+
+# Packages
+*.jar
+*.war
+*.ear
+
+# Maven
+target/
+
+# TestNG
+test-output/
+
+# JBoss AS
+transaction.log
+
+# Scala
+.cache
+
+# gradle
+.ws/
+.gradle/
+arquillian.xml.backup*
+pom.xml.backup*
