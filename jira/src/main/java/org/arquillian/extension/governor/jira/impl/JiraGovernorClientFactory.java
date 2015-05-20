@@ -22,7 +22,10 @@ import org.arquillian.extension.governor.api.GovernorClientFactory;
 import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
 import org.jboss.arquillian.core.spi.Validate;
 
+import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
+import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 
 /**
@@ -45,7 +48,17 @@ public class JiraGovernorClientFactory implements GovernorClientFactory<JiraGove
         final String password = this.jiraGovernorConfiguration.getPassword();
 
         final AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
-        final JiraRestClient restClient = factory.createWithBasicHttpAuthentication(jiraServerUri, username, password);
+
+        AuthenticationHandler authHandler;
+
+        if (username == null || username.isEmpty()) {
+            authHandler = new AnonymousAuthenticationHandler();
+
+        } else {
+            authHandler = new BasicHttpAuthenticationHandler(username, password);
+        }
+
+        final JiraRestClient restClient = factory.create(jiraServerUri, authHandler);
 
         final JiraGovernorClient client = new JiraGovernorClient();
         client.setConfiguration(this.jiraGovernorConfiguration);

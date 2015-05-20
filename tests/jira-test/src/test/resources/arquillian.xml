@@ -21,13 +21,13 @@
         <property name="closePassed">false</property>
         <property name="force">false</property>
         
-        <-- your jira username -->
+        <!-- your jira username -->
         <property name="username"></property>
         
         <!-- your jira password -->
         <property name="password"></property>
         
         <!-- your jira instance, e.g https://issues.jenkins-ci.org -->
-        <property name="server"></property>
+        <!--property name="server"></property-->
     </extension>
 </arquillian>
