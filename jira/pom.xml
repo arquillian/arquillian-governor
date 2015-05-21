@@ -28,7 +28,7 @@
 
     <!-- Properties -->
     <properties>
-        <version.atlassian.jira>2.0.0-m31</version.atlassian.jira>
+        <version.atlassian.jira>2.0.0-m31.w2</version.atlassian.jira>
         <version.jersey.client>1.5</version.jersey.client>
         <version.hamcrest>1.0.0.0</version.hamcrest>
     </properties>
@@ -41,28 +41,13 @@
             <artifactId>arquillian-governor</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <!-- Atlasian JIRA client -->
         <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-rest-java-client-api</artifactId>
+            <groupId>org.openengsb.wrapped</groupId>
+            <artifactId>com.atlassian.jira.rest.client</artifactId>
             <version>${version.atlassian.jira}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-rest-java-client-core</artifactId>
-            <version>${version.atlassian.jira}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>${version.jersey.client}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>${version.jersey.client}</version>
-        </dependency>        
+        </dependency>   
 
         <!-- Arquillian test dependencies -->
         <dependency>
@@ -89,7 +74,7 @@
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>        
-        
+
         <!-- External test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -107,18 +92,5 @@
             <version>${version.hamcrest}</version>
         </dependency>
     </dependencies>
-
-    <!-- Atlasian repositories for JRJC connector -->
-    <repositories>
-        <repository>
-            <id>atlassian-public</id>
-            <name>Atlassian public releases</name>
-            <url>https://m2proxy.atlassian.com/repository/public</url>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-        </repository>
-    </repositories>
 
 </project>
