@@ -60,7 +60,7 @@ public class AsciidocExporter {
             try {
                 writer = new BufferedWriter(new FileWriter(outputFile));
             } catch (IOException e) {
-                throw new IllegalStateException(String.format("Unable to create a writer to file %s.", outputFile.getAbsolutePath()));
+                throw new IllegalStateException(String.format("Unable to create a writer to file %s.", outputFile.getAbsolutePath()), e);
             }
         } else {
             throw new IllegalStateException();
