@@ -59,6 +59,11 @@ public class SkipperReporter {
         SkipperConfiguration skipperConfiguration = this.skipperConfiguration.get();
         ReporterConfiguration reporterConfiguration = this.reporterConfiguration.get();
 
+        if (reporterConfiguration == null) {
+            throw new IllegalStateException("ReporterConfiguration was not injected. Be sure you have Arquillian Recorder "
+                + "Reporter implementation on class path.");
+        }
+
         File adocExportFile = null;
 
         if (skipperConfiguration.getPlainAdoc() != null) {
