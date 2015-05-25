@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -111,7 +112,17 @@ public class AsciidocExporter {
         report.add("|feature|" + testSpec.feature());
         report.add("|test|" + testSpec.test());
         report.add("|prerequisities|" + testSpec.prerequisites());
-        report.add("|steps|" + testSpec.steps());
+
+        List<String> stepsList = new ArrayList<String>(Arrays.asList(testSpec.steps()));
+
+        if (!stepsList.isEmpty() && !stepsList.get(0).isEmpty()) {
+            report.add("|steps|" + stepsList.get(0));
+            stepsList.remove(0);
+            for (String step : stepsList) {
+                report.add("||" + step);
+            }
+        }
+
         report.add("|assertion|" + testSpec.assertion());
         report.add("|issue|" + testSpec.issue());
         report.add("|status|" + testSpec.status());
@@ -120,8 +131,6 @@ public class AsciidocExporter {
 
         return report;
     }
-
-
 
     private int getCount(List<TestSpec> testSpecs, Status status) {
         int count = 0;

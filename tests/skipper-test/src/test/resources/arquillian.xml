@@ -22,6 +22,6 @@
     </extension>
     
     <extension qualifier="reporter">
-        <property name="report">adoc</property>
+        <property name="report">html</property>
     </extension>
 </arquillian>

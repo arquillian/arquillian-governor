@@ -58,7 +58,7 @@ public @interface TestSpec {
      *
      * @return detailed steps in order to consider this test to be successful
      */
-    String steps() default "";
+    String[] steps() default "";
 
     /**
      *

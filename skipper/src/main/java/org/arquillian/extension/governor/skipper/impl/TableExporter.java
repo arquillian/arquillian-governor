@@ -17,6 +17,7 @@
 package org.arquillian.extension.governor.skipper.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.arquillian.extension.governor.skipper.api.Status;
@@ -100,8 +101,21 @@ public class TableExporter {
         TableRowEntry prerequisities = new TableRowEntry();
         prerequisities.addCells(new TableCellEntry("prerequisities"), new TableCellEntry(testSpec.prerequisites()));
 
-        TableRowEntry steps = new TableRowEntry();
-        steps.addCells(new TableCellEntry("steps"), new TableCellEntry(testSpec.steps()));
+        List<TableRowEntry> stepRows = new ArrayList<TableRowEntry>();
+
+        List<String> stepsList = new ArrayList<String>(Arrays.asList(testSpec.steps()));
+
+        if (!stepsList.isEmpty() && !stepsList.get(0).isEmpty()) {
+            TableRowEntry stepRow = new TableRowEntry();
+            stepRow.addCells(new TableCellEntry("steps"), new TableCellEntry(stepsList.get(0)));
+            stepRows.add(stepRow);
+            stepsList.remove(0);
+            for (String step : stepsList) {
+                TableRowEntry stepRowEntry = new TableRowEntry();
+                stepRowEntry.addCells(new TableCellEntry(""), new TableCellEntry(step));
+                stepRows.add(stepRowEntry);
+            }
+        }
 
         TableRowEntry assertion = new TableRowEntry();
         assertion.addCells(new TableCellEntry("assertion"), new TableCellEntry(testSpec.assertion()));
@@ -118,7 +132,7 @@ public class TableExporter {
         rows.add(featureRow);
         rows.add(testRow);
         rows.add(prerequisities);
-        rows.add(steps);
+        rows.addAll(stepRows);
         rows.add(assertion);
         rows.add(issue);
         rows.add(status);

@@ -25,7 +25,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <version.arquillian.core>1.1.8.Final</version.arquillian.core>
-        <version.arquillian.decoder>1.0.0.Alpha2</version.arquillian.decoder>
+        <version.arquillian.decoder>1.0.0.Alpha2-SNAPSHOT</version.arquillian.decoder>
         <version.recorder>1.0.0.Final</version.recorder>
         <version.junit>4.12</version.junit>
 

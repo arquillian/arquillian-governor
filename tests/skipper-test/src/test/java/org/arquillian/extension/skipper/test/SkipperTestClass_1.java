@@ -35,7 +35,6 @@ public class SkipperTestClass_1 extends AbstractArquillianClass {
         issue = "ARQ-1",
         prerequisites = "have java",
         status = Status.AUTOMATED,
-        steps = "some steps",
         test = "tests stuff"
         )
     public void someTest() {
@@ -53,7 +52,7 @@ public class SkipperTestClass_1 extends AbstractArquillianClass {
         issue = "ARQ-2",
         prerequisites = "have java",
         status = Status.MANUAL,
-        steps = "some steps",
+        steps = { "some step", "another step", "final step" },
         test = "tests stuff"
         )
     public void someTest2() {
@@ -68,7 +67,7 @@ public class SkipperTestClass_1 extends AbstractArquillianClass {
         issue = "ARQ-3",
         prerequisites = "have java",
         status = Status.AUTOMATED,
-        steps = "some steps",
+        steps = { "this issue", "have four", "execution", "steps" },
         test = "tests stuff"
         )
     public void someTest3() {
@@ -83,7 +82,7 @@ public class SkipperTestClass_1 extends AbstractArquillianClass {
         issue = "ARQ-4",
         prerequisites = "have java",
         status = Status.MANUAL,
-        steps = "some steps",
+        steps = { "long step 1 long step 1 long step 1 long step 1", "long step 2 long step 2 long step 2 long step 2", },
         test = "tests stuff"
         )
     public void someTest4() {
