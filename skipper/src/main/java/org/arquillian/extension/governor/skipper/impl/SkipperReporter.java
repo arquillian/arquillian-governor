@@ -66,7 +66,7 @@ public class SkipperReporter {
 
         File adocExportFile = null;
 
-        if (skipperConfiguration.getPlainAdoc() != null) {
+        if (!skipperConfiguration.getPlainAdoc().isEmpty()) {
             adocExportFile = new File(reporterConfiguration.getFile().getParentFile(), skipperConfiguration.getPlainAdoc());
         }
 

@@ -26,8 +26,6 @@ import org.arquillian.extension.governor.api.GovernorConfigurationException;
  */
 public class SkipperConfiguration extends Configuration {
 
-    private String plainAdoc = null;
-
     /**
      * When set, there will be simple adoc table with the report.
      * @param plainAdoc
