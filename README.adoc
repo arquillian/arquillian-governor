@@ -304,6 +304,7 @@ mvn clean release:prepare release:perform
 
 Then:
 
+0. Run test projects in `tests` directory and bump version of governor dependency in them to the to-be-released one
 1. Verify the build from staging repository
 2. Make sure all JIRAs are closed
 3. Release version in JIRA and create next version if not available
