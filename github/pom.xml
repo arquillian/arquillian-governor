@@ -9,28 +9,26 @@
     License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
     OF ANY KIND, either express or implied. See the License for the specific
     language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <!-- Model Version -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <!-- Model version -->
     <modelVersion>4.0.0</modelVersion>
-
+    
     <!-- Parent -->
     <parent>
-        <groupId>org.arquillian.extension</groupId>
         <artifactId>arquillian-governor-parent</artifactId>
+        <groupId>org.arquillian.extension</groupId>
         <version>1.0.0.Final-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <!-- Artifact Configuration -->
-    <artifactId>arquillian-governor-jira</artifactId>
-    <name>Arquillian Governor for JIRA</name>
+    <artifactId>arquillian-governor-github</artifactId>
+    <name>Arquillian Governor for GitHub</name>
 
     <!-- Properties -->
     <properties>
-        <version.atlassian.jira>2.0.0-m31.w2</version.atlassian.jira>
-        <version.jersey.client>1.5</version.jersey.client>
-        <version.hamcrest>1.0.0.0</version.hamcrest>
+        <version.egit.github>2.1.5</version.egit.github>
     </properties>
 
     <!-- Dependencies -->
@@ -42,12 +40,12 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Atlasian JIRA client -->
+        <!-- Egit Github -->
         <dependency>
-            <groupId>org.openengsb.wrapped</groupId>
-            <artifactId>com.atlassian.jira.rest.client</artifactId>
-            <version>${version.atlassian.jira}</version>
-        </dependency>   
+            <groupId>org.eclipse.mylyn.github</groupId>
+            <artifactId>org.eclipse.egit.github.core</artifactId>
+            <version>${version.egit.github}</version>
+        </dependency>
 
         <!-- Arquillian test dependencies -->
         <dependency>
@@ -68,12 +66,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-standalone</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.arquillian.test</groupId>
             <artifactId>arquillian-test-impl-base</artifactId>
             <version>${version.arquillian.core}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
-        </dependency>        
+        </dependency>
 
         <!-- External test dependencies -->
         <dependency>
@@ -87,7 +90,6 @@
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-junit</artifactId>
-            <version>${version.hamcrest}</version>
         </dependency>
     </dependencies>
 

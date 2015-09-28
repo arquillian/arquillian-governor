@@ -103,7 +103,7 @@ for JIRA Governor, this extension looks for system properties `jira.governor.ser
 
 You can set properties `force` and `closePassed` by system properties `jira.governor.force` and `jira.governor.closepassed` by setting them to "true" or "false".
 
-== Usage
+=== Usage
 
 Let's have this test case:
 
@@ -156,6 +156,119 @@ public class AutomaticClosingTestCase
         // when this test method succeeds, it automatically resolves 
         // respective JIRA issue as 'Done'
     } 
+}
+----
+
+
+== Arquillian GitHub Governor Extension
+
+In order to use GitHub Governor extension, you have to put this dependency into your Arquillian test Maven build:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-governor-github</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+As stated previously, GitHub Governor has the base implementation automatically bundled in it so you can configure `governor` extension as well.
+
+=== Configuration of Arquillian JIRA Governor Extension
+
+Arquillian GitHub Governor extension is configured by putting the following extension definition into `arquillian.xml` like this:
+
+[source,xml]
+----
+<extension qualifier="governor-github">
+</extension>
+----
+
+Possible properties for `governor-github` extension:
+
+|===
+|Configuration property|Description|Default value|Possible values
+
+|username
+|your GitHub user name. This user name will be used to log in to GitHub instance
+|this property has to be set and has to be non-empty, otherwise it fails if no token property set
+|
+|password
+|your GitHub password. This password will be used to log in to GitHub instance
+|this property has to be set and has to be non-empty, otherwise it fails if no token property set
+|
+|token
+|your GitHub personal token. This token will be used to log in to GitHub instance
+|this property has to be set and has to be non-empty, otherwise it fails if no username and password set
+|
+|repositoryUser
+|Username part of a GitHub repository
+|For example in case of www.github.com/arquillian/arquillian-cube, `arquillian` is the repository user.
+|
+|repository
+|GitHub repository name
+|For example in case of www.github.com/arquillian/arquillian-cube, `arquillian-cube` is the repository name.
+|
+|force
+|Even GitHub status is Open, this test method will be executed anyway
+|false
+|true / false
+|closePassed
+|If you force the execution for some test method which has status as 'Open' and this test succeeds and this property is set to true, GitHub issue on `server` will be automatically resolved as 'Closed' and appropriate message about the issue resolving will be submitted to that GitHub issue as a comment posted by `username`.
+|false
+|true / false
+|closingMessage
+|Message which appears as a comment on a GitHub issue which was automatically closed.
+|This GitHub issue was automatically closed by %s with Arquillian GitHub Governor extension. ('%s' is replaced by +username+ property).
+|Any string.
+
+|===
+
+Due to security reasons, when you do not specify `server` and `username` or `password` properties in `arquillian.xml`
+for GitHub Governor, this extension looks for system properties `github.governor.repository`, `github.governor.repositoryuser`, `github.governor.token`, `github.governor.username` and
+`github.governor.password` respectively.
+
+You can set properties `force` and `closePassed` by system properties `github.governor.force` and `github.governor.closepassed` by setting them to "true" or "false".
+
+=== Usage
+
+Let's have this test case:
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+@RunAsClient
+public class TestCase
+{
+    @Test
+    @GitHub("1")
+    public void test()
+    {
+        //...
+    }
+
+}
+----
+
+=== Automatic closing of your GitHub issues
+
+If some GitHub issue is unresolved, normally, it would be skipped from
+execution. However if you force it to execute by `force` flag on `@GitHub` annotation, and this test method
+passes with success, if you set property `closePassed` in your `arquillian.xml`, that GitHub will be
+automatically marked as `Closed` on GitHub server.
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class AutomaticClosingTestCase
+{
+    @Test
+    @GitHub(value = "2", force = true)
+    public void automaticClosingTest)
+    {
+        // ...
+    }
 }
 ----
 
