@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>arquillian-governor-parent</artifactId>
+        <groupId>org.arquillian.extension</groupId>
+        <version>1.0.0.Final-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Artifact Configuration -->
+    <artifactId>arquillian-governor-github</artifactId>
+    <name>Arquillian Governor for github</name>
+
+    <!-- Properties -->
+    <properties>
+        <version.egit.github>2.1.5</version.egit.github>
+    </properties>
+
+    <!-- Dependencies -->
+    <dependencies>
+        <!-- Governor dependencies -->
+        <dependency>
+            <groupId>org.arquillian.extension</groupId>
+            <artifactId>arquillian-governor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Egit Github -->
+        <dependency>
+            <groupId>org.eclipse.mylyn.github</groupId>
+            <artifactId>org.eclipse.egit.github.core</artifactId>
+            <version>${version.egit.github}</version>
+        </dependency>
+
+        <!-- Arquillian test dependencies -->
+        <dependency>
+            <groupId>org.jboss.arquillian.core</groupId>
+            <artifactId>arquillian-core-impl-base</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.core</groupId>
+            <artifactId>arquillian-core-impl-base</artifactId>
+            <version>${version.arquillian.core}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.test</groupId>
+            <artifactId>arquillian-test-impl-base</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-standalone</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.test</groupId>
+            <artifactId>arquillian-test-impl-base</artifactId>
+            <version>${version.arquillian.core}</version>
+            <scope>test</scope>
+            <classifier>tests</classifier>
+        </dependency>
+
+        <!-- External test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-junit</artifactId>
+        </dependency>
+    </dependencies>
+
+
+</project>

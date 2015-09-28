@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<arquillian xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://jboss.org/schema/arquillian"
+    xsi:schemaLocation="http://jboss.org/schema/arquillian http://www.jboss.org/schema/arquillian/arquillian_1_0.xsd">
+    <extension qualifier="governor-github">
+        <property name="force">true</property>
+        <property name="closePassed">true</property>
+        <property name="reopenPassed">true</property>
+        <property name="username">githubuser</property>
+        <property name="password">githubpassword</property>
+        <property name="repositoryUser">lordofthejars</property>
+        <property name="repository">governor-test</property>
+    </extension>
+</arquillian>
