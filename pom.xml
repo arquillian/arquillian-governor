@@ -94,6 +94,7 @@
 
         <module>jira</module>
         <module>skipper</module>
+        <module>github</module>
     </modules>
 
     <!-- Dependency managemet -->
