@@ -175,7 +175,7 @@ In order to use GitHub Governor extension, you have to put this dependency into 
 
 As stated previously, GitHub Governor has the base implementation automatically bundled in it so you can configure `governor` extension as well.
 
-=== Configuration of Arquillian JIRA Governor Extension
+=== Configuration of Arquillian GitHub Governor Extension
 
 Arquillian GitHub Governor extension is configured by putting the following extension definition into `arquillian.xml` like this:
 
