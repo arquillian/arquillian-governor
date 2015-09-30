@@ -83,7 +83,9 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
         {
             Issue issue = getIssue(issueId);
             issue.setState(IssueService.STATE_CLOSED);
-            comment = this.issueService.createComment(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issueId, getClosingMessage());
+            comment =
+                this.issueService.createComment(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issueId,
+                    getClosingMessage());
             this.issueService.editIssue(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issue);
         } catch (Exception e)
         {
@@ -138,11 +140,18 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
             return null;
         }
     }
+
     private String getClosingMessage()
     {
         Validate.notNull(gitHubGovernorConfiguration, "GitHub Governor configuration must be set.");
 
-        return String.format(gitHubGovernorConfiguration.getClosingMessage(), gitHubGovernorConfiguration.getUsername());
+        String username = gitHubGovernorConfiguration.getUsername();
+
+        if (username == null || username.isEmpty()) {
+            username = "unknown";
+        }
+        
+        return String.format(gitHubGovernorConfiguration.getClosingMessage(), username);
     }
 
 }

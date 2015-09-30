@@ -61,10 +61,15 @@ import static org.junit.Assert.assertThat;
 public class GitHubGovernorTestCase extends AbstractGovernorTestCase
 {
 
+    private static final String EMPTY_STRING = "";
+    
     private static final String DEFAULT_REPOSITORY = "governor-test";
     private static final String DEFAULT_REPOSITORY_USERNAME = "lordofthejars";
     private static String REPOSITORY_USERNAME;
     private static String REPOSITORY_NAME;
+    private static String TOKEN;
+    private static String USERNAME;
+    private static String PASSWORD;
 
     @Inject
     @ApplicationScoped
@@ -103,6 +108,9 @@ public class GitHubGovernorTestCase extends AbstractGovernorTestCase
     {
         REPOSITORY_USERNAME = resolveRepositoryUser();
         REPOSITORY_NAME = resolveRepository();
+        TOKEN = resolveToken();
+        USERNAME = resolvUsername();
+        PASSWORD = resolvePassword();
     }
 
     @Before
@@ -127,8 +135,13 @@ public class GitHubGovernorTestCase extends AbstractGovernorTestCase
         gitHubGovernorConfiguration.setRepositoryUser(REPOSITORY_USERNAME);
         gitHubGovernorConfiguration.setForce(true);
         gitHubGovernorConfiguration.setClosePassed(true);
-        gitHubGovernorConfiguration.setUsername("username");
-        gitHubGovernorConfiguration.setPassword("password");
+        
+        if (!TOKEN.equals(EMPTY_STRING)) {
+            gitHubGovernorConfiguration.setToken(TOKEN);    
+        }
+
+        gitHubGovernorConfiguration.setUsername(USERNAME);
+        gitHubGovernorConfiguration.setPassword(PASSWORD);
 
         bind(ApplicationScoped.class, GitHubGovernorConfiguration.class, gitHubGovernorConfiguration);
 
@@ -199,6 +212,43 @@ public class GitHubGovernorTestCase extends AbstractGovernorTestCase
         }
 
         return gitHubServerAddressProperty;
+    }
+
+
+    private static String resolveToken()
+    {
+        String gitHubTokenProperty = System.getProperty("github.governor.token");
+
+        if (gitHubTokenProperty == null || gitHubTokenProperty.isEmpty())
+        {
+            gitHubTokenProperty = EMPTY_STRING;
+        }
+
+        return gitHubTokenProperty;
+    }
+    
+    private static String resolvUsername()
+    {
+        String gitHubUsernameProperty = System.getProperty("github.governor.username");
+
+        if (gitHubUsernameProperty == null || gitHubUsernameProperty.isEmpty())
+        {
+            gitHubUsernameProperty = EMPTY_STRING;
+        }
+
+        return gitHubUsernameProperty;
+    }
+    
+    private static String resolvePassword()
+    {
+        String gitHubPasswordProperty = System.getProperty("github.governor.password");
+
+        if (gitHubPasswordProperty == null || gitHubPasswordProperty.isEmpty())
+        {
+            gitHubPasswordProperty = EMPTY_STRING;
+        }
+
+        return gitHubPasswordProperty;
     }
 
 }

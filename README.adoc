@@ -220,7 +220,7 @@ Possible properties for `governor-github` extension:
 |true / false
 |closingMessage
 |Message which appears as a comment on a GitHub issue which was automatically closed.
-|This GitHub issue was automatically closed by %s with Arquillian GitHub Governor extension. ('%s' is replaced by +username+ property).
+|This GitHub issue was automatically closed by %s with Arquillian GitHub Governor extension. ('%s' is replaced by +username+ property). If you are using token and username is not set, as of now, it will be set to "unknown"
 |Any string.
 
 |===
