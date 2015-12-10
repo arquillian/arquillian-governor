@@ -1,0 +1,5 @@
+<arquillian>
+    <extension qualifier="governor-ignore">
+        <property name="methods_1">org.arquillian.test.governor.ignore.IgnoreTest#testIgnored</property>
+    </extension>
+</arquillian>
