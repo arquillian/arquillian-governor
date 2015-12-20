@@ -99,6 +99,7 @@
         <module>jira</module>
         <module>skipper</module>
         <module>github</module>
+        <module>redmine</module>
         <module>ignore</module>
     </modules>
 
