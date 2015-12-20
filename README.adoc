@@ -412,6 +412,12 @@ public class AutomaticOpeningTestCase
 }
 ----
 
+=== Setting up redmine locally
+
+The easiest way to run redmine locally is to use this docker image: https://github.com/sameersbn/docker-redmine
+
+IMPORTANT: before you create any project go to *Administration* menu and click on *Load default configuration*. see https://github.com/sameersbn/docker-redmine/issues/92[this issue^] for more details.
+
 == Arquillian Governor Skipper extension
 
 This extension simply skips test methods which are annotated with `@TestSpec`. In order to use this extension, put this into `pom.xml`
