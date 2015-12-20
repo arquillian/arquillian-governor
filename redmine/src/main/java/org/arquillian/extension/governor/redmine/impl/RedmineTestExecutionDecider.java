@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.extension.governor.jira.impl;
+package org.arquillian.extension.governor.redmine.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
-import org.arquillian.extension.governor.jira.api.Jira;
-import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
+import org.arquillian.extension.governor.redmine.api.Redmine;
+import org.arquillian.extension.governor.redmine.configuration.RedmineGovernorConfiguration;
 import org.arquillian.extension.governor.spi.GovernorProvider;
 import org.arquillian.extension.governor.spi.event.ExecutionDecisionEvent;
 import org.jboss.arquillian.core.api.InstanceProducer;
@@ -34,17 +34,16 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
-import org.jboss.arquillian.test.spi.event.suite.After;
 import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
 
 /**
- * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
+ * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
  *
  */
-public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorProvider
+public class RedmineTestExecutionDecider implements TestExecutionDecider, GovernorProvider
 {
     private static final Map<Method, Integer> lifecycleCountRegister = new HashMap<Method, Integer>();
 
@@ -67,10 +66,10 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
     @Override
     public Class<? extends Annotation> provides()
     {
-        return Jira.class;
+        return Redmine.class;
     }
 
-    public void on(@Observes ExecutionDecisionEvent event, JiraGovernorClient jiraGovernorClient)
+    public void on(@Observes ExecutionDecisionEvent event, RedmineGovernorClient redmineGovernorClient)
     {
         ExecutionDecision executionDecision = this.executionDecision.get();
 
@@ -81,37 +80,36 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
 
         if (event.getAnnotation().annotationType() == provides())
         {
-            Jira jiraIssue = (Jira) event.getAnnotation();
-
-            this.executionDecision.set(jiraGovernorClient.resolve(jiraIssue));
+            Redmine redmineIssue = (Redmine) event.getAnnotation();
+            this.executionDecision.set(redmineGovernorClient.resolve(redmineIssue));
         }
     }
 
     public void on(@Observes AfterTestLifecycleEvent event,
         TestResult testResult,
         GovernorRegistry governorRegistry,
-        JiraGovernorConfiguration jiraGovernorConfiguration,
-        JiraGovernorClient jiraGovernorClient)
+        RedmineGovernorConfiguration redmineGovernorConfiguration,
+        RedmineGovernorClient redmineGovernorClient)
     {
+
         int count = 0;
         try
         {
             Integer c = lifecycleCountRegister.get(event.getTestMethod());
             count = (c != null ? c.intValue() : 0);
             if (count == 0)
-            {//skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+            {// skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
                 return;
             }
             final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
-            // if we passed some test method annotated with Jira, we may eventually close it
-
-            if (jiraGovernorConfiguration.getClosePassed())
+            // if we passed some test method annotated with Redmine, we may eventually close it
+            if (redmineGovernorConfiguration.getClosePassed())
             {
                 // we decided we run this test method even it has annotation on it
                 if (testResult.getStatus() == Status.PASSED
                     && decision.getDecision() == Decision.EXECUTE
-                    && (decision.getReason().equals(JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING)))
+                    && (RedmineGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
                 {
 
                     for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
@@ -122,8 +120,34 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
                             {
                                 if (annotation.annotationType() == provides())
                                 {
-                                    String id = ((Jira) annotation).value();
-                                    jiraGovernorClient.close(id);
+                                    String id = ((Redmine) annotation).value();
+                                    redmineGovernorClient.close(id);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            // openFailed can be configured globally in arquillian.xml or per test method via Redmine annotation
+            if (redmineGovernorConfiguration.getOpenFailed()
+                || (event.getTestMethod().getAnnotation(Redmine.class) != null && event.getTestMethod().getAnnotation(Redmine.class).openFailed()))
+            {
+                if (testResult.getStatus() == Status.FAILED
+                    && decision.getDecision() == Decision.EXECUTE
+                    && (decision.getReason().equals(RedmineGovernorStrategy.FORCING_EXECUTION_OPEN_FAILED)))
+                {
+
+                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
+                    {
+                        if (entry.getKey().toString().equals(event.getTestMethod().toString()))
+                        {
+                            for (Annotation annotation : entry.getValue())
+                            {
+                                if (annotation.annotationType() == provides())
+                                {
+                                    String id = ((Redmine) annotation).value();
+                                    redmineGovernorClient.open(id, testResult.getThrowable());
                                     return;
                                 }
                             }
@@ -136,4 +160,5 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
             lifecycleCountRegister.put(event.getTestMethod(), ++count);
         }
     }
+
 }

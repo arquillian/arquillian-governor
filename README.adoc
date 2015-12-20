@@ -272,6 +272,173 @@ public class AutomaticClosingTestCase
 }
 ----
 
+== Arquillian Redmine Governor Extension
+
+In order to use Redmine Governor extension, you have to put this dependency into your Arquillian test Maven build:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-governor-redmine</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+As stated previously, Redmine Governor has the base implementation automatically bundled in it so you can configure `governor` extension as well.
+
+=== Configuration of Arquillian Redmine Governor Extension
+
+To use this extension you need to enable Redmine rest api like in image below:
+
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/enable-api.png[]
+
+And also will need an *apikey*. The apikey can be found in your user's account, see image below:
+
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/get-your-api.png[]
+
+Arquillian Redmine Governor extension is configured by putting the following extension definition into `arquillian.xml` like this:
+
+[source,xml]
+----
+<extension qualifier="governor-redmine">
+        <property name="server">http://localhost:10083/</property>
+        <property name="apikey">42f0c893f65fc65cab6ddd8eaad4c5029799a7ab</property>
+</extension>
+----
+
+Possible properties for `governor-redmine` extension:
+
+|===
+|Configuration property|Description|Default value|Possible values
+
+|server
+|The Redmine server address.
+|this property has to be set and has to be non-empty, otherwise it fails if no property is set
+|Any string.
+|apikey
+|your redmine user apikey.
+|this property has to be set and has to be non-empty, otherwise it fails if no property is set
+|Any string.
+|force
+|Even if issue status is Open, this test method will be executed anyway
+|false
+|true / false
+|closePassed
+|If you force the execution for some test method which has status as *not* 'closed' and this test succeeds and this property is set to true, Redmine issue on `server` will be automatically resolved as *'Closed'* and appropriate message about the issue resolving will be submitted to that Redmine issue as a comment posted by `username`.
+|false
+|true / false
+|closingMessage
+|Message which appears as a comment on a Redmine issue which was automatically *closed*.
+|This Redmine issue was automatically closed by %s with Arquillian Redmine Governor extension. ('%s' is replaced by +username+ property).
+|Any string.
+|openFailed
+|If this test fails and this property is set to true, Redmine issue on `server` will be automatically resolved as 'New' and appropriate message about the issue reopened will be submitted to that Redmine issue as a comment posted by `username`.
+|false
+|true / false
+|openingMessage
+|Message which appears as a comment on a Redmine issue which was automatically *opened*. The stacktrace will be also appended to opening message.
+|This Redmine issue was automatically opened by %s with Arquillian Redmine Governor extension. ('%s' is replaced by +username+ property).
+|Any string.
+
+|===
+
+Due to security reasons, when you do not specify `server` and `apikey` properties in `arquillian.xml`
+for Redmine Governor, this extension looks for system properties `redmine.governor.server` and `redmine.governor.apikey`.
+
+You can set properties `force`, `closePassed` and `openFailed` by system properties `redmine.governor.force`, `redmine.governor.closepassed` and `redmine.governor.openFailed` by setting them to "true" or "false".
+
+=== Usage
+
+Let's have this test case:
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class TestCase
+{
+    @Test
+    @Redmine("1")
+    public void test()
+    {
+        //...
+    }
+
+}
+----
+
+=== Automatic closing of your Redmine issues
+
+If some Redmine issue is unresolved, normally, it would be skipped from
+execution. However if you force it to execute by `force` flag on `@Redmine` annotation, and this test method
+passes with success, if you set property `closePassed` in your `arquillian.xml`, that issue will be
+automatically marked as `Closed` on Redmine server.
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class AutomaticClosingTestCase
+{
+    @Test
+    @Redmine(value = "2", force = true)
+    public void automaticClosingTest)
+    {
+        // ...
+    }
+}
+----
+
+Here is an issue closed by Governor Redmine:
+
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/closed.png[]
+
+=== Close order
+
+Redmine can be configured to have a workflow for issue transitions. In some cases this workflow *does not* allow closing issues for some issue statuses.
+
+Imagine you have a customised workflow for closing issues, e.g 'New' -> 'Executing' -> 'close', then you have to provide statuses id order so governor redmine can close your issues.
+
+In the example above the issue have to go to 'executing'(id 2) before going to 'close'(id 5). Just add 'closeOrder' property in arquillian:
+
+
+[source,xml]
+----
+<extension qualifier="governor-redmine">
+        <property name="closeOrder">2, 5</property>
+</extension>
+----
+
+NOTE: You can retrieve issue status id in 'REDMINE_URL/issue_statuses.xml' address.
+
+=== Automatic opening of your Redmine issues
+
+If some Redmine issue is *closed* it will be executed and if your test fails nothing will be updated on Redmine server. However if you set `openFailed` flag on `@Redmine` annotation or in `arquillian.xml` to true, and this test method
+fails then that issue will be automatically marked as `New` on Redmine server.
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class AutomaticOpeningTestCase
+{
+    @Test
+    @Redmine(value = "3", openFailed = true)
+    public void automaticOpeningTest)
+    {
+        // ...
+    }
+}
+----
+
+Here is an issue opened by Governor Redmine:
+
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/openFailed.png[]
+
+=== Setting up Redmine locally
+
+The easiest way to run redmine locally is to use this docker image: https://github.com/sameersbn/docker-redmine
+
+IMPORTANT: before you create any project go to *Administration* menu and click on *Load default configuration*. see https://github.com/sameersbn/docker-redmine/issues/92[this issue^] for more details.
+
 == Arquillian Governor Skipper extension
 
 This extension simply skips test methods which are annotated with `@TestSpec`. In order to use this extension, put this into `pom.xml`
