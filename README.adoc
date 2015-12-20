@@ -412,7 +412,7 @@ public class AutomaticOpeningTestCase
 }
 ----
 
-=== Setting up redmine locally
+=== Setting up Redmine locally
 
 The easiest way to run redmine locally is to use this docker image: https://github.com/sameersbn/docker-redmine
 
