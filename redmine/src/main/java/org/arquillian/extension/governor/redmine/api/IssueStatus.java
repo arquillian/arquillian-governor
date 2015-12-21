@@ -21,7 +21,8 @@ package org.arquillian.extension.governor.redmine.api;
  *
  * http://demo.redmine.org/issue_statuses.xml
  */
-public enum IssueStatus {
+public enum IssueStatus
+{
     NEW(1), IN_PROGRESS(2), RESOLVED(3), CLOSED(5);
 
 
