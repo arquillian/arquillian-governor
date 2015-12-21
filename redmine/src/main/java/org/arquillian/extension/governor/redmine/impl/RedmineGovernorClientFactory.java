@@ -30,12 +30,12 @@ public class RedmineGovernorClientFactory implements GovernorClientFactory<Redmi
     private RedmineGovernorConfiguration redmineGovernorConfiguration;
 
     @Override
-    public RedmineGovernorClient build(RedmineGovernorConfiguration governorConfiguration) throws Exception
+    public RedmineGovernorClient build(RedmineGovernorConfiguration redmineGovernorConfiguration) throws Exception
     {
-        Validate.notNull(governorConfiguration, "Redmine governor configuration has to be set.");
-        this.redmineGovernorConfiguration = governorConfiguration;
+        Validate.notNull(redmineGovernorConfiguration, "Redmine governor configuration has to be set.");
+        this.redmineGovernorConfiguration = redmineGovernorConfiguration;
 
-        RedmineGovernorClient redmineGovernorClient = new RedmineGovernorClient(redmineGovernorConfiguration);
+        RedmineGovernorClient redmineGovernorClient = new RedmineGovernorClient(this.redmineGovernorConfiguration);
         redmineGovernorClient.setGovernorStrategy(new RedmineGovernorStrategy(this.redmineGovernorConfiguration));
 
         return redmineGovernorClient;

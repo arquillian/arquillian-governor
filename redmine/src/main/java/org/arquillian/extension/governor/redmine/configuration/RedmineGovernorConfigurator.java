@@ -66,10 +66,10 @@ public class RedmineGovernorConfigurator
             if (extension.getExtensionName().equals(EXTENSION_NAME))
             {
                 redmineGovernorConfiguration.setConfiguration(extension.getExtensionProperties());
-                redmineGovernorConfiguration.validate();
                 break;
             }
         }
+        redmineGovernorConfiguration.validate();
 
         this.redmineGovernorConfiguration.set(redmineGovernorConfiguration);
 

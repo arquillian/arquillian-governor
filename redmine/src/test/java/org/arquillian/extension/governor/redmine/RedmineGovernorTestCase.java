@@ -56,7 +56,7 @@ import static org.junit.Assert.assertThat;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class RedmineGovernorTestCase extends org.arquillian.extension.governor.redmine.AbstractGovernorTestCase
+public class RedmineGovernorTestCase extends AbstractGovernorTestCase
 {
 
     private static final String DEFAULT_SERVER = "localhost";

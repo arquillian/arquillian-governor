@@ -91,7 +91,7 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
     {
         final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
-        // if we passed some test method annotated with GitHub, we may eventually close it
+        // if we passed some test method annotated with Redmine, we may eventually close it
 
         if (redmineGovernorConfiguration.getClosePassed())
         {
