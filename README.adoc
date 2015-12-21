@@ -291,11 +291,11 @@ As stated previously, Redmine Governor has the base implementation automatically
 
 To use this extension you need to enable Redmine rest api like in image below:
 
-image::https://raw.githubusercontent.com/rmpestano/arquillian-governor/master/redmine/enable-api.png[]
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/enable-api.png[]
 
 And also will need an *apikey*. The apikey can be found in your user's account, see image bellow:
 
-image::https://raw.githubusercontent.com/rmpestano/arquillian-governor/master/redmine/get-your-api.png[]
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/get-your-api.png[]
 
 Arquillian Redmine Governor extension is configured by putting the following extension definition into `arquillian.xml` like this:
 
@@ -390,7 +390,7 @@ public class AutomaticClosingTestCase
 
 Here is a closed issue by Governor Redmine:
 
-image::https://raw.githubusercontent.com/rmpestano/arquillian-governor/master/redmine/closed.png[]
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/closed.png[]
 
 
 === Automatic opening of your Redmine issues
