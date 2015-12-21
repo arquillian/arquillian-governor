@@ -28,15 +28,18 @@ public enum IssueStatus
 
     private final Integer statusCode;
 
-    IssueStatus(int statusCode) {
+    IssueStatus(int statusCode)
+    {
         this.statusCode = statusCode;
     }
 
-    public Integer getStatusCode() {
+    public Integer getStatusCode()
+    {
         return statusCode;
     }
 
-    public static boolean isClosed(Integer statusCode){
+    public static boolean isClosed(Integer statusCode)
+    {
         return CLOSED.getStatusCode().equals(statusCode);
     }
 }
