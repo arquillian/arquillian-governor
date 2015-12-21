@@ -293,7 +293,7 @@ To use this extension you need to enable Redmine rest api like in image below:
 
 image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/enable-api.png[]
 
-And also will need an *apikey*. The apikey can be found in your user's account, see image bellow:
+And also will need an *apikey*. The apikey can be found in your user's account, see image below:
 
 image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/get-your-api.png[]
 
