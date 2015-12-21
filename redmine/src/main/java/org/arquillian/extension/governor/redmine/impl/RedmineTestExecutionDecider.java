@@ -77,9 +77,9 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
 
         if (event.getAnnotation().annotationType() == provides())
         {
-            Redmine gitHubIssue = (Redmine) event.getAnnotation();
+            Redmine redmineIssue = (Redmine) event.getAnnotation();
 
-            this.executionDecision.set(redmineGovernorClient.resolve(gitHubIssue));
+            this.executionDecision.set(redmineGovernorClient.resolve(redmineIssue));
         }
     }
 
