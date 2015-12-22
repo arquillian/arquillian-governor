@@ -396,7 +396,7 @@ image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/r
 === Automatic opening of your Redmine issues
 
 If some Redmine issue is *closed* it will be executed and if your test fails nothing will be updated on Redmine server. However if you set `openFailed` flag on `@Redmine` annotation or in `arquillian.xml` to true, and this test method
-fails then that issue will be automatically marked as `In Progress` on Redmine server.
+fails then that issue will be automatically marked as `New` on Redmine server.
 
 [source,java]
 ----
