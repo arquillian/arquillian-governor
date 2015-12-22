@@ -100,7 +100,7 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         try
         {
             Issue issue = getIssue(issueId);
-            issue.setStatusId(IssueStatus.IN_PROGRESS.getStatusCode());
+            issue.setStatusId(IssueStatus.NEW.getStatusCode());
             StringBuilder openingMessage = new StringBuilder(getOpeningMessage()+"\n");
             openingMessage.append(getCauseAsString(cause));
             issue.setNotes(openingMessage.toString());

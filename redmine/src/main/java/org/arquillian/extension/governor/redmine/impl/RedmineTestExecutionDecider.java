@@ -28,7 +28,7 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
-import org.jboss.arquillian.test.spi.event.suite.After;
+import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
@@ -83,7 +83,7 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
         }
     }
 
-    public void on(@Observes After event,
+    public void on(@Observes AfterTestLifecycleEvent event,
         TestResult testResult,
         GovernorRegistry governorRegistry,
         RedmineGovernorConfiguration redmineGovernorConfiguration,
@@ -118,7 +118,8 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
                 }
             }
         }
-        if(redmineGovernorConfiguration.getOpenFailed())
+        //openFailed can be configured globally in arquillian.xml or per test method via Redmine annotation
+        if(redmineGovernorConfiguration.getOpenFailed() || event.getTestMethod().getAnnotation(Redmine.class).openFailed())
         {
             if (testResult.getStatus() == Status.FAILED
                     && decision.getDecision() == Decision.EXECUTE
