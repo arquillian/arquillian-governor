@@ -16,12 +16,11 @@
  */
 package org.arquillian.extension.governor.redmine.impl;
 
-import com.taskadapter.redmineapi.Include;
-import com.taskadapter.redmineapi.RedmineException;
-import com.taskadapter.redmineapi.RedmineManager;
-import com.taskadapter.redmineapi.RedmineManagerFactory;
-import com.taskadapter.redmineapi.bean.Issue;
-import com.taskadapter.redmineapi.bean.User;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.arquillian.extension.governor.api.GovernorClient;
 import org.arquillian.extension.governor.redmine.api.IssueStatus;
 import org.arquillian.extension.governor.redmine.api.Redmine;
@@ -29,10 +28,12 @@ import org.arquillian.extension.governor.redmine.configuration.RedmineGovernorCo
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.taskadapter.redmineapi.Include;
+import com.taskadapter.redmineapi.RedmineException;
+import com.taskadapter.redmineapi.RedmineManager;
+import com.taskadapter.redmineapi.RedmineManagerFactory;
+import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.User;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
@@ -46,8 +47,9 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
     private RedmineGovernorConfiguration redmineGovernorConfiguration;
     private RedmineGovernorStrategy redmineGovernorStrategy;
 
-    public RedmineGovernorClient(RedmineGovernorConfiguration redmineGovernorConfiguration) {
-        this.initializeRedmineManager(redmineGovernorConfiguration.getServer(),redmineGovernorConfiguration.getApiKey());
+    public RedmineGovernorClient(RedmineGovernorConfiguration redmineGovernorConfiguration)
+    {
+        this.initializeRedmineManager(redmineGovernorConfiguration.getServer(), redmineGovernorConfiguration.getApiKey());
         this.setConfiguration(redmineGovernorConfiguration);
     }
 
@@ -81,17 +83,17 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
     {
         Validate.notNull(redmineManager, "Redmine manager must be specified.");
 
-
         try
         {
             Issue issue = getIssue(issueId);
-            if(!IssueStatus.isClosed(issue.getStatusId()))
+            if (!IssueStatus.isClosed(issue.getStatusId()))
             {
                 issue.setStatusId(IssueStatus.CLOSED.getStatusCode());
                 issue.setNotes(getClosingMessage());
                 redmineManager.getIssueManager().update(issue);
             }
-        } catch (Exception e){
+        } catch (Exception e)
+        {
             logger.warning(String.format("An exception has occurred while closing the issue %s. Exception: %s", issueId, e.getMessage()));
         }
     }
@@ -103,28 +105,28 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         try
         {
             Issue issue = getIssue(issueId);
-            if(IssueStatus.isClosed(issue.getStatusId()))
+            if (IssueStatus.isClosed(issue.getStatusId()))
             {
                 issue.setStatusId(IssueStatus.NEW.getStatusCode());
-                StringBuilder openingMessage = new StringBuilder(getOpeningMessage()+"\n");
+                StringBuilder openingMessage = new StringBuilder(getOpeningMessage() + "\n");
                 openingMessage.append(getCauseAsString(cause));
                 issue.setNotes(openingMessage.toString());
                 redmineManager.getIssueManager().update(issue);
             }
 
-        } catch (Exception e){
+        } catch (Exception e)
+        {
             logger.warning(String.format("An exception has occurred while closing the issue %s. Exception: %s", issueId, e.getMessage()));
         }
     }
 
     private String getCauseAsString(Throwable cause)
     {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw, true);
-            cause.printStackTrace(pw);
-           return sw.getBuffer().toString();
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw, true);
+        cause.printStackTrace(pw);
+        return sw.getBuffer().toString();
     }
-
 
     @Override
     public void setGovernorStrategy(RedmineGovernorStrategy strategy)
@@ -154,7 +156,8 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
     private Issue getIssue(String issueId) {
         try
         {
-            if(issueId == null || !isNumeric(issueId)){
+            if (issueId == null || !isNumeric(issueId))
+            {
                 throw new IllegalArgumentException("Issue id is invalid.");
             }
             return redmineManager.getIssueManager().getIssueById(new Integer(issueId), Include.journals);
@@ -166,48 +169,53 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
     }
 
     private boolean isNumeric(String issueId) {
-            try
-            {
-                Integer.parseInt(issueId);
-            }
-            catch(NumberFormatException nfe)
-            {
-                return false;
-            }
-            return true;
+        try
+        {
+            Integer.parseInt(issueId);
+        } catch (NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
 
     }
 
-    private String getClosingMessage(){
+    private String getClosingMessage() {
         Validate.notNull(redmineGovernorConfiguration, "Redmine Governor configuration must be set.");
 
         String username = null;
-        try{
+        try
+        {
             User apiKeyUser = redmineManager.getUserManager().getCurrentUser();
             username = apiKeyUser.getLogin();
-        }catch (RedmineException e){
-            logger.log(Level.WARNING,"Could not get redmine user.", e);
+        } catch (RedmineException e)
+        {
+            logger.log(Level.WARNING, "Could not get redmine user.", e);
         }
 
-        if (username == null || username.isEmpty()) {
+        if (username == null || username.isEmpty())
+        {
             username = "unknown";
         }
-        
+
         return String.format(redmineGovernorConfiguration.getClosingMessage(), username);
     }
 
-    private String getOpeningMessage(){
+    private String getOpeningMessage() {
         Validate.notNull(redmineGovernorConfiguration, "Redmine Governor configuration must be set.");
 
         String username = null;
-        try{
+        try
+        {
             User apiKeyUser = redmineManager.getUserManager().getCurrentUser();
             username = apiKeyUser.getLogin();
-        }catch (RedmineException e){
-            logger.log(Level.WARNING,"Could not get redmine user.", e);
+        } catch (RedmineException e)
+        {
+            logger.log(Level.WARNING, "Could not get redmine user.", e);
         }
 
-        if (username == null || username.isEmpty()) {
+        if (username == null || username.isEmpty())
+        {
             username = "unknown";
         }
 

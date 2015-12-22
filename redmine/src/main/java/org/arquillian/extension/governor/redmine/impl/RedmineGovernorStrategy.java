@@ -16,13 +16,14 @@
  */
 package org.arquillian.extension.governor.redmine.impl;
 
-import com.taskadapter.redmineapi.bean.Issue;
 import org.arquillian.extension.governor.api.GovernorStrategy;
 import org.arquillian.extension.governor.redmine.api.IssueStatus;
 import org.arquillian.extension.governor.redmine.api.Redmine;
 import org.arquillian.extension.governor.redmine.configuration.RedmineGovernorConfiguration;
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
+
+import com.taskadapter.redmineapi.bean.Issue;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
@@ -43,6 +44,7 @@ public class RedmineGovernorStrategy implements GovernorStrategy
         Validate.notNull(redmineGovernorConfiguration, "Redmine Governor configuration has to be set.");
         this.redmineGovernorConfiguration = redmineGovernorConfiguration;
     }
+
     public RedmineGovernorStrategy annotation(Redmine annotation)
     {
         this.annotation = annotation;
@@ -63,21 +65,21 @@ public class RedmineGovernorStrategy implements GovernorStrategy
 
         Integer issueStatus = redmineIssue.getStatusId();
 
-
         if (issueStatus == null || IssueStatus.isClosed(issueStatus))
         {
-            if(annotation.openFailed()){
-                //if issue is closed and test fails, governor will reopen issue
+            if (annotation.openFailed())
+            {
+                // if issue is closed and test fails, governor will reopen issue
                 return ExecutionDecision.execute(FORCING_EXECUTION_OPEN_FAILED);
             }
 
             return ExecutionDecision.execute();
         }
 
-        if (annotation.force() || redmineGovernorConfiguration.getForce()) {
+        if (annotation.force() || redmineGovernorConfiguration.getForce())
+        {
             return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
         }
-
 
         return ExecutionDecision.dontExecute(String.format(SKIPPING_EXECUTION_REASON_STRING, redmineIssue.getId(), issueStatus));
     }

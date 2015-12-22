@@ -19,12 +19,14 @@ package org.arquillian.extension.governor.redmine.api;
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
  *
- * http://demo.redmine.org/issue_statuses.xml
+ *         http://demo.redmine.org/issue_statuses.xml
  */
 public enum IssueStatus
 {
-    NEW(1), IN_PROGRESS(2), RESOLVED(3), CLOSED(5);
-
+    NEW(1),
+    IN_PROGRESS(2),
+    RESOLVED(3),
+    CLOSED(5);
 
     private final Integer statusCode;
 

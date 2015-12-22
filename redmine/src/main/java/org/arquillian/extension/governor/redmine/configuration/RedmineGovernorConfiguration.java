@@ -113,13 +113,12 @@ public class RedmineGovernorConfiguration extends Configuration
         setProperty("openingMessage", closingMessage);
     }
 
-
     @Override
     public void validate() throws GovernorConfigurationException
     {
         if (EMPTY_STRING.equals(getServer()))
         {
-            //TODO provide more info on how to set the property
+            // TODO provide more info on how to set the property
             throw new GovernorConfigurationException("Redmine server is not set.");
         }
 
@@ -166,8 +165,9 @@ public class RedmineGovernorConfiguration extends Configuration
 
         if (server != null && server.length() != 0)
         {
-            if(server.endsWith("/")){
-                server = server.substring(0,server.length()-1);
+            if (server.endsWith("/"))
+            {
+                server = server.substring(0, server.length() - 1);
             }
             return server;
         }
@@ -186,4 +186,3 @@ public class RedmineGovernorConfiguration extends Configuration
     }
 
 }
-
