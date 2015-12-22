@@ -388,7 +388,7 @@ public class AutomaticClosingTestCase
 }
 ----
 
-Here is a closed issue by Governor Redmine:
+Here is an issue closed by Governor Redmine:
 
 image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/closed.png[]
 
@@ -411,6 +411,10 @@ public class AutomaticOpeningTestCase
     }
 }
 ----
+
+Here is an issue opened by Governor Redmine:
+
+image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/redmine/openFailed.png[]
 
 === Setting up Redmine locally
 
