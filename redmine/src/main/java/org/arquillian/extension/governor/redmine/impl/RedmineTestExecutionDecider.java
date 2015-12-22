@@ -123,7 +123,7 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
         {
             if (testResult.getStatus() == Status.FAILED
                     && decision.getDecision() == Decision.EXECUTE
-                    && (decision.getReason().equals(RedmineGovernorStrategy.FORCING_EXECUTION_REASON_STRING)))
+                    && (decision.getReason().equals(RedmineGovernorStrategy.FORCING_EXECUTION_OPEN_FAILED)))
             {
 
                 for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())

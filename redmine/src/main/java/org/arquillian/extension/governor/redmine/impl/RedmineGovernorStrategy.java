@@ -31,6 +31,7 @@ import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 public class RedmineGovernorStrategy implements GovernorStrategy
 {
     public static final String FORCING_EXECUTION_REASON_STRING = "forcing execution";
+    public static final String FORCING_EXECUTION_OPEN_FAILED = "forcing execution for reopening issue";
     public static final String SKIPPING_EXECUTION_REASON_STRING = "Skipping %s. Status %s.";
 
     private RedmineGovernorConfiguration redmineGovernorConfiguration;
@@ -67,14 +68,13 @@ public class RedmineGovernorStrategy implements GovernorStrategy
         {
             if(annotation.openFailed()){
                 //if issue is closed and test fails, governor will reopen issue
-                return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
+                return ExecutionDecision.execute(FORCING_EXECUTION_OPEN_FAILED);
             }
 
             return ExecutionDecision.execute();
         }
 
-        if (annotation.force() || redmineGovernorConfiguration.getForce())
-        {
+        if (annotation.force() || redmineGovernorConfiguration.getForce()) {
             return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
         }
 

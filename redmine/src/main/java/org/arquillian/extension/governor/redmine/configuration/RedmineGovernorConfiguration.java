@@ -28,7 +28,7 @@ public class RedmineGovernorConfiguration extends Configuration
     private static final String EMPTY_STRING = "";
 
     private static final String DEFAULT_REDMINE_CLOSING_MESSAGE = "This Redmine issue was automatically closed by %s with Arquillian Governor Redmine extension.";
-    private static final String DEFAULT_REDMINE_OPENING_MESSAGE = "This Redmine issue was automatically opened by %s with Arquillian Governor Redmine extension.";
+    private static final String DEFAULT_REDMINE_OPENING_MESSAGE = "This Redmine issue was automatically opened by %s with Arquillian Governor Redmine extension. Cause: ";
 
     private String apiKey = resolveApiKey();
 

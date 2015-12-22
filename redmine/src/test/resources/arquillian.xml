@@ -6,6 +6,7 @@
     <extension qualifier="governor-redmine">
         <property name="force">false</property>
         <property name="closePassed">true</property>
+        <property name="openingMessage">This issue was automatically opened by %s with arquillian governor redmine. Root cause: </property>
         <property name="server">http://localhost:10083/</property>
         <property name="apikey">42f0c893f65fc65cab6ddd8eaad4c5029799a7ab</property>
     </extension>

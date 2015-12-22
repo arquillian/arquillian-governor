@@ -85,9 +85,12 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         try
         {
             Issue issue = getIssue(issueId);
-            issue.setStatusId(IssueStatus.CLOSED.getStatusCode());
-            issue.setNotes(getClosingMessage());
-            redmineManager.getIssueManager().update(issue);
+            if(!IssueStatus.isClosed(issue.getStatusId()))
+            {
+                issue.setStatusId(IssueStatus.CLOSED.getStatusCode());
+                issue.setNotes(getClosingMessage());
+                redmineManager.getIssueManager().update(issue);
+            }
         } catch (Exception e){
             logger.warning(String.format("An exception has occurred while closing the issue %s. Exception: %s", issueId, e.getMessage()));
         }
@@ -100,11 +103,15 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         try
         {
             Issue issue = getIssue(issueId);
-            issue.setStatusId(IssueStatus.NEW.getStatusCode());
-            StringBuilder openingMessage = new StringBuilder(getOpeningMessage()+"\n");
-            openingMessage.append(getCauseAsString(cause));
-            issue.setNotes(openingMessage.toString());
-            redmineManager.getIssueManager().update(issue);
+            if(IssueStatus.isClosed(issue.getStatusId()))
+            {
+                issue.setStatusId(IssueStatus.NEW.getStatusCode());
+                StringBuilder openingMessage = new StringBuilder(getOpeningMessage()+"\n");
+                openingMessage.append(getCauseAsString(cause));
+                issue.setNotes(openingMessage.toString());
+                redmineManager.getIssueManager().update(issue);
+            }
+
         } catch (Exception e){
             logger.warning(String.format("An exception has occurred while closing the issue %s. Exception: %s", issueId, e.getMessage()));
         }
