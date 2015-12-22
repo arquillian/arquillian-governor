@@ -119,7 +119,7 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
             }
         }
         //openFailed can be configured globally in arquillian.xml or per test method via Redmine annotation
-        if(redmineGovernorConfiguration.getOpenFailed() || event.getTestMethod().getAnnotation(Redmine.class).openFailed())
+        if(redmineGovernorConfiguration.getOpenFailed() || (event.getTestMethod().getAnnotation(Redmine.class) != null && event.getTestMethod().getAnnotation(Redmine.class).openFailed()))
         {
             if (testResult.getStatus() == Status.FAILED
                     && decision.getDecision() == Decision.EXECUTE
