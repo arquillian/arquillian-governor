@@ -16,13 +16,13 @@
  */
 package org.arquillian.extension.governor.redmine.api;
 
-import org.arquillian.extension.governor.api.Governor;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.arquillian.extension.governor.api.Governor;
 
 /**
  * Place this annotation on a test method with Redmine issue (e.g. {@literal @Redmine(1)})
