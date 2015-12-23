@@ -18,6 +18,7 @@ package org.arquillian.extension.governor.jira.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
 import org.jboss.arquillian.test.spi.event.suite.After;
+import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
@@ -44,6 +46,8 @@ import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
  */
 public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorProvider
 {
+    private static final Map<Method, Integer> lifecycleCountRegister = new HashMap<Method, Integer>();
+
     @Inject
     @ClassScoped
     private InstanceProducer<ExecutionDecision> executionDecision;
@@ -83,40 +87,53 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
         }
     }
 
-    public void on(@Observes After event,
+    public void on(@Observes AfterTestLifecycleEvent event,
         TestResult testResult,
         GovernorRegistry governorRegistry,
         JiraGovernorConfiguration jiraGovernorConfiguration,
         JiraGovernorClient jiraGovernorClient)
     {
-        final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
-
-        // if we passed some test method annotated with Jira, we may eventually close it
-
-        if (jiraGovernorConfiguration.getClosePassed())
+        int count = 0;
+        try
         {
-            // we decided we run this test method even it has annotation on it
-            if (testResult.getStatus() == Status.PASSED
-                && decision.getDecision() == Decision.EXECUTE
-                && (decision.getReason().equals(JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING)))
-            {
+            Integer c = lifecycleCountRegister.get(event.getTestMethod());
+            count = (c != null ? c.intValue() : 0);
+            if (count == 0)
+            {//skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+                return;
+            }
+            final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
-                for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
+            // if we passed some test method annotated with Jira, we may eventually close it
+
+            if (jiraGovernorConfiguration.getClosePassed())
+            {
+                // we decided we run this test method even it has annotation on it
+                if (testResult.getStatus() == Status.PASSED
+                    && decision.getDecision() == Decision.EXECUTE
+                    && (decision.getReason().equals(JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING)))
                 {
-                    if (entry.getKey().toString().equals(event.getTestMethod().toString()))
+
+                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
                     {
-                        for (Annotation annotation : entry.getValue())
+                        if (entry.getKey().toString().equals(event.getTestMethod().toString()))
                         {
-                            if (annotation.annotationType() == provides())
+                            for (Annotation annotation : entry.getValue())
                             {
-                                String id = ((Jira) annotation).value();
-                                jiraGovernorClient.close(id);
-                                return;
+                                if (annotation.annotationType() == provides())
+                                {
+                                    String id = ((Jira) annotation).value();
+                                    jiraGovernorClient.close(id);
+                                    return;
+                                }
                             }
                         }
                     }
                 }
             }
+        } finally
+        {
+            lifecycleCountRegister.put(event.getTestMethod(), ++count);
         }
     }
 }
