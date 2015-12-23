@@ -18,6 +18,7 @@ package org.arquillian.extension.governor.redmine.impl;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,15 +89,18 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
             Issue issue = getIssue(issueId);
             if (!IssueStatus.isClosed(issue.getStatusId()))
             {
-                if(redmineGovernorConfiguration.getCloseOrder() != null && redmineGovernorConfiguration.getCloseOrder().length() > 0){
+                if(redmineGovernorConfiguration.getCloseOrder() != null && redmineGovernorConfiguration.getCloseOrder().length() > 0)
+                {
                     resolveIntermediateIssueTransitions(issue, redmineGovernorConfiguration.getCloseOrder());
                 }
                 issue.setStatusId(IssueStatus.CLOSED.getStatusCode());
                 issue.setNotes(getClosingMessage());
                 redmineManager.getIssueManager().update(issue);
                 boolean stillNotClosed = !IssueStatus.isClosed(getIssue(issueId).getStatusId());
-                if(stillNotClosed){
-                    throw new RuntimeException("Arquillian governor redmine could not close issue "+issueId+". " +
+                if(stillNotClosed)
+                {
+                    printAvailableStatus();
+                    throw new RuntimeException("Arquillian governor redmine could not close issue. " +
                             "The status transition is probably invalid. Use property 'closeOrder' in arquillian.xml and provide a valid status transition for this issue.");
                 }
             }
@@ -104,6 +108,24 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         {
             logger.warning(String.format("An exception has occurred while closing the issue %s. Exception: %s", issueId, e.getMessage()));
         }
+    }
+
+    private void printAvailableStatus()
+    {
+        try
+        {
+            List<com.taskadapter.redmineapi.bean.IssueStatus> statuses = redmineManager.getIssueManager().getStatuses();
+            logger.info("Printing available issue status (id - name):");
+            for (com.taskadapter.redmineapi.bean.IssueStatus status : statuses)
+            {
+                logger.info(status.getId() + " - " + status.getName());
+            }
+        } catch (RedmineException e)
+        {
+            logger.log(Level.SEVERE, "Could not list issue statuses.",e);
+            e.printStackTrace();
+        }
+
     }
 
     private void resolveIntermediateIssueTransitions(Issue issue, String closeOrder)
@@ -115,7 +137,7 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         {
             try
             {
-                Integer intermediateStatus = Integer.parseInt(statusId[i]);
+                Integer intermediateStatus = Integer.parseInt(statusId[i].trim());
                 if(!IssueStatus.isClosed(intermediateStatus)){
                     issue.setStatusId(intermediateStatus);
                     redmineManager.getIssueManager().update(issue);
