@@ -40,6 +40,8 @@ public class RedmineGovernorConfiguration extends Configuration
 
     private boolean openFailed = resolveOpenFailed();
 
+    private String closeOrder = resolveCloseOrder();
+
     private boolean resolveOpenFailed() {
         return Boolean.valueOf(System.getProperty("redmine.governor.openfailed"));
     }
@@ -47,6 +49,11 @@ public class RedmineGovernorConfiguration extends Configuration
     public String getApiKey()
     {
         return getProperty("apikey", apiKey);
+    }
+
+    public String getCloseOrder()
+    {
+        return getProperty("closeOrder", closeOrder);
     }
 
     public void setApiKey(String apiKey)
@@ -139,9 +146,12 @@ public class RedmineGovernorConfiguration extends Configuration
 
         sb.append(String.format("%-40s %s\n", "server", getServer()));
         sb.append(String.format("%-40s %s\n", "apikey", getApiKey()));
+        sb.append(String.format("%-40s %s\n", "closeOrder", getCloseOrder()));
         sb.append(String.format("%-40s %s\n", "force", getForce()));
         sb.append(String.format("%-40s %s\n", "closePassed", getClosePassed()));
         sb.append(String.format("%-40s %s\n", "closingMessage", getClosingMessage()));
+        sb.append(String.format("%-40s %s\n", "openFailed", getOpenFailed()));
+        sb.append(String.format("%-40s %s\n", "openingMessage", getOpeningMessage()));
 
         return sb.toString();
     }
@@ -155,6 +165,18 @@ public class RedmineGovernorConfiguration extends Configuration
         if (apiKey != null && !apiKey.trim().equals(""))
         {
             return apiKey;
+        }
+
+        return EMPTY_STRING;
+    }
+
+    private String resolveCloseOrder()
+    {
+        final String closeOrder = System.getProperty("github.governor.closeOrder");
+
+        if (closeOrder != null && !closeOrder.trim().equals(""))
+        {
+            return closeOrder;
         }
 
         return EMPTY_STRING;
@@ -182,7 +204,7 @@ public class RedmineGovernorConfiguration extends Configuration
 
     private boolean resolveClosePassed()
     {
-        return Boolean.valueOf(System.getProperty("redmine.governor.closepassed"));
+        return Boolean.valueOf(System.getProperty("redmine.governor.closePassed"));
     }
 
 }

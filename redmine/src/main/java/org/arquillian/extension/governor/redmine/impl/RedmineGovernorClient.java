@@ -81,18 +81,47 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
     {
         Validate.notNull(redmineManager, "Redmine manager must be specified.");
 
-
         try
         {
             Issue issue = getIssue(issueId);
             if(!IssueStatus.isClosed(issue.getStatusId()))
             {
+                if(redmineGovernorConfiguration.getCloseOrder() != null && redmineGovernorConfiguration.getCloseOrder().length() > 0){
+                    resolveIntermediateIssueTransitions(issue, redmineGovernorConfiguration.getCloseOrder());
+                }
                 issue.setStatusId(IssueStatus.CLOSED.getStatusCode());
                 issue.setNotes(getClosingMessage());
                 redmineManager.getIssueManager().update(issue);
+                boolean stillNotClosed = !IssueStatus.isClosed(getIssue(issueId).getStatusId());
+                if(stillNotClosed){
+                    throw new RuntimeException("Arquillian governor redmine could not close issue "+issueId+". " +
+                            "The status transition is probably invalid. Use property 'closeOrder' in arquillian.xml and provide a valid status transition for this issue.");
+                }
             }
         } catch (Exception e){
             logger.warning(String.format("An exception has occurred while closing the issue %s. Exception: %s", issueId, e.getMessage()));
+        }
+    }
+
+    private void resolveIntermediateIssueTransitions(Issue issue, String closeOrder)
+    {
+        String[] statusId = closeOrder.split(",");
+
+        int i = 0;
+        while (i < statusId.length )
+        {
+            try
+            {
+                Integer intermediateStatus = Integer.parseInt(statusId[i]);
+                if(!IssueStatus.isClosed(intermediateStatus)){
+                    issue.setStatusId(intermediateStatus);
+                    redmineManager.getIssueManager().update(issue);
+                }
+            }catch (Exception e)
+            {
+                Logger.getLogger(getClass().getName()).log(Level.WARNING, String.format("Could not update issue %s with status id %d", issue.getId(), statusId[i]), e);
+            }
+            i++;
         }
     }
 
@@ -110,6 +139,10 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
                 openingMessage.append(getCauseAsString(cause));
                 issue.setNotes(openingMessage.toString());
                 redmineManager.getIssueManager().update(issue);
+                boolean stillClosed = IssueStatus.isClosed(getIssue(issueId).getStatusId());
+                if(stillClosed){
+                    throw new RuntimeException("Arquillian governor redmine could not open issue "+issueId+". Please check if provided user has privileges for re opening issues.");
+                }
             }
 
         } catch (Exception e){
