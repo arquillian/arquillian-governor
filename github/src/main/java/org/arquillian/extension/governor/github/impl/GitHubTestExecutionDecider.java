@@ -29,12 +29,14 @@ import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
 import org.jboss.arquillian.test.spi.event.suite.After;
+import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +46,8 @@ import java.util.Map;
  */
 public class GitHubTestExecutionDecider implements TestExecutionDecider, GovernorProvider
 {
+    private static final Map<Method, Integer> lifecycleCountRegister = new HashMap<Method, Integer>();
+
     @Inject
     @ClassScoped
     private InstanceProducer<ExecutionDecision> executionDecision;
@@ -83,12 +87,23 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
         }
     }
 
-    public void on(@Observes After event,
+    public void on(@Observes AfterTestLifecycleEvent event,
         TestResult testResult,
         GovernorRegistry governorRegistry,
         GitHubGovernorConfiguration gitHubGovernorConfiguration,
         GitHubGovernorClient gitHubGovernorClient)
     {
+        
+        int count = 0;
+        try
+        {
+            Integer c = lifecycleCountRegister.get(event.getTestMethod());
+            count = (c != null ? c.intValue() : 0);
+            if (count == 0)
+            {//skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+                return;
+            }
+            
         final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
         // if we passed some test method annotated with GitHub, we may eventually close it
@@ -118,6 +133,11 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
                 }
             }
         }
+        } finally
+        {
+            lifecycleCountRegister.put(event.getTestMethod(), ++count);
+        }
     }
+        
 }
 
