@@ -16,6 +16,11 @@
  */
 package org.arquillian.extension.governor.redmine.impl;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
 import org.arquillian.extension.governor.redmine.api.Redmine;
@@ -32,11 +37,6 @@ import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
@@ -118,12 +118,13 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
                 }
             }
         }
-        //openFailed can be configured globally in arquillian.xml or per test method via Redmine annotation
-        if(redmineGovernorConfiguration.getOpenFailed() || (event.getTestMethod().getAnnotation(Redmine.class) != null && event.getTestMethod().getAnnotation(Redmine.class).openFailed()))
+        // openFailed can be configured globally in arquillian.xml or per test method via Redmine annotation
+        if (redmineGovernorConfiguration.getOpenFailed()
+            || (event.getTestMethod().getAnnotation(Redmine.class) != null && event.getTestMethod().getAnnotation(Redmine.class).openFailed()))
         {
             if (testResult.getStatus() == Status.FAILED
-                    && decision.getDecision() == Decision.EXECUTE
-                    && (decision.getReason().equals(RedmineGovernorStrategy.FORCING_EXECUTION_OPEN_FAILED)))
+                && decision.getDecision() == Decision.EXECUTE
+                && (decision.getReason().equals(RedmineGovernorStrategy.FORCING_EXECUTION_OPEN_FAILED)))
             {
 
                 for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
@@ -135,7 +136,7 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
                             if (annotation.annotationType() == provides())
                             {
                                 String id = ((Redmine) annotation).value();
-                                redmineGovernorClient.open(id,testResult.getThrowable());
+                                redmineGovernorClient.open(id, testResult.getThrowable());
                                 return;
                             }
                         }
@@ -145,4 +146,3 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
         }
     }
 }
-

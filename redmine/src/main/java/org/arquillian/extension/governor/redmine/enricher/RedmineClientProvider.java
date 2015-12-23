@@ -16,19 +16,21 @@
  */
 package org.arquillian.extension.governor.redmine.enricher;
 
-import com.taskadapter.redmineapi.RedmineManager;
+import java.lang.annotation.Annotation;
+
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 
-import java.lang.annotation.Annotation;
+import com.taskadapter.redmineapi.RedmineManager;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
  *
  */
-public class RedmineClientProvider implements ResourceProvider {
+public class RedmineClientProvider implements ResourceProvider
+{
 
     @Inject
     private Instance<RedmineManager> redmineManager;
@@ -42,7 +44,8 @@ public class RedmineClientProvider implements ResourceProvider {
     public Object lookup(ArquillianResource resource, Annotation... qualifiers) {
         RedmineManager redmineManager = this.redmineManager.get();
 
-        if (redmineManager == null) {
+        if (redmineManager == null)
+        {
             throw new IllegalStateException("Redmine manager was not found.");
         }
 

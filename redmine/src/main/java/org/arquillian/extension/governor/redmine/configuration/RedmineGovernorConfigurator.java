@@ -16,7 +16,9 @@
  */
 package org.arquillian.extension.governor.redmine.configuration;
 
-import com.taskadapter.redmineapi.RedmineManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.arquillian.extension.governor.redmine.impl.RedmineGovernorClient;
 import org.arquillian.extension.governor.redmine.impl.RedmineGovernorClientFactory;
 import org.arquillian.extension.governor.spi.event.GovernorExtensionConfigured;
@@ -29,8 +31,7 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.taskadapter.redmineapi.RedmineManager;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
