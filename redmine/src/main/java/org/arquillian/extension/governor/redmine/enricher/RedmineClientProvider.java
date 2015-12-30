@@ -36,12 +36,14 @@ public class RedmineClientProvider implements ResourceProvider
     private Instance<RedmineManager> redmineManager;
 
     @Override
-    public boolean canProvide(Class<?> type) {
+    public boolean canProvide(Class<?> type)
+    {
         return RedmineManager.class.isAssignableFrom(type);
     }
 
     @Override
-    public Object lookup(ArquillianResource resource, Annotation... qualifiers) {
+    public Object lookup(ArquillianResource resource, Annotation... qualifiers)
+    {
         RedmineManager redmineManager = this.redmineManager.get();
 
         if (redmineManager == null)

@@ -89,7 +89,7 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
             Issue issue = getIssue(issueId);
             if (!IssueStatus.isClosed(issue.getStatusId()))
             {
-                if(redmineGovernorConfiguration.getCloseOrder() != null && redmineGovernorConfiguration.getCloseOrder().length() > 0)
+                if (redmineGovernorConfiguration.getCloseOrder() != null && redmineGovernorConfiguration.getCloseOrder().length() > 0)
                 {
                     resolveIntermediateIssueTransitions(issue, redmineGovernorConfiguration.getCloseOrder());
                 }
@@ -97,11 +97,11 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
                 issue.setNotes(getClosingMessage());
                 redmineManager.getIssueManager().update(issue);
                 boolean stillNotClosed = !IssueStatus.isClosed(getIssue(issueId).getStatusId());
-                if(stillNotClosed)
+                if (stillNotClosed)
                 {
                     printAvailableStatus();
                     throw new RuntimeException("Arquillian governor redmine could not close issue. " +
-                            "The status transition is probably invalid. Use property 'closeOrder' in arquillian.xml and provide a valid status transition for this issue.");
+                        "The status transition is probably invalid. Use property 'closeOrder' in arquillian.xml and provide a valid status transition for this issue.");
                 }
             }
         } catch (Exception e)
@@ -122,7 +122,7 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
             }
         } catch (RedmineException e)
         {
-            logger.log(Level.SEVERE, "Could not list issue statuses.",e);
+            logger.log(Level.SEVERE, "Could not list issue statuses.", e);
             e.printStackTrace();
         }
 
@@ -133,16 +133,17 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         String[] statusId = closeOrder.split(",");
 
         int i = 0;
-        while (i < statusId.length )
+        while (i < statusId.length)
         {
             try
             {
                 Integer intermediateStatus = Integer.parseInt(statusId[i].trim());
-                if(!IssueStatus.isClosed(intermediateStatus)){
+                if (!IssueStatus.isClosed(intermediateStatus))
+                {
                     issue.setStatusId(intermediateStatus);
                     redmineManager.getIssueManager().update(issue);
                 }
-            }catch (Exception e)
+            } catch (Exception e)
             {
                 Logger.getLogger(getClass().getName()).log(Level.WARNING, String.format("Could not update issue %s with status id %d", issue.getId(), statusId[i]), e);
             }
@@ -165,8 +166,10 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
                 issue.setNotes(openingMessage.toString());
                 redmineManager.getIssueManager().update(issue);
                 boolean stillClosed = IssueStatus.isClosed(getIssue(issueId).getStatusId());
-                if(stillClosed){
-                    throw new RuntimeException("Arquillian governor redmine could not open issue "+issueId+". Please check if provided user has privileges for re opening issues.");
+                if (stillClosed)
+                {
+                    throw new RuntimeException("Arquillian governor redmine could not open issue " + issueId
+                        + ". Please check if provided user has privileges for re opening issues.");
                 }
             }
 
@@ -191,7 +194,8 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         this.redmineGovernorStrategy = strategy;
     }
 
-    public RedmineManager getRedmineManager() {
+    public RedmineManager getRedmineManager()
+    {
         return redmineManager;
     }
 
@@ -209,7 +213,8 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         redmineManager = RedmineManagerFactory.createWithApiKey(uri, apiKey);
     }
 
-    private Issue getIssue(String issueId) {
+    private Issue getIssue(String issueId)
+    {
         try
         {
             if (issueId == null || !isNumeric(issueId))
@@ -224,7 +229,8 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         }
     }
 
-    private boolean isNumeric(String issueId) {
+    private boolean isNumeric(String issueId)
+    {
         try
         {
             Integer.parseInt(issueId);
@@ -236,7 +242,8 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
 
     }
 
-    private String getClosingMessage() {
+    private String getClosingMessage()
+    {
         Validate.notNull(redmineGovernorConfiguration, "Redmine Governor configuration must be set.");
 
         String username = null;
@@ -257,7 +264,8 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
         return String.format(redmineGovernorConfiguration.getClosingMessage(), username);
     }
 
-    private String getOpeningMessage() {
+    private String getOpeningMessage()
+    {
         Validate.notNull(redmineGovernorConfiguration, "Redmine Governor configuration must be set.");
 
         String username = null;

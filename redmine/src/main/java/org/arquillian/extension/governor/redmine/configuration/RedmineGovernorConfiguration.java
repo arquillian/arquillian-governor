@@ -42,7 +42,8 @@ public class RedmineGovernorConfiguration extends Configuration
 
     private String closeOrder = resolveCloseOrder();
 
-    private boolean resolveOpenFailed() {
+    private boolean resolveOpenFailed()
+    {
         return Boolean.valueOf(System.getProperty("redmine.governor.openfailed"));
     }
 
@@ -96,7 +97,8 @@ public class RedmineGovernorConfiguration extends Configuration
         return Boolean.parseBoolean(getProperty("openFailed", Boolean.toString(openFailed)));
     }
 
-    public void setOpenFailed(boolean openFailed) {
+    public void setOpenFailed(boolean openFailed)
+    {
         setProperty("openFailed", Boolean.toString(openFailed));
     }
 

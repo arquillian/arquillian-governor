@@ -54,7 +54,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class RedmineGovernorTestCase extends AbstractGovernorTestCase
 {
@@ -174,7 +173,6 @@ public class RedmineGovernorTestCase extends AbstractGovernorTestCase
 
     // helpers
 
-
     private static String resolveServer()
     {
         String redmineServerAddressProperty = System.getProperty("redmine.governor.server");
@@ -187,7 +185,6 @@ public class RedmineGovernorTestCase extends AbstractGovernorTestCase
         return redmineServerAddressProperty;
     }
 
-
     private static String resolveApiKey()
     {
         String redmineApiKeyProperty = System.getProperty("redmine.governor.apikey");
@@ -199,6 +196,5 @@ public class RedmineGovernorTestCase extends AbstractGovernorTestCase
 
         return redmineApiKeyProperty;
     }
-    
 
 }

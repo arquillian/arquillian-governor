@@ -35,7 +35,6 @@ import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
 import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
-import org.jboss.arquillian.test.spi.event.suite.BeforeTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
@@ -53,28 +52,34 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
     private InstanceProducer<ExecutionDecision> executionDecision;
 
     @Override
-    public ExecutionDecision decide(Method testMethod) {
+    public ExecutionDecision decide(Method testMethod)
+    {
         return TestMethodExecutionRegister.resolve(testMethod, provides());
     }
 
     @Override
-    public int precedence() {
+    public int precedence()
+    {
         return 0;
     }
 
     @Override
-    public Class<? extends Annotation> provides() {
+    public Class<? extends Annotation> provides()
+    {
         return Redmine.class;
     }
 
-    public void on(@Observes ExecutionDecisionEvent event, RedmineGovernorClient redmineGovernorClient) {
+    public void on(@Observes ExecutionDecisionEvent event, RedmineGovernorClient redmineGovernorClient)
+    {
         ExecutionDecision executionDecision = this.executionDecision.get();
 
-        if (executionDecision == null || executionDecision.getDecision() == Decision.DONT_EXECUTE) {
+        if (executionDecision == null || executionDecision.getDecision() == Decision.DONT_EXECUTE)
+        {
             return;
         }
 
-        if (event.getAnnotation().annotationType() == provides()) {
+        if (event.getAnnotation().annotationType() == provides())
+        {
             Redmine redmineIssue = (Redmine) event.getAnnotation();
             this.executionDecision.set(redmineGovernorClient.resolve(redmineIssue));
         }
@@ -84,7 +89,8 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
         TestResult testResult,
         GovernorRegistry governorRegistry,
         RedmineGovernorConfiguration redmineGovernorConfiguration,
-        RedmineGovernorClient redmineGovernorClient) {
+        RedmineGovernorClient redmineGovernorClient)
+    {
 
         int count = 0;
         try
@@ -92,22 +98,28 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
             Integer c = lifecycleCountRegister.get(event.getTestMethod());
             count = (c != null ? c.intValue() : 0);
             if (count == 0)
-            {//skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+            {// skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
                 return;
             }
             final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
             // if we passed some test method annotated with Redmine, we may eventually close it
-            if (redmineGovernorConfiguration.getClosePassed()) {
+            if (redmineGovernorConfiguration.getClosePassed())
+            {
                 // we decided we run this test method even it has annotation on it
                 if (testResult.getStatus() == Status.PASSED
                     && decision.getDecision() == Decision.EXECUTE
-                    && (RedmineGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason())) {
+                    && (RedmineGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
+                {
 
-                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet()) {
-                        if (entry.getKey().toString().equals(event.getTestMethod().toString())) {
-                            for (Annotation annotation : entry.getValue()) {
-                                if (annotation.annotationType() == provides()) {
+                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
+                    {
+                        if (entry.getKey().toString().equals(event.getTestMethod().toString()))
+                        {
+                            for (Annotation annotation : entry.getValue())
+                            {
+                                if (annotation.annotationType() == provides())
+                                {
                                     String id = ((Redmine) annotation).value();
                                     redmineGovernorClient.close(id);
                                     return;
@@ -119,15 +131,21 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
             }
             // openFailed can be configured globally in arquillian.xml or per test method via Redmine annotation
             if (redmineGovernorConfiguration.getOpenFailed()
-                || (event.getTestMethod().getAnnotation(Redmine.class) != null && event.getTestMethod().getAnnotation(Redmine.class).openFailed())) {
+                || (event.getTestMethod().getAnnotation(Redmine.class) != null && event.getTestMethod().getAnnotation(Redmine.class).openFailed()))
+            {
                 if (testResult.getStatus() == Status.FAILED
                     && decision.getDecision() == Decision.EXECUTE
-                    && (decision.getReason().equals(RedmineGovernorStrategy.FORCING_EXECUTION_OPEN_FAILED))) {
+                    && (decision.getReason().equals(RedmineGovernorStrategy.FORCING_EXECUTION_OPEN_FAILED)))
+                {
 
-                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet()) {
-                        if (entry.getKey().toString().equals(event.getTestMethod().toString())) {
-                            for (Annotation annotation : entry.getValue()) {
-                                if (annotation.annotationType() == provides()) {
+                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
+                    {
+                        if (entry.getKey().toString().equals(event.getTestMethod().toString()))
+                        {
+                            for (Annotation annotation : entry.getValue())
+                            {
+                                if (annotation.annotationType() == provides())
+                                {
                                     String id = ((Redmine) annotation).value();
                                     redmineGovernorClient.open(id, testResult.getThrowable());
                                     return;
@@ -142,7 +160,5 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
             lifecycleCountRegister.put(event.getTestMethod(), ++count);
         }
     }
-
-
 
 }
