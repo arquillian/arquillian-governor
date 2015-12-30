@@ -26,7 +26,7 @@ import org.junit.runner.RunWith;
 public class ITJiraGovernorTest
 {
     @Test
-    @Jira(value = "ARQ-2005", force=true)
+    @Jira(value = "ARQ-2005")
     public void wontBeSkippedBecauseResolved()
     {
         Assert.assertTrue(true);

@@ -22,10 +22,10 @@
         <property name="force">false</property>
         
         <!-- your jira username -->
-        <property name="username">kwintesencja</property>
+        <property name="username"></property>
         
         <!-- your jira password -->
-        <property name="password">bigboss</property>
+        <property name="password"></property>
         
         <!-- your jira instance, e.g https://issues.jenkins-ci.org -->
         <!--property name="server"></property-->

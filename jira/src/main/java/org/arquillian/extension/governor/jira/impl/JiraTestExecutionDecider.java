@@ -111,7 +111,7 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
                 // we decided we run this test method even it has annotation on it
                 if (testResult.getStatus() == Status.PASSED
                     && decision.getDecision() == Decision.EXECUTE
-                    && (decision.getReason().equals(JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING)))
+                    && (JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
                 {
 
                     for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
