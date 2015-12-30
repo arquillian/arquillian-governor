@@ -7,8 +7,8 @@
         <property name="closePassed">true</property>
         <!--<property name="username">githubuser</property>
         <property name="password">githubpassword</property>-->
-        <!--<property name="token">11111111</property>-->
-        <property name="repositoryUser">lordofthejars</property>
-        <property name="repository">governor-test</property>
+        <property name="token">8fbcc989b067d02c28454e9a817eea0c5e8bf897</property>
+        <property name="repositoryUser">rmpestano</property>
+        <property name="repository">design-patterns</property>
     </extension>
 </arquillian>

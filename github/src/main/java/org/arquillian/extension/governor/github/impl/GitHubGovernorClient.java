@@ -82,6 +82,10 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
         try
         {
             Issue issue = getIssue(issueId);
+            if(IssueService.STATE_CLOSED.equals(issue.getState())){
+                logger.warning(String.format("Issue %s already closed, skipping issue comment.",issueId));
+                return;
+            }
             issue.setState(IssueService.STATE_CLOSED);
             comment =
                 this.issueService.createComment(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issueId,
