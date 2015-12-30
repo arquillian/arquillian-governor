@@ -396,7 +396,7 @@ image::https://raw.githubusercontent.com/arquillian/arquillian-governor/master/r
 
 Redmine can be configured to have a workflow for issue transitions. In some cases this workflow *does not* allow closing issues for some issue statuses.
 
-Imagine you have a customised workflow for closing issues, e.g 'New' -> 'Executing' -> 'close', then you have to provide statuses id order so governor redmine can close your issues.
+Imagine you have a customised workflow for closing issues, e.g 'New' -> 'Executing' -> 'close', in this case you will have to provide statuses id order so governor redmine can close your issues.
 
 In the example above the issue have to go to 'executing'(id 2) before going to 'close'(id 5). Just add 'closeOrder' property in arquillian:
 
