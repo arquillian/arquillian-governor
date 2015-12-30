@@ -113,7 +113,7 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
             // we decided we run this test method even it has annotation on it
             if (testResult.getStatus() == Status.PASSED
                 && decision.getDecision() == Decision.EXECUTE
-                && (decision.getReason().equals(GitHubGovernorStrategy.FORCING_EXECUTION_REASON_STRING)))
+                && (GitHubGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
             {
 
                 for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
