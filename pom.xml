@@ -25,7 +25,7 @@
     <!-- Artifact Configuration -->
     <groupId>org.arquillian.extension</groupId>
     <artifactId>arquillian-governor-parent</artifactId>
-    <version>1.0.2.Final-SNAPSHOT</version>
+    <version>1.0.2.Final</version>
     <packaging>pom</packaging>
 
     <name>Arquillian Governor Parent</name>
@@ -58,7 +58,7 @@
         <connection>scm:git:git://git@github.com:arquillian/arquillian-governor.git</connection>
         <developerConnection>scm:git:ssh://github.com/arquillian/arquillian-governor.git</developerConnection>
         <url>git://github.com/arquillian/arquillian-governor.git</url>
-        <tag>HEAD</tag>
+        <tag>1.0.2.Final</tag>
     </scm>
 
     <!-- Issues -->
