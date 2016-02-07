@@ -17,12 +17,14 @@
 package org.arquillian.extension.governor.jira;
 
 import org.arquillian.extension.governor.jira.api.Jira;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
+@RunAsClient
 public class ITJiraGovernorTest
 {
     @Test

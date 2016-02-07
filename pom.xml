@@ -9,7 +9,8 @@
     License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
     OF ANY KIND, either express or implied. See the License for the specific
     language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <!-- Model Version -->
     <modelVersion>4.0.0</modelVersion>
@@ -80,6 +81,10 @@
         <version.hamcrest>1.0.0.0</version.hamcrest>
         <version.maven.animal.sniffer>1.13</version.maven.animal.sniffer>
         <version.signature>1.1</version.signature>
+        
+        <!-- logging -->
+        <versions.log4j>1.2.17</versions.log4j>
+        <versions.slf4j>1.7.13</versions.slf4j>
 
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.source>1.6</maven.compiler.source>
@@ -133,6 +138,20 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-junit</artifactId>
                 <version>${version.hamcrest}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- logging -->
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${versions.log4j}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${versions.slf4j}</version>
                 <scope>test</scope>
             </dependency>
 

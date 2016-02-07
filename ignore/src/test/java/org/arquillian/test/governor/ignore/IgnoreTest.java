@@ -22,6 +22,7 @@
 
 package org.arquillian.test.governor.ignore;
 
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,9 @@ import org.junit.runner.RunWith;
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
 @RunWith(Arquillian.class)
+@RunAsClient
 public class IgnoreTest {
+
     @Test
     public void testIgnored() {
     }
