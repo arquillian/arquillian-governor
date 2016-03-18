@@ -38,5 +38,7 @@ public @interface Jira
 {
     String value() default "";
 
+    String server() default "default";
+
     boolean force() default false;
 }

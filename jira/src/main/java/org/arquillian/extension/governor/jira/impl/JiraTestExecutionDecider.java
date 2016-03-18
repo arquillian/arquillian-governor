@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.arquillian.extension.governor.api.GovernorClientRegistryRegistry;
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
 import org.arquillian.extension.governor.jira.api.Jira;
@@ -34,7 +35,6 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
-import org.jboss.arquillian.test.spi.event.suite.After;
 import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
@@ -70,7 +70,7 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
         return Jira.class;
     }
 
-    public void on(@Observes ExecutionDecisionEvent event, JiraGovernorClient jiraGovernorClient)
+    public void on(@Observes ExecutionDecisionEvent event)
     {
         ExecutionDecision executionDecision = this.executionDecision.get();
 
@@ -78,12 +78,22 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
         {
             return;
         }
+        
+        if (event.getAnnotation().annotationType() != provides())
+        {
+            return;
+        }
 
+        JiraGovernorClient governorClient = (JiraGovernorClient) GovernorClientRegistryRegistry
+            .instance()
+            .get(provides())
+            .get(((Jira) event.getAnnotation()).server());
+        
         if (event.getAnnotation().annotationType() == provides())
         {
             Jira jiraIssue = (Jira) event.getAnnotation();
 
-            this.executionDecision.set(jiraGovernorClient.resolve(jiraIssue));
+            this.executionDecision.set(governorClient.resolve(jiraIssue));
         }
     }
 
@@ -99,7 +109,7 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
             Integer c = lifecycleCountRegister.get(event.getTestMethod());
             count = (c != null ? c.intValue() : 0);
             if (count == 0)
-            {//skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+            {// skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
                 return;
             }
             final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
