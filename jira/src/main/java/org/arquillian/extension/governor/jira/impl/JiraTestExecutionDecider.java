@@ -19,14 +19,12 @@ package org.arquillian.extension.governor.jira.impl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.arquillian.extension.governor.api.GovernorClientRegistryRegistry;
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
 import org.arquillian.extension.governor.jira.api.Jira;
-import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
 import org.arquillian.extension.governor.spi.GovernorProvider;
 import org.arquillian.extension.governor.spi.event.ExecutionDecisionEvent;
 import org.jboss.arquillian.core.api.InstanceProducer;
@@ -35,7 +33,9 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
+import org.jboss.arquillian.test.spi.annotation.TestScoped;
 import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
+import org.jboss.arquillian.test.spi.event.suite.Before;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
@@ -51,6 +51,10 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
     @Inject
     @ClassScoped
     private InstanceProducer<ExecutionDecision> executionDecision;
+
+    @Inject
+    @TestScoped
+    private InstanceProducer<Jira> jiraAnnotationProducer;
 
     @Override
     public ExecutionDecision decide(Method testMethod)
@@ -78,30 +82,44 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
         {
             return;
         }
-        
+
         if (event.getAnnotation().annotationType() != provides())
         {
             return;
         }
 
+        Jira jiraIssue = (Jira) event.getAnnotation();
+
         JiraGovernorClient governorClient = (JiraGovernorClient) GovernorClientRegistryRegistry
             .instance()
             .get(provides())
-            .get(((Jira) event.getAnnotation()).server());
-        
-        if (event.getAnnotation().annotationType() == provides())
-        {
-            Jira jiraIssue = (Jira) event.getAnnotation();
+            .get(jiraIssue.server());
 
-            this.executionDecision.set(governorClient.resolve(jiraIssue));
+        executionDecision = governorClient.resolve(jiraIssue);
+
+        if (executionDecision.getDecision() == Decision.EXECUTE)
+        {
+            JiraAnnotationRegister.add(jiraIssue);
+        }
+
+        this.executionDecision.set(executionDecision);
+    }
+
+    public void on(@Observes Before event, GovernorRegistry governorRegistry)
+    {
+        if (TestMethodExecutionRegister.resolve(event.getTestMethod(), provides()).getDecision() == Decision.EXECUTE)
+        {
+            for (Annotation annotation : governorRegistry.getAnnotationsForMethod(event.getTestMethod()))
+            {
+                if (annotation.annotationType() == provides() && JiraAnnotationRegister.contains(annotation))
+                {
+                    jiraAnnotationProducer.set((Jira) annotation);
+                }
+            }
         }
     }
 
-    public void on(@Observes AfterTestLifecycleEvent event,
-        TestResult testResult,
-        GovernorRegistry governorRegistry,
-        JiraGovernorConfiguration jiraGovernorConfiguration,
-        JiraGovernorClient jiraGovernorClient)
+    public void on(@Observes AfterTestLifecycleEvent event, TestResult testResult, Jira jiraIssue)
     {
         int count = 0;
         try
@@ -112,33 +130,30 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
             {// skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
                 return;
             }
-            final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
+
+            if (jiraIssue == null)
+            {
+                return;
+            }
+
+            JiraGovernorClient governorClient = (JiraGovernorClient) GovernorClientRegistryRegistry
+                .instance()
+                .get(Jira.class)
+                .get(jiraIssue.server());
 
             // if we passed some test method annotated with Jira, we may eventually close it
 
-            if (jiraGovernorConfiguration.getClosePassed())
+            if (governorClient.getConfiguration().getClosePassed())
             {
+                final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
+
                 // we decided we run this test method even it has annotation on it
                 if (testResult.getStatus() == Status.PASSED
                     && decision.getDecision() == Decision.EXECUTE
                     && (JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
                 {
 
-                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
-                    {
-                        if (entry.getKey().toString().equals(event.getTestMethod().toString()))
-                        {
-                            for (Annotation annotation : entry.getValue())
-                            {
-                                if (annotation.annotationType() == provides())
-                                {
-                                    String id = ((Jira) annotation).value();
-                                    jiraGovernorClient.close(id);
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    governorClient.close(jiraIssue.value());
                 }
             }
         } finally

@@ -52,6 +52,11 @@ public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStra
         this.jiraGovernorConfiguration = jiraGovernorConfiguration;
     }
 
+    public JiraGovernorConfiguration getConfiguration()
+    {
+        return jiraGovernorConfiguration;
+    }
+    
     @Override
     public ExecutionDecision resolve(final Jira annotation)
     {

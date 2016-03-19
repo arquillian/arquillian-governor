@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.arquillian.extension.governor.api.GovernorClientRegistryRegistry;
+import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
 import org.arquillian.extension.governor.jira.api.Jira;
 import org.arquillian.extension.governor.jira.api.Jiras;
@@ -15,6 +16,7 @@ import org.jboss.arquillian.core.api.InstanceProducer;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
+import org.jboss.arquillian.test.spi.event.suite.Before;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
@@ -67,21 +69,41 @@ public class JirasTestExecutionDecider implements TestExecutionDecider, Governor
             return;
         }
 
-        for (Jira jira : ((Jiras) event.getAnnotation()).value())
+        for (Jira jiraIssue : ((Jiras) event.getAnnotation()).value())
         {
             JiraGovernorClient governorClient = (JiraGovernorClient) GovernorClientRegistryRegistry
                 .instance()
                 .get(provides())
-                .get(jira.server());
+                .get(jiraIssue.server());
 
-            ExecutionDecision resolvedExecutionDecision = governorClient.resolve(jira);
+            ExecutionDecision resolvedExecutionDecision = governorClient.resolve(jiraIssue);
 
             if (resolvedExecutionDecision.getDecision() == Decision.EXECUTE)
             {
+                JiraAnnotationRegister.add(jiraIssue);
                 this.executionDecision.set(resolvedExecutionDecision);
                 break;
             }
         }
     }
-
+    
+    public void on(@Observes Before event, GovernorRegistry governorRegistry)
+    {
+        if (TestMethodExecutionRegister.resolve(event.getTestMethod(), provides()).getDecision() == Decision.EXECUTE)
+        {
+            for (Annotation annotation : governorRegistry.getAnnotationsForMethod(event.getTestMethod()))
+            {
+                if (annotation.annotationType() == provides())
+                {
+                    for (Jira jiraIssue : ((Jiras) annotation).value())
+                    {
+                        if (JiraAnnotationRegister.contains(jiraIssue))
+                        {
+                            jiraAnnotationProducer.set(jiraIssue);       
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

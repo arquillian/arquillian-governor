@@ -73,4 +73,10 @@ public class GovernorRegistryImpl implements GovernorRegistry
 
         return methods;
     }
+
+    @Override
+    public List<Annotation> getAnnotationsForMethod(Method method)
+    {
+        return scannedTestMethods.get(method);
+    }
 }

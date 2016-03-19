@@ -30,4 +30,6 @@ public interface GovernorRegistry
     List<Method> getMethodsForAnnotation(Class<? extends Annotation> annotation);
 
     Map<Method, List<Annotation>> get();
+    
+    List<Annotation> getAnnotationsForMethod(Method method);
 }
