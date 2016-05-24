@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.arquillian.extension.governor.api.ClosePassedDecider;
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
 import org.arquillian.extension.governor.jira.api.Jira;
@@ -29,12 +30,13 @@ import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfigur
 import org.arquillian.extension.governor.spi.GovernorProvider;
 import org.arquillian.extension.governor.spi.event.ExecutionDecisionEvent;
 import org.jboss.arquillian.core.api.InstanceProducer;
+import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
-import org.jboss.arquillian.test.spi.event.suite.After;
+import org.jboss.arquillian.test.spi.event.suite.AfterSuite;
 import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
@@ -51,6 +53,10 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
     @Inject
     @ClassScoped
     private InstanceProducer<ExecutionDecision> executionDecision;
+
+    @Inject
+    @ApplicationScoped
+    private InstanceProducer<ClosePassedDecider> closePassedDecider;
 
     @Override
     public ExecutionDecision decide(Method testMethod)
@@ -90,8 +96,7 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
     public void on(@Observes AfterTestLifecycleEvent event,
         TestResult testResult,
         GovernorRegistry governorRegistry,
-        JiraGovernorConfiguration jiraGovernorConfiguration,
-        JiraGovernorClient jiraGovernorClient)
+        JiraGovernorConfiguration jiraGovernorConfiguration)
     {
         int count = 0;
         try
@@ -109,8 +114,7 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
             if (jiraGovernorConfiguration.getClosePassed())
             {
                 // we decided we run this test method even it has annotation on it
-                if (testResult.getStatus() == Status.PASSED
-                    && decision.getDecision() == Decision.EXECUTE
+                if (decision.getDecision() == Decision.EXECUTE
                     && (JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
                 {
 
@@ -122,8 +126,7 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
                             {
                                 if (annotation.annotationType() == provides())
                                 {
-                                    String id = ((Jira) annotation).value();
-                                    jiraGovernorClient.close(id);
+                                    closePassedDecider.get().setClosable(annotation, testResult.getStatus() == Status.PASSED);
                                     return;
                                 }
                             }
@@ -134,6 +137,18 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
         } finally
         {
             lifecycleCountRegister.put(event.getTestMethod(), ++count);
+        }
+    }
+
+    public void on(@Observes AfterSuite event, JiraGovernorClient jiraGovernorClient) {
+        for (Map.Entry<Annotation, Boolean> entry : closePassedDecider.get().get().entrySet()) {
+            Annotation annotation = entry.getKey();
+            if (annotation.annotationType() == provides()) {
+                if (entry.getValue()) {
+                    String id = ((Jira) annotation).value();
+                    jiraGovernorClient.close(id);
+                }
+            }
         }
     }
 }
