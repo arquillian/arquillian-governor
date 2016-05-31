@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 @RunAsClient
+@Jira("ARQ-831")
 public class ITJiraGovernorTest
 {
     @Test
@@ -35,7 +36,6 @@ public class ITJiraGovernorTest
     }
 
     @Test
-    @Jira("ARQ-831")
     public void willBeSkippedBecauseUnresolved()
     {
         Assert.assertTrue(false);

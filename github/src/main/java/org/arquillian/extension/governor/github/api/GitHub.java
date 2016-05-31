@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
  */
 @Governor
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Documented
 public @interface GitHub
 {

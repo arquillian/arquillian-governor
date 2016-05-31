@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.arquillian.extension.governor.api.ClosePassedDecider;
 import org.arquillian.extension.governor.api.Governor;
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.configuration.GovernorConfiguration;
@@ -41,6 +42,7 @@ import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.event.suite.BeforeClass;
+import org.jboss.arquillian.test.spi.event.suite.BeforeSuite;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
@@ -53,6 +55,10 @@ public class GovernorTestClassScanner
     private InstanceProducer<GovernorRegistry> governorRegistry;
 
     @Inject
+    @ApplicationScoped
+    private InstanceProducer<ClosePassedDecider> closePassedDecider;
+
+    @Inject
     private Instance<ServiceLoader> serviceLoader;
 
     @Inject
@@ -60,6 +66,10 @@ public class GovernorTestClassScanner
 
     @Inject
     private Instance<GovernorConfiguration> governorConfiguration;
+
+    public void onBeforeSuite(@Observes BeforeSuite event) {
+        closePassedDecider.set(new ClosePassedDeciderImpl());
+    }
 
     public void onBeforeClass(@Observes BeforeClass event)
     {
@@ -122,10 +132,16 @@ public class GovernorTestClassScanner
 
         final Map<Method, List<Annotation>> methodAnnotationsMap = new HashMap<Method, List<Annotation>>();
 
+        final Annotation[] classAnnotations = testClass.getJavaClass().getAnnotations();
+
         final Method[] methods = testClass.getJavaClass().getMethods();
 
         for (final Method method : methods)
         {
+            if (!isTestMethod(method)) {
+                continue;
+            }
+
             List<Annotation> methodAnnotations = new ArrayList<Annotation>();
 
             for (final Annotation annotation : method.getAnnotations())
@@ -133,6 +149,21 @@ public class GovernorTestClassScanner
                 if (annotation.annotationType().isAnnotationPresent(governorAnnotation))
                 {
                     methodAnnotations.add(annotation);
+                }
+            }
+
+            for (final Annotation cAnnotation : classAnnotations) {
+                if (cAnnotation.annotationType().isAnnotationPresent(governorAnnotation))
+                {
+                    if (methodAnnotations.isEmpty()) {
+                        methodAnnotations.add(cAnnotation);
+                    } else {
+                        for (final Annotation mAnnotation : methodAnnotations) {
+                            if (!mAnnotation.annotationType().equals(cAnnotation.annotationType())) {
+                                methodAnnotations.add(cAnnotation);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -144,5 +175,17 @@ public class GovernorTestClassScanner
         }
 
         return methodAnnotationsMap;
+    }
+
+    private boolean isTestMethod(Method method) {
+        for (Annotation annotation : method.getAnnotations())
+        {
+            for (TestFramework tf : TestFramework.values()) {
+                if (tf.getClassName().equals(annotation.annotationType().getName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

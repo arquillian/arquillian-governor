@@ -16,6 +16,7 @@
  */
 package org.arquillian.extension.governor.github.impl;
 
+import org.arquillian.extension.governor.api.ClosePassedDecider;
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.github.api.GitHub;
 import org.arquillian.extension.governor.github.configuration.GitHubGovernorConfiguration;
@@ -23,12 +24,13 @@ import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
 import org.arquillian.extension.governor.spi.GovernorProvider;
 import org.arquillian.extension.governor.spi.event.ExecutionDecisionEvent;
 import org.jboss.arquillian.core.api.InstanceProducer;
+import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestResult;
 import org.jboss.arquillian.test.spi.TestResult.Status;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
-import org.jboss.arquillian.test.spi.event.suite.After;
+import org.jboss.arquillian.test.spi.event.suite.AfterSuite;
 import org.jboss.arquillian.test.spi.event.suite.AfterTestLifecycleEvent;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
@@ -51,6 +53,10 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
     @Inject
     @ClassScoped
     private InstanceProducer<ExecutionDecision> executionDecision;
+
+    @Inject
+    @ApplicationScoped
+    private InstanceProducer<ClosePassedDecider> closePassedDecider;
 
     @Override
     public ExecutionDecision decide(Method testMethod)
@@ -90,8 +96,7 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
     public void on(@Observes AfterTestLifecycleEvent event,
         TestResult testResult,
         GovernorRegistry governorRegistry,
-        GitHubGovernorConfiguration gitHubGovernorConfiguration,
-        GitHubGovernorClient gitHubGovernorClient)
+        GitHubGovernorConfiguration gitHubGovernorConfiguration)
     {
         
         int count = 0;
@@ -111,8 +116,7 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
         if (gitHubGovernorConfiguration.getClosePassed())
         {
             // we decided we run this test method even it has annotation on it
-            if (testResult.getStatus() == Status.PASSED
-                && decision.getDecision() == Decision.EXECUTE
+            if (decision.getDecision() == Decision.EXECUTE
                 && (GitHubGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
             {
 
@@ -124,8 +128,7 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
                         {
                             if (annotation.annotationType() == provides())
                             {
-                                String id = ((GitHub) annotation).value();
-                                gitHubGovernorClient.close(id);
+                                closePassedDecider.get().setClosable(annotation, testResult.getStatus() == Status.PASSED);
                                 return;
                             }
                         }
@@ -138,6 +141,17 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
             lifecycleCountRegister.put(event.getTestMethod(), ++count);
         }
     }
-        
+
+    public void on(@Observes AfterSuite event, GitHubGovernorClient githubGovernorClient) {
+        for (Map.Entry<Annotation, Boolean> entry : closePassedDecider.get().get().entrySet()) {
+            Annotation annotation = entry.getKey();
+            if (annotation.annotationType() == provides()) {
+                if (entry.getValue()) {
+                    String id = ((GitHub) annotation).value();
+                    githubGovernorClient.close(id);
+                }
+            }
+        }
+    }
 }
 

@@ -32,7 +32,7 @@ import org.arquillian.extension.governor.api.Governor;
  */
 @Governor
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Documented
 public @interface Jira
 {
