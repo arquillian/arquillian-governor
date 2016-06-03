@@ -143,11 +143,9 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
     public void on(@Observes AfterSuite event, JiraGovernorClient jiraGovernorClient) {
         for (Map.Entry<Annotation, Boolean> entry : closePassedDecider.get().get().entrySet()) {
             Annotation annotation = entry.getKey();
-            if (annotation.annotationType() == provides()) {
-                if (entry.getValue()) {
-                    String id = ((Jira) annotation).value();
-                    jiraGovernorClient.close(id);
-                }
+            if (annotation.annotationType() == provides() && entry.getValue()) {
+                String id = ((Jira) annotation).value();
+                jiraGovernorClient.close(id);
             }
         }
     }

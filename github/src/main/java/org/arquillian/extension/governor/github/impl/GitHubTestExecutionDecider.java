@@ -145,11 +145,9 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
     public void on(@Observes AfterSuite event, GitHubGovernorClient githubGovernorClient) {
         for (Map.Entry<Annotation, Boolean> entry : closePassedDecider.get().get().entrySet()) {
             Annotation annotation = entry.getKey();
-            if (annotation.annotationType() == provides()) {
-                if (entry.getValue()) {
-                    String id = ((GitHub) annotation).value();
-                    githubGovernorClient.close(id);
-                }
+            if (annotation.annotationType() == provides() && entry.getValue()) {
+                String id = ((GitHub) annotation).value();
+                githubGovernorClient.close(id);
             }
         }
     }

@@ -153,9 +153,9 @@ public class IgnoreObserver {
                     set.addAll(Arrays.asList(exp.split(",")));
                 }
 
-                for (String key : properties.keySet()) {
-                    if (key.startsWith(EXTENSION_PROPERTY_METHODS + "_")) {
-                        set.add(properties.get(key));
+                for (Map.Entry<String, String> entry : properties.entrySet()) {
+                    if (entry.getKey().startsWith(EXTENSION_PROPERTY_METHODS + "_")) {
+                        set.add(entry.getValue());
                     }
                 }
             }

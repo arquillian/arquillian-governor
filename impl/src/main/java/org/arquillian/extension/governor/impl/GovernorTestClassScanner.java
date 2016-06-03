@@ -167,7 +167,7 @@ public class GovernorTestClassScanner
                 }
             }
 
-            if (methodAnnotations.size() > 0)
+            if (!methodAnnotations.isEmpty())
             {
                 methodAnnotationsMap.put(method, methodAnnotations);
             }

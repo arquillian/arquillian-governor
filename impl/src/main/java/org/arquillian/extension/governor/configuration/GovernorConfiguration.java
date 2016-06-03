@@ -54,14 +54,11 @@ public class GovernorConfiguration extends Configuration
     @Override
     public void validate() throws GovernorConfigurationException
     {
-        if (getIgnore())
+        if (getIgnore() && getIgnoreOnly() != null && getIgnoreOnly().length() != 0)
         {
-            if (getIgnoreOnly() != null && getIgnoreOnly().length() != 0)
-            {
-                throw new GovernorConfigurationException("You have set 'ignore' property to true and you set 'ignoreOnly' as well. "
-                    + "Either set 'ignore' and left ignoreOnly unset or left 'ignore' flag unset "
-                    + "and set 'ignoreOnly' property.");
-            }
+            throw new GovernorConfigurationException("You have set 'ignore' property to true and you set 'ignoreOnly' as well. "
+                + "Either set 'ignore' and left ignoreOnly unset or left 'ignore' flag unset "
+                + "and set 'ignoreOnly' property.");
         }
     }
 
