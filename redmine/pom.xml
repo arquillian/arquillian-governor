@@ -9,11 +9,12 @@
     License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
     OF ANY KIND, either express or implied. See the License for the specific
     language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <!-- Model version -->
     <modelVersion>4.0.0</modelVersion>
-    
+
     <!-- Parent -->
     <parent>
         <artifactId>arquillian-governor-parent</artifactId>
@@ -41,9 +42,9 @@
 
         <!-- redmine java api -->
         <dependency>
-  	   <groupId>com.taskadapter</groupId>
-   	   <artifactId>redmine-java-api</artifactId>
-  	   <version>${version.redmine.java.api}</version>
+            <groupId>com.taskadapter</groupId>
+            <artifactId>redmine-java-api</artifactId>
+            <version>${version.redmine.java.api}</version>
         </dependency>
 
         <!-- Arquillian test dependencies -->
@@ -76,7 +77,7 @@
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>
-        
+
         <!-- logging -->
         <dependency>
             <groupId>log4j</groupId>

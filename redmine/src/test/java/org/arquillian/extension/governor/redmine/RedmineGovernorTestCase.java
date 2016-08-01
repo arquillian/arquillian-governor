@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -50,45 +50,62 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RedmineGovernorTestCase extends AbstractGovernorTestCase
-{
+public class RedmineGovernorTestCase extends AbstractGovernorTestCase {
 
     private static final String DEFAULT_SERVER = "localhost";
     private static final String DEFAULT_APIKEY = "testapikey";
-
+    private static String apiKey;
+    private static String redmineServer;
     @Inject
     @ApplicationScoped
     private InstanceProducer<ServiceLoader> serviceProducer;
-
     @Mock
     private ServiceLoader serviceLoader;
-
     private GovernorConfiguration governorConfiguration;
-
     private RedmineGovernorConfiguration redminebGovernorConfiguration;
-
     private Manager manager;
-
-    private static String apiKey;
-    private static String redmineServer;
-
-    private GovernorProvider governorProvider = new GovernorProvider()
-    {
+    private GovernorProvider governorProvider = new GovernorProvider() {
         @Override
-        public Class<? extends Annotation> provides()
-        {
+        public Class<? extends Annotation> provides() {
             return Redmine.class;
         }
     };
 
+    @org.junit.BeforeClass
+    public static void setupClass() throws Exception {
+        redmineServer = resolveServer();
+        apiKey = resolveApiKey();
+    }
+
+    private static String resolveServer() {
+        String redmineServerAddressProperty = System.getProperty("redmine.governor.server");
+
+        if (redmineServerAddressProperty == null || redmineServerAddressProperty.isEmpty()) {
+            redmineServerAddressProperty = DEFAULT_SERVER;
+        }
+
+        return redmineServerAddressProperty;
+    }
+
+    private static String resolveApiKey() {
+        String redmineApiKeyProperty = System.getProperty("redmine.governor.apikey");
+
+        if (redmineApiKeyProperty == null || redmineApiKeyProperty.isEmpty()) {
+            redmineApiKeyProperty = DEFAULT_APIKEY;
+        }
+
+        return redmineApiKeyProperty;
+    }
+
     @Override
-    public void addExtensions(List<Class<?>> extensions)
-    {
+    public void addExtensions(List<Class<?>> extensions) {
         extensions.add(RedmineGovernorConfigurator.class);
         extensions.add(RedmineTestExecutionDecider.class);
         extensions.add(GovernorTestClassScanner.class);
@@ -96,20 +113,14 @@ public class RedmineGovernorTestCase extends AbstractGovernorTestCase
         extensions.add(GovernorConfigurator.class);
     }
 
-    @org.junit.BeforeClass
-    public static void setupClass() throws Exception
-    {
-        redmineServer = resolveServer();
-        apiKey = resolveApiKey();
-    }
+    // utils
 
     @Before
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
 
         serviceProducer.set(serviceLoader);
 
-        List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
+        final List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
         governorProviders.add(governorProvider);
 
         Mockito.when(serviceLoader.all(GovernorProvider.class)).thenReturn(governorProviders);
@@ -128,73 +139,43 @@ public class RedmineGovernorTestCase extends AbstractGovernorTestCase
 
         bind(ApplicationScoped.class, RedmineGovernorConfiguration.class, redminebGovernorConfiguration);
 
-        RedmineGovernorClient redmineGovernorClient = new RedmineGovernorClientFactory().build(redminebGovernorConfiguration);
+        final RedmineGovernorClient redmineGovernorClient = new RedmineGovernorClientFactory().build(redminebGovernorConfiguration);
         bind(ApplicationScoped.class, RedmineGovernorClient.class, redmineGovernorClient);
     }
 
+    // helpers
+
     @Test
-    public void gitHubGovernorTest()
-    {
+    public void gitHubGovernorTest() {
         fire(new BeforeClass(FakeTestClass.class));
 
         assertEventFired(BeforeClass.class, 1);
         assertEventFired(DecideMethodExecutions.class, 1);
 
-        GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
+        final GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
         assertThat(configuration, is(not(nullValue())));
 
-        RedmineGovernorConfiguration gitHubConfiguration = manager.getContext(ApplicationContext.class).getObjectStore().get(RedmineGovernorConfiguration.class);
+        final RedmineGovernorConfiguration gitHubConfiguration = manager.getContext(ApplicationContext.class).getObjectStore().get(RedmineGovernorConfiguration.class);
         assertThat(gitHubConfiguration, is(not(nullValue())));
 
         // for every method and for every Governor annotation of that method
         assertEventFired(ExecutionDecisionEvent.class, 1);
 
-        ExecutionDecision decision = manager.getContext(ClassContext.class).getObjectStore().get(ExecutionDecision.class);
+        final ExecutionDecision decision = manager.getContext(ClassContext.class).getObjectStore().get(ExecutionDecision.class);
 
         assertThat(decision, is(not(nullValue())));
         assertEquals(decision.getDecision(), Decision.EXECUTE);
     }
 
-    // utils
-
-    private static final class FakeTestClass
-    {
+    private static final class FakeTestClass {
         @Test
         @Redmine("1")
-        public void fakeTest()
-        {
+        public void fakeTest() {
         }
 
         @Test
-        public void someTestMethod()
-        {
+        public void someTestMethod() {
         }
-    }
-
-    // helpers
-
-    private static String resolveServer()
-    {
-        String redmineServerAddressProperty = System.getProperty("redmine.governor.server");
-
-        if (redmineServerAddressProperty == null || redmineServerAddressProperty.isEmpty())
-        {
-            redmineServerAddressProperty = DEFAULT_SERVER;
-        }
-
-        return redmineServerAddressProperty;
-    }
-
-    private static String resolveApiKey()
-    {
-        String redmineApiKeyProperty = System.getProperty("redmine.governor.apikey");
-
-        if (redmineApiKeyProperty == null || redmineApiKeyProperty.isEmpty())
-        {
-            redmineApiKeyProperty = DEFAULT_APIKEY;
-        }
-
-        return redmineApiKeyProperty;
     }
 
 }

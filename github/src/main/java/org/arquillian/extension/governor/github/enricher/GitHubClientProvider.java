@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -26,7 +26,6 @@ import java.lang.annotation.Annotation;
 
 /**
  * @author <a href="mailto:asotobu@gmail.com">Alex Soto</a>
- *
  */
 public class GitHubClientProvider implements ResourceProvider {
 
@@ -40,7 +39,7 @@ public class GitHubClientProvider implements ResourceProvider {
 
     @Override
     public Object lookup(ArquillianResource resource, Annotation... qualifiers) {
-        GitHubClient gitHubClient = this.gitHubClient.get();
+        final GitHubClient gitHubClient = this.gitHubClient.get();
 
         if (gitHubClient == null) {
             throw new IllegalStateException("GitHub Client was not found.");

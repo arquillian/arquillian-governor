@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -58,11 +58,10 @@ import static org.junit.Assert.assertThat;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class GitHubGovernorTestCase extends AbstractGovernorTestCase
-{
+public class GitHubGovernorTestCase extends AbstractGovernorTestCase {
 
     private static final String EMPTY_STRING = "";
-    
+
     private static final String DEFAULT_REPOSITORY = "governor-test";
     private static final String DEFAULT_REPOSITORY_USERNAME = "lordofthejars";
     private static String REPOSITORY_USERNAME;
@@ -84,28 +83,15 @@ public class GitHubGovernorTestCase extends AbstractGovernorTestCase
 
     private Manager manager;
 
-    private GovernorProvider governorProvider = new GovernorProvider()
-    {
+    private GovernorProvider governorProvider = new GovernorProvider() {
         @Override
-        public Class<? extends Annotation> provides()
-        {
+        public Class<? extends Annotation> provides() {
             return GitHub.class;
         }
     };
 
-    @Override
-    public void addExtensions(List<Class<?>> extensions)
-    {
-        extensions.add(GitHubGovernorConfigurator.class);
-        extensions.add(GitHubTestExecutionDecider.class);
-        extensions.add(GovernorTestClassScanner.class);
-        extensions.add(GovernorExecutionDecider.class);
-        extensions.add(GovernorConfigurator.class);
-    }
-
     @org.junit.BeforeClass
-    public static void setupClass() throws Exception
-    {
+    public static void setupClass() throws Exception {
         REPOSITORY_USERNAME = resolveRepositoryUser();
         REPOSITORY_NAME = resolveRepository();
         TOKEN = resolveToken();
@@ -113,13 +99,75 @@ public class GitHubGovernorTestCase extends AbstractGovernorTestCase
         PASSWORD = resolvePassword();
     }
 
+    private static String resolveRepository() {
+        String gitHubServerAddressProperty = System.getProperty("github.governor.repository");
+
+        if (gitHubServerAddressProperty == null || gitHubServerAddressProperty.isEmpty()) {
+            gitHubServerAddressProperty = DEFAULT_REPOSITORY;
+        }
+
+        return gitHubServerAddressProperty;
+    }
+
+    private static String resolveRepositoryUser() {
+        String gitHubServerAddressProperty = System.getProperty("github.governor.repositoryuser");
+
+        if (gitHubServerAddressProperty == null || gitHubServerAddressProperty.isEmpty()) {
+            gitHubServerAddressProperty = DEFAULT_REPOSITORY_USERNAME;
+        }
+
+        return gitHubServerAddressProperty;
+    }
+
+    private static String resolveToken() {
+        String gitHubTokenProperty = System.getProperty("github.governor.token");
+
+        if (gitHubTokenProperty == null || gitHubTokenProperty.isEmpty()) {
+            gitHubTokenProperty = EMPTY_STRING;
+        }
+
+        return gitHubTokenProperty;
+    }
+
+    // utils
+
+    private static String resolvUsername() {
+        String gitHubUsernameProperty = System.getProperty("github.governor.username");
+
+        if (gitHubUsernameProperty == null || gitHubUsernameProperty.isEmpty()) {
+            gitHubUsernameProperty = EMPTY_STRING;
+        }
+
+        return gitHubUsernameProperty;
+    }
+
+    // helpers
+
+    private static String resolvePassword() {
+        String gitHubPasswordProperty = System.getProperty("github.governor.password");
+
+        if (gitHubPasswordProperty == null || gitHubPasswordProperty.isEmpty()) {
+            gitHubPasswordProperty = EMPTY_STRING;
+        }
+
+        return gitHubPasswordProperty;
+    }
+
+    @Override
+    public void addExtensions(List<Class<?>> extensions) {
+        extensions.add(GitHubGovernorConfigurator.class);
+        extensions.add(GitHubTestExecutionDecider.class);
+        extensions.add(GovernorTestClassScanner.class);
+        extensions.add(GovernorExecutionDecider.class);
+        extensions.add(GovernorConfigurator.class);
+    }
+
     @Before
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
 
         serviceProducer.set(serviceLoader);
 
-        List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
+        final List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
         governorProviders.add(governorProvider);
 
         Mockito.when(serviceLoader.all(GovernorProvider.class)).thenReturn(governorProviders);
@@ -135,9 +183,9 @@ public class GitHubGovernorTestCase extends AbstractGovernorTestCase
         gitHubGovernorConfiguration.setRepositoryUser(REPOSITORY_USERNAME);
         gitHubGovernorConfiguration.setForce(true);
         gitHubGovernorConfiguration.setClosePassed(true);
-        
+
         if (!TOKEN.equals(EMPTY_STRING)) {
-            gitHubGovernorConfiguration.setToken(TOKEN);    
+            gitHubGovernorConfiguration.setToken(TOKEN);
         }
 
         gitHubGovernorConfiguration.setUsername(USERNAME);
@@ -145,110 +193,41 @@ public class GitHubGovernorTestCase extends AbstractGovernorTestCase
 
         bind(ApplicationScoped.class, GitHubGovernorConfiguration.class, gitHubGovernorConfiguration);
 
-        GitHubGovernorClient gitHubGovernorClient = new GitHubGovernorClientFactory().build(gitHubGovernorConfiguration);
+        final GitHubGovernorClient gitHubGovernorClient = new GitHubGovernorClientFactory().build(gitHubGovernorConfiguration);
         bind(ApplicationScoped.class, GitHubGovernorClient.class, gitHubGovernorClient);
     }
 
     @Test
-    public void gitHubGovernorTest()
-    {
+    public void gitHubGovernorTest() {
         fire(new BeforeClass(FakeTestClass.class));
 
         assertEventFired(BeforeClass.class, 1);
         assertEventFired(DecideMethodExecutions.class, 1);
 
-        GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
+        final GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
         assertThat(configuration, is(not(nullValue())));
 
-        GitHubGovernorConfiguration gitHubConfiguration = manager.getContext(ApplicationContext.class).getObjectStore().get(GitHubGovernorConfiguration.class);
+        final GitHubGovernorConfiguration gitHubConfiguration = manager.getContext(ApplicationContext.class).getObjectStore().get(GitHubGovernorConfiguration.class);
         assertThat(gitHubConfiguration, is(not(nullValue())));
 
         // for every method and for every Governor annotation of that method
         assertEventFired(ExecutionDecisionEvent.class, 1);
 
-        ExecutionDecision decision = manager.getContext(ClassContext.class).getObjectStore().get(ExecutionDecision.class);
+        final ExecutionDecision decision = manager.getContext(ClassContext.class).getObjectStore().get(ExecutionDecision.class);
 
         assertThat(decision, is(not(nullValue())));
         assertEquals(decision.getDecision(), Decision.EXECUTE);
     }
 
-    // utils
-
-    private static final class FakeTestClass
-    {
+    private static final class FakeTestClass {
         @Test
         @GitHub("1")
-        public void fakeTest()
-        {
+        public void fakeTest() {
         }
 
         @Test
-        public void someTestMethod()
-        {
+        public void someTestMethod() {
         }
-    }
-
-    // helpers
-
-    private static String resolveRepository()
-    {
-        String gitHubServerAddressProperty = System.getProperty("github.governor.repository");
-
-        if (gitHubServerAddressProperty == null || gitHubServerAddressProperty.isEmpty())
-        {
-            gitHubServerAddressProperty = DEFAULT_REPOSITORY;
-        }
-
-        return gitHubServerAddressProperty;
-    }
-
-    private static String resolveRepositoryUser()
-    {
-        String gitHubServerAddressProperty = System.getProperty("github.governor.repositoryuser");
-
-        if (gitHubServerAddressProperty == null || gitHubServerAddressProperty.isEmpty())
-        {
-            gitHubServerAddressProperty = DEFAULT_REPOSITORY_USERNAME;
-        }
-
-        return gitHubServerAddressProperty;
-    }
-
-
-    private static String resolveToken()
-    {
-        String gitHubTokenProperty = System.getProperty("github.governor.token");
-
-        if (gitHubTokenProperty == null || gitHubTokenProperty.isEmpty())
-        {
-            gitHubTokenProperty = EMPTY_STRING;
-        }
-
-        return gitHubTokenProperty;
-    }
-    
-    private static String resolvUsername()
-    {
-        String gitHubUsernameProperty = System.getProperty("github.governor.username");
-
-        if (gitHubUsernameProperty == null || gitHubUsernameProperty.isEmpty())
-        {
-            gitHubUsernameProperty = EMPTY_STRING;
-        }
-
-        return gitHubUsernameProperty;
-    }
-    
-    private static String resolvePassword()
-    {
-        String gitHubPasswordProperty = System.getProperty("github.governor.password");
-
-        if (gitHubPasswordProperty == null || gitHubPasswordProperty.isEmpty())
-        {
-            gitHubPasswordProperty = EMPTY_STRING;
-        }
-
-        return gitHubPasswordProperty;
     }
 
 }

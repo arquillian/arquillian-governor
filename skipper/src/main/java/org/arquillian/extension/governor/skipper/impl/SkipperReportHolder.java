@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,15 +16,14 @@
  */
 package org.arquillian.extension.governor.skipper.impl;
 
+import org.arquillian.extension.governor.skipper.api.TestSpec;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.arquillian.extension.governor.skipper.api.TestSpec;
-
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class SkipperReportHolder {
 

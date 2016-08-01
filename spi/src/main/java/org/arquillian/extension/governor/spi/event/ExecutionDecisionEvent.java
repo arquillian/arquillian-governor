@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,28 +16,24 @@
  */
 package org.arquillian.extension.governor.spi.event;
 
-import java.lang.annotation.Annotation;
-
 import org.jboss.arquillian.core.spi.Validate;
+
+import java.lang.annotation.Annotation;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class ExecutionDecisionEvent
-{
+public class ExecutionDecisionEvent {
 
     private final Annotation annotation;
 
-    public ExecutionDecisionEvent(final Annotation annotation)
-    {
+    public ExecutionDecisionEvent(final Annotation annotation) {
         Validate.notNull(annotation, "Annotation has to be specified.");
 
         this.annotation = annotation;
     }
 
-    public Annotation getAnnotation()
-    {
+    public Annotation getAnnotation() {
         return annotation;
     }
 }

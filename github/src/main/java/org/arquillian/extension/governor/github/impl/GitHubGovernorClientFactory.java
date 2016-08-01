@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -23,30 +23,27 @@ import org.jboss.arquillian.core.spi.Validate;
 
 /**
  * @author <a href="mailto:asotobu@gmail.com">Alex Soto</a>
- *
  */
-public class GitHubGovernorClientFactory implements GovernorClientFactory<GitHubGovernorConfiguration, GitHubGovernorClient>
-{
+public class GitHubGovernorClientFactory implements GovernorClientFactory<GitHubGovernorConfiguration, GitHubGovernorClient> {
 
     private GitHubGovernorConfiguration gitHubGovernorConfiguration;
 
     @Override
     public GitHubGovernorClient build(
-            GitHubGovernorConfiguration governorConfiguration) throws Exception
-    {
+            GitHubGovernorConfiguration governorConfiguration) throws Exception {
         Validate.notNull(governorConfiguration, "GitHub governor configuration has to be set.");
         this.gitHubGovernorConfiguration = governorConfiguration;
 
-        GitHubClient gitHubClient = new GitHubClient();
-        if(this.gitHubGovernorConfiguration.getUsername() != null && this.gitHubGovernorConfiguration.getUsername().length() > 0 && this.gitHubGovernorConfiguration.getPassword() != null && this.gitHubGovernorConfiguration.getPassword().length() > 0) {
+        final GitHubClient gitHubClient = new GitHubClient();
+        if (this.gitHubGovernorConfiguration.getUsername() != null && this.gitHubGovernorConfiguration.getUsername().length() > 0 && this.gitHubGovernorConfiguration.getPassword() != null && this.gitHubGovernorConfiguration.getPassword().length() > 0) {
             gitHubClient.setCredentials(this.gitHubGovernorConfiguration.getUsername(), this.gitHubGovernorConfiguration.getPassword());
         }
 
-        if(this.gitHubGovernorConfiguration.getToken() != null && this.gitHubGovernorConfiguration.getToken().length() > 0) {
+        if (this.gitHubGovernorConfiguration.getToken() != null && this.gitHubGovernorConfiguration.getToken().length() > 0) {
             gitHubClient.setOAuth2Token(gitHubGovernorConfiguration.getToken());
         }
 
-        GitHubGovernorClient gitHubGovernorClient = new GitHubGovernorClient(gitHubClient, gitHubGovernorConfiguration);
+        final GitHubGovernorClient gitHubGovernorClient = new GitHubGovernorClient(gitHubClient, gitHubGovernorConfiguration);
         gitHubGovernorClient.setGovernorStrategy(new GitHubGovernorStrategy(this.gitHubGovernorConfiguration));
 
         return gitHubGovernorClient;

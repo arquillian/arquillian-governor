@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,9 +16,6 @@
  */
 package org.arquillian.extension.governor.configuration;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.arquillian.extension.governor.api.GovernorConfigurationException;
 import org.arquillian.extension.governor.spi.event.GovernorExtensionConfigured;
 import org.jboss.arquillian.config.descriptor.api.ArquillianDescriptor;
@@ -29,12 +26,14 @@ import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class GovernorConfigurator
-{
+public class GovernorConfigurator {
+
     private static final Logger logger = Logger.getLogger(GovernorConfigurator.class.getName());
 
     private static final String EXTENSION_NAME = "governor";
@@ -48,12 +47,10 @@ public class GovernorConfigurator
 
     public void onArquillianDescriptor(@Observes ArquillianDescriptor arquillianDescriptor) throws GovernorConfigurationException {
 
-        GovernorConfiguration governorConfiguration = new GovernorConfiguration();
+        final GovernorConfiguration governorConfiguration = new GovernorConfiguration();
 
-        for (final ExtensionDef extension : arquillianDescriptor.getExtensions())
-        {
-            if (extension.getExtensionName().equals(EXTENSION_NAME))
-            {
+        for (final ExtensionDef extension : arquillianDescriptor.getExtensions()) {
+            if (extension.getExtensionName().equals(EXTENSION_NAME)) {
                 governorConfiguration.setConfiguration(extension.getExtensionProperties());
                 governorConfiguration.validate();
                 break;
@@ -62,8 +59,7 @@ public class GovernorConfigurator
 
         this.governorConfiguration.set(governorConfiguration);
 
-        if (logger.isLoggable(Level.INFO))
-        {
+        if (logger.isLoggable(Level.INFO)) {
             System.out.println("Configuration of Arquillian Governor extension: ");
             System.out.println(governorConfiguration.toString());
         }

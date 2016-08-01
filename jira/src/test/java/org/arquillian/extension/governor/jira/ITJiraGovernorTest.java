@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -26,18 +26,15 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @Jira("ARQ-831")
-public class ITJiraGovernorTest
-{
+public class ITJiraGovernorTest {
     @Test
     @Jira(value = "ARQ-2005")
-    public void wontBeSkippedBecauseResolved()
-    {
+    public void wontBeSkippedBecauseResolved() {
         Assert.assertTrue(true);
     }
 
     @Test
-    public void willBeSkippedBecauseUnresolved()
-    {
+    public void willBeSkippedBecauseUnresolved() {
         Assert.assertTrue(false);
     }
 }

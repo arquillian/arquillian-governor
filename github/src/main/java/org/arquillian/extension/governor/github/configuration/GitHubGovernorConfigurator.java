@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -34,10 +34,8 @@ import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:asotobu@gmail.com">Alex Soto</a>
- *
  */
-public class GitHubGovernorConfigurator
-{
+public class GitHubGovernorConfigurator {
     private static final Logger logger = Logger.getLogger(GitHubGovernorConfigurator.class.getName());
 
     private static final String EXTENSION_NAME = "governor-github";
@@ -57,14 +55,11 @@ public class GitHubGovernorConfigurator
     @ApplicationScoped
     private InstanceProducer<GitHubClient> gitHubClient;
 
-    public void onGovernorExtensionConfigured(@Observes GovernorExtensionConfigured event, ArquillianDescriptor arquillianDescriptor) throws Exception
-    {
-        GitHubGovernorConfiguration gitHubGovernorConfiguration = new GitHubGovernorConfiguration();
+    public void onGovernorExtensionConfigured(@Observes GovernorExtensionConfigured event, ArquillianDescriptor arquillianDescriptor) throws Exception {
+        final GitHubGovernorConfiguration gitHubGovernorConfiguration = new GitHubGovernorConfiguration();
 
-        for (final ExtensionDef extension : arquillianDescriptor.getExtensions())
-        {
-            if (extension.getExtensionName().equals(EXTENSION_NAME))
-            {
+        for (final ExtensionDef extension : arquillianDescriptor.getExtensions()) {
+            if (extension.getExtensionName().equals(EXTENSION_NAME)) {
                 gitHubGovernorConfiguration.setConfiguration(extension.getExtensionProperties());
                 gitHubGovernorConfiguration.validate();
                 break;
@@ -78,8 +73,7 @@ public class GitHubGovernorConfigurator
         this.gitHubGovernorClient.set(gitHubGovernorClient);
         this.gitHubClient.set(gitHubGovernorClient.getGitHubClient());
 
-        if (logger.isLoggable(Level.INFO))
-        {
+        if (logger.isLoggable(Level.INFO)) {
             System.out.println("Configuration of Arquillian GitHub extension: ");
             System.out.println(gitHubGovernorConfiguration.toString());
         }

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,9 +16,6 @@
  */
 package org.arquillian.extension.governor.skipper.impl;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import org.arquillian.extension.governor.impl.TestMethodExecutionRegister;
 import org.arquillian.extension.governor.skipper.api.Status;
 import org.arquillian.extension.governor.skipper.api.TestSpec;
@@ -33,9 +30,11 @@ import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class SkipperTestExecutionDecider implements TestExecutionDecider, GovernorProvider {
 
@@ -47,8 +46,7 @@ public class SkipperTestExecutionDecider implements TestExecutionDecider, Govern
     private Instance<SkipperReportHolder> holder;
 
     @Override
-    public ExecutionDecision decide(Method testMethod)
-    {
+    public ExecutionDecision decide(Method testMethod) {
         return TestMethodExecutionRegister.resolve(testMethod, provides());
     }
 
@@ -58,16 +56,16 @@ public class SkipperTestExecutionDecider implements TestExecutionDecider, Govern
     }
 
     public void on(@Observes ExecutionDecisionEvent event) {
-        ExecutionDecision executionDecision = this.executionDecision.get();
+        final ExecutionDecision executionDecision = this.executionDecision.get();
 
         if (executionDecision == null || executionDecision.getDecision() == Decision.DONT_EXECUTE) {
             return;
         }
 
         if (event.getAnnotation().annotationType() == provides()) {
-            TestSpec testSpec = (TestSpec) event.getAnnotation();
+            final TestSpec testSpec = (TestSpec) event.getAnnotation();
 
-            ExecutionDecision decision;
+            final ExecutionDecision decision;
 
             if (testSpec.status() == Status.AUTOMATED) {
                 decision = ExecutionDecision.execute();

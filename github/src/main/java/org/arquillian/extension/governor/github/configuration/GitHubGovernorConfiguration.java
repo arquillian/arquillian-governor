@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -21,10 +21,8 @@ import org.arquillian.extension.governor.api.GovernorConfigurationException;
 
 /**
  * @author <a href="mailto:asotobu@gmail.com">Alex Soto</a>
- *
  */
-public class GitHubGovernorConfiguration extends Configuration
-{
+public class GitHubGovernorConfiguration extends Configuration {
     private static final String EMPTY_STRING = "";
 
     private static final String DEFAULT_GITHUB_CLOSING_MESSAGE = "This GitHub issue was automatically closed by %s with Arquillian Governor GitHub extension.";
@@ -43,100 +41,81 @@ public class GitHubGovernorConfiguration extends Configuration
 
     private boolean closePassed = resolveClosePassed();
 
-    public void setUsername(String username)
-    {
-        setProperty("username", username);
-    }
-
-    public String getUsername()
-    {
+    public String getUsername() {
         return getProperty("username", username);
     }
 
-    public void setPassword(String password)
-    {
-        setProperty("password", password);
+    public void setUsername(String username) {
+        setProperty("username", username);
     }
 
-    public String getPassword()
-    {
+    public String getPassword() {
         return getProperty("password", password);
     }
 
-    public void setToken(String token)
-    {
-        setProperty("token", token);
+    public void setPassword(String password) {
+        setProperty("password", password);
     }
 
-    public String getToken()
-    {
+    public String getToken() {
         return getProperty("token", token);
     }
 
-    public void setRepositoryUser(String repositoryUser)
-    {
-        setProperty("repositoryUser", repositoryUser);
+    public void setToken(String token) {
+        setProperty("token", token);
     }
 
-    public String getRepositoryUser()
-    {
+    public String getRepositoryUser() {
         return getProperty("repositoryUser", repositoryUser);
     }
 
-    public void setRepository(String repository)
-    {
-        setProperty("repository", repository);
+    public void setRepositoryUser(String repositoryUser) {
+        setProperty("repositoryUser", repositoryUser);
     }
 
-    public String getRepository()
-    {
+    public String getRepository() {
         return getProperty("repository", repository);
     }
 
-    public void setForce(boolean force)
-    {
-        setProperty("force", Boolean.toString(force));
+    public void setRepository(String repository) {
+        setProperty("repository", repository);
     }
 
-    public boolean getForce()
-    {
+    public boolean getForce() {
         return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
     }
 
-    public void setClosePassed(boolean closePassed)
-    {
-        setProperty("closePassed", Boolean.toString(closePassed));
+    public void setForce(boolean force) {
+        setProperty("force", Boolean.toString(force));
     }
 
-    public boolean getClosePassed()
-    {
+    public boolean getClosePassed() {
         return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
     }
 
-    public void setClosingMessage(String closingMessage)
-    {
-        setProperty("closingMessage", closingMessage);
+    public void setClosePassed(boolean closePassed) {
+        setProperty("closePassed", Boolean.toString(closePassed));
     }
 
-    public String getClosingMessage()
-    {
+    public String getClosingMessage() {
         return getProperty("closingMessage", DEFAULT_GITHUB_CLOSING_MESSAGE);
     }
 
+    public void setClosingMessage(String closingMessage) {
+        setProperty("closingMessage", closingMessage);
+    }
+
     @Override
-    public void validate() throws GovernorConfigurationException
-    {
-        if (EMPTY_STRING.equals(getRepositoryUser()) || EMPTY_STRING.equals(getRepository()))
-        {
+    public void validate() throws GovernorConfigurationException {
+        if (EMPTY_STRING.equals(getRepositoryUser()) || EMPTY_STRING.equals(getRepository())) {
             throw new GovernorConfigurationException("Repository user or repository name are not set - it is an empty String.");
         }
 
     }
 
     @Override
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
 
         // password is not here due to security reasons
 
@@ -152,73 +131,61 @@ public class GitHubGovernorConfiguration extends Configuration
 
     // helpers
 
-    private String resolvePassword()
-    {
+    private String resolvePassword() {
         final String password = System.getProperty("github.governor.password");
 
-        if (password != null && password.length() != 0)
-        {
+        if (password != null && password.length() != 0) {
             return password;
         }
 
         return EMPTY_STRING;
     }
 
-    private String resolveUsername()
-    {
+    private String resolveUsername() {
         final String username = System.getProperty("github.governor.username");
 
-        if (username != null && username.length() != 0)
-        {
+        if (username != null && username.length() != 0) {
             return username;
         }
 
         return EMPTY_STRING;
     }
 
-    private String resolveToken()
-    {
+    private String resolveToken() {
         final String token = System.getProperty("github.governor.token");
 
-        if (token != null && token.length() != 0)
-        {
+        if (token != null && token.length() != 0) {
             return token;
         }
 
         return EMPTY_STRING;
     }
 
-    private String resolveRepositoryUser()
-    {
+    private String resolveRepositoryUser() {
         final String repositoryUser = System.getProperty("github.governor.repositoryuser");
 
-        if (repositoryUser != null && repositoryUser.length() != 0)
-        {
+        if (repositoryUser != null && repositoryUser.length() != 0) {
             return repositoryUser;
         }
 
         return EMPTY_STRING;
     }
 
-    private String resolveRepository()
-    {
+    private String resolveRepository() {
         final String repository = System.getProperty("github.governor.repository");
 
-        if (repository != null && repository.length() != 0)
-        {
+        if (repository != null && repository.length() != 0) {
             return repository;
         }
 
         return EMPTY_STRING;
     }
 
-    private boolean resolveForce()
-    {
+    private boolean resolveForce() {
         return Boolean.valueOf(System.getProperty("github.governor.force"));
     }
 
-    private boolean resolveClosePassed()
-    {
+    private boolean resolveClosePassed() {
         return Boolean.valueOf(System.getProperty("github.governor.closepassed"));
     }
 

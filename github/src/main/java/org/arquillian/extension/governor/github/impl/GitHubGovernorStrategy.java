@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -18,19 +18,16 @@ package org.arquillian.extension.governor.github.impl;
 
 import org.arquillian.extension.governor.api.GovernorStrategy;
 import org.arquillian.extension.governor.api.detector.DetectorProcessor;
+import org.arquillian.extension.governor.github.api.GitHub;
+import org.arquillian.extension.governor.github.configuration.GitHubGovernorConfiguration;
 import org.eclipse.egit.github.core.Issue;
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 
-import org.arquillian.extension.governor.github.api.GitHub;
-import org.arquillian.extension.governor.github.configuration.GitHubGovernorConfiguration;
-
 /**
  * @author <a href="mailto:asotobu@gmail.com">Alex Soto</a>
- *
  */
-public class GitHubGovernorStrategy implements GovernorStrategy
-{
+public class GitHubGovernorStrategy implements GovernorStrategy {
     public static final String FORCING_EXECUTION_REASON_STRING = "forcing execution";
     public static final String SKIPPING_EXECUTION_REASON_STRING = "Skipping %s. Status %s.";
     public static final Object GITHUB_CLOSED_STRING = "closed";
@@ -39,26 +36,23 @@ public class GitHubGovernorStrategy implements GovernorStrategy
     private GitHub annotation;
     private Issue gitHubIssue;
 
-    public GitHubGovernorStrategy(GitHubGovernorConfiguration gitHubGovernorConfiguration)
-    {
+    public GitHubGovernorStrategy(GitHubGovernorConfiguration gitHubGovernorConfiguration) {
         Validate.notNull(gitHubGovernorConfiguration, "GitHub Governor configuration has to be set.");
         this.gitHubGovernorConfiguration = gitHubGovernorConfiguration;
     }
-    public GitHubGovernorStrategy annotation(GitHub annotation)
-    {
+
+    public GitHubGovernorStrategy annotation(GitHub annotation) {
         this.annotation = annotation;
         return this;
     }
 
-    public GitHubGovernorStrategy issue(Issue gitHubIssue)
-    {
+    public GitHubGovernorStrategy issue(Issue gitHubIssue) {
         this.gitHubIssue = gitHubIssue;
         return this;
     }
 
     @Override
-    public ExecutionDecision resolve()
-    {
+    public ExecutionDecision resolve() {
         Validate.notNull(gitHubIssue, "GitHub issue must be specified.");
         Validate.notNull(annotation, "Annotation must be specified.");
 
@@ -67,25 +61,21 @@ public class GitHubGovernorStrategy implements GovernorStrategy
             return ExecutionDecision.execute();
         }
 
-        String gitHubStatus = gitHubIssue.getState();
+        final String gitHubStatus = gitHubIssue.getState();
 
-        if (gitHubStatus == null || gitHubStatus.length() == 0)
-        {
+        if (gitHubStatus == null || gitHubStatus.length() == 0) {
             return ExecutionDecision.execute();
         }
 
-        if (annotation.force())
-        {
+        if (annotation.force()) {
             return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
         }
 
-        if (gitHubGovernorConfiguration.getForce())
-        {
+        if (gitHubGovernorConfiguration.getForce()) {
             return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
         }
 
-        if (gitHubStatus.equals(GITHUB_CLOSED_STRING))
-        {
+        if (gitHubStatus.equals(GITHUB_CLOSED_STRING)) {
             return ExecutionDecision.execute();
         }
 

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -24,16 +24,12 @@ import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
 
 /**
- *
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
  */
-public class RedmineGovernorExtension implements LoadableExtension
-{
+public class RedmineGovernorExtension implements LoadableExtension {
 
     @Override
-    public void register(ExtensionBuilder builder)
-    {
+    public void register(ExtensionBuilder builder) {
         builder.observer(RedmineTestExecutionDecider.class);
         builder.observer(RedmineGovernorConfigurator.class);
 

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,6 +16,7 @@
  */
 package org.arquillian.extension.governor.redmine.impl;
 
+import com.taskadapter.redmineapi.bean.Issue;
 import org.arquillian.extension.governor.api.GovernorStrategy;
 import org.arquillian.extension.governor.redmine.api.IssueStatus;
 import org.arquillian.extension.governor.redmine.api.Redmine;
@@ -23,14 +24,10 @@ import org.arquillian.extension.governor.redmine.configuration.RedmineGovernorCo
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 
-import com.taskadapter.redmineapi.bean.Issue;
-
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
  */
-public class RedmineGovernorStrategy implements GovernorStrategy
-{
+public class RedmineGovernorStrategy implements GovernorStrategy {
     public static final String FORCING_EXECUTION_REASON_STRING = "forcing execution";
     public static final String FORCING_EXECUTION_OPEN_FAILED = "forcing execution for reopening issue";
     public static final String SKIPPING_EXECUTION_REASON_STRING = "Skipping %s. Status %s.";
@@ -39,36 +36,30 @@ public class RedmineGovernorStrategy implements GovernorStrategy
     private Redmine annotation;
     private Issue redmineIssue;
 
-    public RedmineGovernorStrategy(RedmineGovernorConfiguration redmineGovernorConfiguration)
-    {
+    public RedmineGovernorStrategy(RedmineGovernorConfiguration redmineGovernorConfiguration) {
         Validate.notNull(redmineGovernorConfiguration, "Redmine Governor configuration has to be set.");
         this.redmineGovernorConfiguration = redmineGovernorConfiguration;
     }
 
-    public RedmineGovernorStrategy annotation(Redmine annotation)
-    {
+    public RedmineGovernorStrategy annotation(Redmine annotation) {
         this.annotation = annotation;
         return this;
     }
 
-    public RedmineGovernorStrategy issue(Issue redmine)
-    {
+    public RedmineGovernorStrategy issue(Issue redmine) {
         this.redmineIssue = redmine;
         return this;
     }
 
     @Override
-    public ExecutionDecision resolve()
-    {
+    public ExecutionDecision resolve() {
         Validate.notNull(redmineIssue, "Redmine issue must be specified.");
         Validate.notNull(annotation, "Annotation must be specified.");
 
-        Integer issueStatus = redmineIssue.getStatusId();
+        final Integer issueStatus = redmineIssue.getStatusId();
 
-        if (issueStatus == null || IssueStatus.isClosed(issueStatus))
-        {
-            if (annotation.openFailed())
-            {
+        if (issueStatus == null || IssueStatus.isClosed(issueStatus)) {
+            if (annotation.openFailed()) {
                 // if issue is closed and test fails, governor will reopen issue
                 return ExecutionDecision.execute(FORCING_EXECUTION_OPEN_FAILED);
             }
@@ -76,8 +67,7 @@ public class RedmineGovernorStrategy implements GovernorStrategy
             return ExecutionDecision.execute();
         }
 
-        if (annotation.force() || redmineGovernorConfiguration.getForce())
-        {
+        if (annotation.force() || redmineGovernorConfiguration.getForce()) {
             return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
         }
 

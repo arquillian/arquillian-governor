@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,9 +16,6 @@
  */
 package org.arquillian.extension.governor.jira.configuration;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.arquillian.extension.governor.jira.impl.JiraGovernorClient;
 import org.arquillian.extension.governor.jira.impl.JiraGovernorClientFactory;
 import org.arquillian.extension.governor.spi.event.GovernorExtensionConfigured;
@@ -31,12 +28,13 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class JiraGovernorConfigurator
-{
+public class JiraGovernorConfigurator {
     private static final Logger logger = Logger.getLogger(JiraGovernorConfigurator.class.getName());
 
     private static final String EXTENSION_NAME = "governor-jira";
@@ -52,14 +50,11 @@ public class JiraGovernorConfigurator
     @ApplicationScoped
     private InstanceProducer<JiraGovernorClient> jiraGovernorClient;
 
-    public void onGovernorExtensionConfigured(@Observes GovernorExtensionConfigured event, ArquillianDescriptor arquillianDescriptor) throws Exception
-    {
-        JiraGovernorConfiguration jiraGovernorConfiguration = new JiraGovernorConfiguration();
+    public void onGovernorExtensionConfigured(@Observes GovernorExtensionConfigured event, ArquillianDescriptor arquillianDescriptor) throws Exception {
+        final JiraGovernorConfiguration jiraGovernorConfiguration = new JiraGovernorConfiguration();
 
-        for (final ExtensionDef extension : arquillianDescriptor.getExtensions())
-        {
-            if (extension.getExtensionName().equals(EXTENSION_NAME))
-            {
+        for (final ExtensionDef extension : arquillianDescriptor.getExtensions()) {
+            if (extension.getExtensionName().equals(EXTENSION_NAME)) {
                 jiraGovernorConfiguration.setConfiguration(extension.getExtensionProperties());
                 jiraGovernorConfiguration.validate();
                 break;
@@ -72,8 +67,7 @@ public class JiraGovernorConfigurator
 
         this.jiraGovernorClient.set(jiraGovernorClient);
 
-        if (logger.isLoggable(Level.INFO))
-        {
+        if (logger.isLoggable(Level.INFO)) {
             System.out.println("Configuration of Arquillian JIRA extension: ");
             System.out.println(jiraGovernorConfiguration.toString());
         }

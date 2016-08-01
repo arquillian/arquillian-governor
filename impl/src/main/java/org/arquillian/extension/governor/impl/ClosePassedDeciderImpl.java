@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -40,11 +40,11 @@ public class ClosePassedDeciderImpl implements ClosePassedDecider {
 
     @Override
     public void setClosable(Annotation annotation, boolean closeable) {
-        for (Map.Entry<Annotation, Boolean> entry : closableAnnotationMap.entrySet()) {
-            Annotation oldAnnotation = entry.getKey();
+        for (final Map.Entry<Annotation, Boolean> entry : closableAnnotationMap.entrySet()) {
+            final Annotation oldAnnotation = entry.getKey();
             if (oldAnnotation.annotationType().equals(annotation.annotationType())) {
-                String oldId = ReflectionUtils.getAnnotationValue(oldAnnotation);
-                String id = ReflectionUtils.getAnnotationValue(annotation);
+                final String oldId = ReflectionUtils.getAnnotationValue(oldAnnotation);
+                final String id = ReflectionUtils.getAnnotationValue(annotation);
                 if (oldId != null && oldId.equals(id)) {
                     closableAnnotationMap.put(oldAnnotation, entry.getValue().booleanValue() & closeable);
                     return;

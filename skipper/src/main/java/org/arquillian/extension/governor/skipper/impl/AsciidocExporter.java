@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,6 +16,9 @@
  */
 package org.arquillian.extension.governor.skipper.impl;
 
+import org.arquillian.extension.governor.skipper.api.Status;
+import org.arquillian.extension.governor.skipper.api.TestSpec;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -27,22 +30,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.arquillian.extension.governor.skipper.api.Status;
-import org.arquillian.extension.governor.skipper.api.TestSpec;
-
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class AsciidocExporter {
 
-    private OutputStream outputStream;
-
-    private BufferedWriter writer;
-
-    private File outputFile;
-
     private final List<String> outputLines = new ArrayList<String>();
+    private OutputStream outputStream;
+    private BufferedWriter writer;
+    private File outputFile;
 
     public AsciidocExporter(OutputStream outputStream) {
         this.outputStream = outputStream;
@@ -69,10 +65,10 @@ public class AsciidocExporter {
     }
 
     public void append(List<TestSpec> testSpecs, String className) {
-        int automated = getCount(testSpecs, Status.AUTOMATED);
-        int manual = getCount(testSpecs, Status.MANUAL);
+        final int automated = getCount(testSpecs, Status.AUTOMATED);
+        final int manual = getCount(testSpecs, Status.MANUAL);
 
-        List<String> appending = new ArrayList<String>();
+        final List<String> appending = new ArrayList<String>();
         appending.add("---");
         appending.add("[cols=\"2*\", options=\"header\"]");
         appending.add("|===");
@@ -81,7 +77,7 @@ public class AsciidocExporter {
         appending.add("|manual|" + manual);
         appending.add("|===");
 
-        for (TestSpec testSpec : sortTestSpecs(testSpecs)) {
+        for (final TestSpec testSpec : sortTestSpecs(testSpecs)) {
             appending.addAll(reportTestSpec(testSpec));
         }
 
@@ -91,7 +87,7 @@ public class AsciidocExporter {
     public void export() {
 
         try {
-            for (String line : outputLines) {
+            for (final String line : outputLines) {
                 writer.append(line + "\n");
             }
 
@@ -105,7 +101,7 @@ public class AsciidocExporter {
     // helpers
 
     private Collection<? extends String> reportTestSpec(TestSpec testSpec) {
-        List<String> report = new ArrayList<String>();
+        final List<String> report = new ArrayList<String>();
 
         report.add("[cols=\"2*\", options=\"header\"]");
         report.add("|===");
@@ -113,12 +109,12 @@ public class AsciidocExporter {
         report.add("|test|" + testSpec.test());
         report.add("|prerequisities|" + testSpec.prerequisites());
 
-        List<String> stepsList = new ArrayList<String>(Arrays.asList(testSpec.steps()));
+        final List<String> stepsList = new ArrayList<String>(Arrays.asList(testSpec.steps()));
 
         if (!stepsList.isEmpty() && !stepsList.get(0).isEmpty()) {
             report.add("|steps|" + stepsList.get(0));
             stepsList.remove(0);
-            for (String step : stepsList) {
+            for (final String step : stepsList) {
                 report.add("||" + step);
             }
         }
@@ -135,7 +131,7 @@ public class AsciidocExporter {
     private int getCount(List<TestSpec> testSpecs, Status status) {
         int count = 0;
 
-        for (TestSpec testSpec : testSpecs) {
+        for (final TestSpec testSpec : testSpecs) {
             if (testSpec.status() == status) {
                 count++;
             }
@@ -146,9 +142,9 @@ public class AsciidocExporter {
 
     private List<TestSpec> sortTestSpecs(List<TestSpec> testSpecs) {
 
-        List<TestSpec> sortedTestSpecs = new ArrayList<TestSpec>();
+        final List<TestSpec> sortedTestSpecs = new ArrayList<TestSpec>();
 
-        for (TestSpec testSpec : testSpecs) {
+        for (final TestSpec testSpec : testSpecs) {
             if (testSpec.status() == Status.MANUAL) {
                 sortedTestSpecs.add(testSpec);
             }
@@ -156,7 +152,7 @@ public class AsciidocExporter {
 
         // automated after
 
-        for (TestSpec testSpec : testSpecs) {
+        for (final TestSpec testSpec : testSpecs) {
             if (testSpec.status() == Status.AUTOMATED) {
                 sortedTestSpecs.add(testSpec);
             }
