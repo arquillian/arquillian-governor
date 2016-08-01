@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -44,7 +44,7 @@ public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStra
     private JiraGovernorStrategy jiraGovernorStrategy;
     private JiraGovernorConfiguration jiraGovernorConfiguration;
 
-    private int JIRA_BUILD_NUMBER = 0;
+    private int jiraBuildNumber = 0;
 
     public void setConfiguration(JiraGovernorConfiguration jiraGovernorConfiguration)
     {
@@ -90,7 +90,7 @@ public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStra
 
             final Collection<FieldInput> fieldInputs;
 
-            if (JIRA_BUILD_NUMBER > ServerVersionConstants.BN_JIRA_5)
+            if (jiraBuildNumber > ServerVersionConstants.BN_JIRA_5)
             {
                 fieldInputs = Arrays.asList(new FieldInput("resolution", ComplexIssueInputFieldValue.with("name", "Done")));
             } else {
@@ -121,7 +121,7 @@ public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStra
         Validate.notNull(restClient, "Jira REST client must be specified.");
         this.restClient = restClient;
 
-        JIRA_BUILD_NUMBER = this.restClient.getMetadataClient().getServerInfo().claim().getBuildNumber();
+        jiraBuildNumber = this.restClient.getMetadataClient().getServerInfo().claim().getBuildNumber();
     }
 
     // private helpers

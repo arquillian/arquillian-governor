@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -100,8 +100,8 @@ public class RedmineGovernorClient implements GovernorClient<Redmine, RedmineGov
                 if (stillNotClosed)
                 {
                     printAvailableStatus();
-                    throw new RuntimeException("Arquillian governor redmine could not close issue. " +
-                        "The status transition is probably invalid. Use property 'closeOrder' in arquillian.xml and provide a valid status transition for this issue.");
+                    throw new RuntimeException("Arquillian governor redmine could not close issue. "
+                        + "The status transition is probably invalid. Use property 'closeOrder' in arquillian.xml and provide a valid status transition for this issue.");
                 }
             }
         } catch (Exception e)

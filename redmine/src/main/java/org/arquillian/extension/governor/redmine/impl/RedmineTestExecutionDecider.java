@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -98,7 +98,7 @@ public class RedmineTestExecutionDecider implements TestExecutionDecider, Govern
             Integer c = lifecycleCountRegister.get(event.getTestMethod());
             count = (c != null ? c.intValue() : 0);
             if (count == 0)
-            {// skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+            { // skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
                 return;
             }
             final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());

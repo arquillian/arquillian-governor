@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -163,7 +163,7 @@ public class RedmineGovernorConfiguration extends Configuration
     {
         final String apiKey = System.getProperty("github.governor.apikey");
 
-        if (apiKey != null && !apiKey.trim().equals(""))
+        if (apiKey != null && !apiKey.trim().isEmpty())
         {
             return apiKey;
         }
@@ -175,7 +175,7 @@ public class RedmineGovernorConfiguration extends Configuration
     {
         final String closeOrder = System.getProperty("github.governor.closeOrder");
 
-        if (closeOrder != null && !closeOrder.trim().equals(""))
+        if (closeOrder != null && !closeOrder.trim().isEmpty())
         {
             return closeOrder;
         }

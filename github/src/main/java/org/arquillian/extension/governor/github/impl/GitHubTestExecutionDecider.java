@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -105,37 +105,37 @@ public class GitHubTestExecutionDecider implements TestExecutionDecider, Governo
             Integer c = lifecycleCountRegister.get(event.getTestMethod());
             count = (c != null ? c.intValue() : 0);
             if (count == 0)
-            {//skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+            { //skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
                 return;
             }
-            
-        final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
-        // if we passed some test method annotated with GitHub, we may eventually close it
+            final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
-        if (gitHubGovernorConfiguration.getClosePassed())
-        {
-            // we decided we run this test method even it has annotation on it
-            if (decision.getDecision() == Decision.EXECUTE
-                && (GitHubGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
+            // if we passed some test method annotated with GitHub, we may eventually close it
+
+            if (gitHubGovernorConfiguration.getClosePassed())
             {
-
-                for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
+                // we decided we run this test method even it has annotation on it
+                if (decision.getDecision() == Decision.EXECUTE
+                    && (GitHubGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
                 {
-                    if (entry.getKey().toString().equals(event.getTestMethod().toString()))
+
+                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
                     {
-                        for (Annotation annotation : entry.getValue())
+                        if (entry.getKey().toString().equals(event.getTestMethod().toString()))
                         {
-                            if (annotation.annotationType() == provides())
+                            for (Annotation annotation : entry.getValue())
                             {
-                                closePassedDecider.get().setClosable(annotation, testResult.getStatus() == Status.PASSED);
-                                return;
+                                if (annotation.annotationType() == provides())
+                                {
+                                    closePassedDecider.get().setClosable(annotation, testResult.getStatus() == Status.PASSED);
+                                    return;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
         } finally
         {
             lifecycleCountRegister.put(event.getTestMethod(), ++count);
