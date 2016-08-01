@@ -17,6 +17,7 @@
 package org.arquillian.extension.governor.impl;
 
 import org.arquillian.extension.governor.api.ClosePassedDecider;
+import org.arquillian.extension.governor.utils.RefletionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -44,8 +45,8 @@ public class ClosePassedDeciderImpl implements ClosePassedDecider {
         for (Map.Entry<Annotation, Boolean> entry : closableAnnotationMap.entrySet()) {
             Annotation oldAnnotation = entry.getKey();
             if (oldAnnotation.annotationType().equals(annotation.annotationType())) {
-                String oldId = getAnnotationValue(oldAnnotation);
-                String id = getAnnotationValue(annotation);
+                String oldId = RefletionUtils.getAnnotationValue(oldAnnotation);
+                String id = RefletionUtils.getAnnotationValue(annotation);
                 if (oldId != null && oldId.equals(id)) {
                     closableAnnotationMap.put(oldAnnotation, entry.getValue().booleanValue() & closeable);
                     return;
@@ -58,18 +59,5 @@ public class ClosePassedDeciderImpl implements ClosePassedDecider {
     @Override
     public boolean isCloseable(Annotation annotation) {
         return closableAnnotationMap.get(annotation);
-    }
-
-    private String getAnnotationValue(Annotation annotation) {
-        for (Method method : annotation.annotationType().getDeclaredMethods()) {
-            if ("value".equals(method.getName())) {
-                try {
-                    return (String) method.invoke(annotation);
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Annotation {0} does not contain field \"value\"", annotation.annotationType().getName());
-                }
-            }
-        }
-        return null;
     }
 }

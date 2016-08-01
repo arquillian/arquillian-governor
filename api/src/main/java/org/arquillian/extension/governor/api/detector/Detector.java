@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.extension.governor.jira.api;
+package org.arquillian.extension.governor.api.detector;
+
+import org.arquillian.extension.governor.api.Governor;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,25 +24,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.arquillian.extension.governor.api.Governor;
-import org.arquillian.extension.governor.api.detector.Detectable;
-import org.arquillian.extension.governor.api.detector.Detector;
-
 /**
- * Place this annotation on a test method with JIRA issue (e.g. {@literal @Jira("ARQ-1")})
+ * Annotation {@code Detector} is used to set up list of prerequisites for current environment with merging strategy.
  *
- * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
+ * @author <a href="mailto:mbasovni@redhat.com">Martin Basovnik</a>
  *
  */
 @Governor
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.PARAMETER})
 @Documented
-public @interface Jira
-{
-    String value() default "";
+public @interface Detector {
 
-    boolean force() default false;
+    Class<? extends Detectable>[] value();
 
-    Detector detector() default @Detector(value = Detectable.True.class);
+    Class<? extends Strategy> strategy() default Strategy.And.class;
 }
