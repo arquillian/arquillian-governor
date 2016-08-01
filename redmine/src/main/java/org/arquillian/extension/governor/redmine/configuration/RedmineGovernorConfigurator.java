@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,9 +16,7 @@
  */
 package org.arquillian.extension.governor.redmine.configuration;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.taskadapter.redmineapi.RedmineManager;
 import org.arquillian.extension.governor.redmine.impl.RedmineGovernorClient;
 import org.arquillian.extension.governor.redmine.impl.RedmineGovernorClientFactory;
 import org.arquillian.extension.governor.spi.event.GovernorExtensionConfigured;
@@ -31,14 +29,13 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 
-import com.taskadapter.redmineapi.RedmineManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
  */
-public class RedmineGovernorConfigurator
-{
+public class RedmineGovernorConfigurator {
     private static final Logger logger = Logger.getLogger(RedmineGovernorConfigurator.class.getName());
 
     private static final String EXTENSION_NAME = "governor-redmine";
@@ -58,14 +55,11 @@ public class RedmineGovernorConfigurator
     @ApplicationScoped
     private InstanceProducer<RedmineManager> redmineManager;
 
-    public void onGovernorExtensionConfigured(@Observes GovernorExtensionConfigured event, ArquillianDescriptor arquillianDescriptor) throws Exception
-    {
-        RedmineGovernorConfiguration redmineGovernorConfiguration = new RedmineGovernorConfiguration();
+    public void onGovernorExtensionConfigured(@Observes GovernorExtensionConfigured event, ArquillianDescriptor arquillianDescriptor) throws Exception {
+        final RedmineGovernorConfiguration redmineGovernorConfiguration = new RedmineGovernorConfiguration();
 
-        for (final ExtensionDef extension : arquillianDescriptor.getExtensions())
-        {
-            if (extension.getExtensionName().equals(EXTENSION_NAME))
-            {
+        for (final ExtensionDef extension : arquillianDescriptor.getExtensions()) {
+            if (extension.getExtensionName().equals(EXTENSION_NAME)) {
                 redmineGovernorConfiguration.setConfiguration(extension.getExtensionProperties());
                 break;
             }
@@ -79,8 +73,7 @@ public class RedmineGovernorConfigurator
         this.redmineGovernorClient.set(redmineGovernorClient);
         this.redmineManager.set(redmineGovernorClient.getRedmineManager());
 
-        if (logger.isLoggable(Level.INFO))
-        {
+        if (logger.isLoggable(Level.INFO)) {
             System.out.println("Configuration of Arquillian Redmine extension: ");
             System.out.println(this.redmineGovernorConfiguration.get().toString());
         }

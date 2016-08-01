@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -26,12 +26,10 @@ import java.lang.annotation.Target;
  * Annotate specific annotations in your Governor implementation by this annotation.
  *
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE})
+@Target(ElementType.ANNOTATION_TYPE)
 @Documented
-public @interface Governor
-{
+public @interface Governor {
 
 }

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -15,21 +15,6 @@
  * limitations under the License.
  */
 package org.arquillian.extension.governor;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-import java.lang.annotation.Annotation;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.arquillian.extension.governor.api.Governor;
 import org.arquillian.extension.governor.api.GovernorRegistry;
@@ -54,13 +39,26 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class GovernorTestCase extends AbstractGovernorTestCase
-{
+public class GovernorTestCase extends AbstractGovernorTestCase {
     @Inject
     @ApplicationScoped
     private InstanceProducer<ServiceLoader> serviceProducer;
@@ -72,30 +70,26 @@ public class GovernorTestCase extends AbstractGovernorTestCase
 
     private Manager manager;
 
-    private GovernorProvider governorProvider = new GovernorProvider()
-    {
+    private GovernorProvider governorProvider = new GovernorProvider() {
 
         @Override
-        public Class<? extends Annotation> provides()
-        {
+        public Class<? extends Annotation> provides() {
             return FakeGovernor.class;
         }
     };
 
     @Override
-    public void addExtensions(List<Class<?>> extensions)
-    {
+    public void addExtensions(List<Class<?>> extensions) {
         extensions.add(GovernorTestClassScanner.class);
         extensions.add(GovernorExecutionDecider.class);
         extensions.add(GovernorConfigurator.class);
     }
 
     @Before
-    public void setup()
-    {
+    public void setup() {
         serviceProducer.set(serviceLoader);
 
-        List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
+        final List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
         governorProviders.add(governorProvider);
 
         Mockito.when(serviceLoader.all(GovernorProvider.class)).thenReturn(governorProviders);
@@ -108,25 +102,24 @@ public class GovernorTestCase extends AbstractGovernorTestCase
     }
 
     @Test
-    public void governorRegistryTestCase()
-    {
+    public void governorRegistryTestCase() {
         fire(new BeforeClass(FakeTestClass.class));
 
         assertEventFired(BeforeClass.class, 1);
         assertEventFired(DecideMethodExecutions.class, 1);
 
-        GovernorRegistry governorRegistry = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorRegistry.class);
+        final GovernorRegistry governorRegistry = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorRegistry.class);
 
-        GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
+        final GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
 
         assertThat(configuration, is(not(nullValue())));
 
         assertThat(governorRegistry, is(not(nullValue())));
 
-        List<Method> fakeGovernorMethods = governorRegistry.getMethodsForAnnotation(FakeGovernor.class);
+        final List<Method> fakeGovernorMethods = governorRegistry.getMethodsForAnnotation(FakeGovernor.class);
         assertEquals(2, fakeGovernorMethods.size());
 
-        List<Method> dumymGovernorMethods = governorRegistry.getMethodsForAnnotation(DummyGovernor.class);
+        final List<Method> dumymGovernorMethods = governorRegistry.getMethodsForAnnotation(DummyGovernor.class);
         assertEquals(1, dumymGovernorMethods.size());
 
         // for every method and for every Governor annotation of that method
@@ -135,40 +128,34 @@ public class GovernorTestCase extends AbstractGovernorTestCase
 
     // utils
 
-    private static final class FakeTestClass
-    {
+    @Governor
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    private @interface FakeGovernor {
+        String value() default "";
+    }
+
+    @Governor
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    private @interface DummyGovernor {
+        String value() default "";
+    }
+
+    private static final class FakeTestClass {
         @Test
         @FakeGovernor
-        public void fakeTest()
-        {
+        public void fakeTest() {
         }
 
         @Test
         @FakeGovernor
         @DummyGovernor
-        public void dummyTest()
-        {
+        public void dummyTest() {
         }
 
         @Test
-        public void someTestMethod()
-        {
+        public void someTestMethod() {
         }
-    }
-
-    @Governor
-    @Target({ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    private @interface FakeGovernor
-    {
-        String value() default "";
-    }
-
-    @Governor
-    @Target({ElementType.METHOD})
-    @Retention(RetentionPolicy.RUNTIME)
-    private @interface DummyGovernor
-    {
-        String value() default "";
     }
 }

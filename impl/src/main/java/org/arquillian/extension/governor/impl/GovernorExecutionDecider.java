@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,11 +16,6 @@
  */
 package org.arquillian.extension.governor.impl;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.spi.event.DecideMethodExecutions;
 import org.arquillian.extension.governor.spi.event.ExecutionDecisionEvent;
@@ -32,12 +27,16 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.annotation.ClassScoped;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class GovernorExecutionDecider
-{
+public class GovernorExecutionDecider {
+
     @Inject
     private Instance<GovernorRegistry> governorRegistry;
 
@@ -51,24 +50,20 @@ public class GovernorExecutionDecider
     @Inject
     private Event<ExecutionDecisionEvent> executionDecisionEvent;
 
-    public void on(@Observes DecideMethodExecutions decodeMethodExecution)
-    {
-        for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().get().entrySet())
-        {
+    public void on(@Observes DecideMethodExecutions decodeMethodExecution) {
+        for (final Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().get().entrySet()) {
             final Method testMethod = entry.getKey();
 
             executionDecisionProducer.set(ExecutionDecision.execute());
 
-            for (final Annotation annotation : entry.getValue())
-            {
+            for (final Annotation annotation : entry.getValue()) {
                 executionDecisionEvent.fire(new ExecutionDecisionEvent(annotation));
 
                 // we get here after all TestExecutionDeciders which observe above event are treated
                 // and eventually set final execution decision about that annotation
                 ExecutionDecision decision = this.executionDecision.get();
 
-                if (decision == null)
-                {
+                if (decision == null) {
                     decision = ExecutionDecision.execute();
                 }
 

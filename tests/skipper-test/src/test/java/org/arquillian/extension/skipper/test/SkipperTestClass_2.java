@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -23,39 +23,38 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class SkipperTestClass_2 extends AbstractArquillianClass {
 
     @Test
     @TestSpec(
-        author = "Stefan Miklosovic",
-        assertion = "this test should pass",
-        feature = "tests if true returns true",
-        issue = "ARQ-6",
-        prerequisites = "have java",
-        status = Status.AUTOMATED,
-        steps = "some steps",
-        test = "tests stuff"
-        )
+            author = "Stefan Miklosovic",
+            assertion = "this test should pass",
+            feature = "tests if true returns true",
+            issue = "ARQ-6",
+            prerequisites = "have java",
+            status = Status.AUTOMATED,
+            steps = "some steps",
+            test = "tests stuff"
+    )
     public void someTest() {
         Assert.assertTrue(true);
     }
 
     @Test
     @TestSpec(
-        author = "Stefan Miklosovic",
-        assertion = "this test should pass",
-        feature = "tests if true returns true tests if true returns true "
-            + "tests if true returns true tests if true returns true "
-            + "tests if true returns true tests if true returns true "
-            + "tests if true returns true tests if true returns true",
-        issue = "ARQ-5",
-        prerequisites = "have java",
-        status = Status.MANUAL,
-        steps = "some steps",
-        test = "tests stuff"
-        )
+            author = "Stefan Miklosovic",
+            assertion = "this test should pass",
+            feature = "tests if true returns true tests if true returns true "
+                    + "tests if true returns true tests if true returns true "
+                    + "tests if true returns true tests if true returns true "
+                    + "tests if true returns true tests if true returns true",
+            issue = "ARQ-5",
+            prerequisites = "have java",
+            status = Status.MANUAL,
+            steps = "some steps",
+            test = "tests stuff"
+    )
     public void someTest2() {
         Assert.assertTrue(true);
     }

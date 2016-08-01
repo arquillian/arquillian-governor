@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -15,12 +15,6 @@
  * limitations under the License.
  */
 package org.arquillian.extension.governor.jira.impl;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.arquillian.extension.governor.api.ClosePassedDecider;
 import org.arquillian.extension.governor.api.GovernorRegistry;
@@ -42,12 +36,16 @@ import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision.Decision;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorProvider
-{
+public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorProvider {
     private static final Map<Method, Integer> lifecycleCountRegister = new HashMap<Method, Integer>();
 
     @Inject
@@ -59,73 +57,58 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
     private InstanceProducer<ClosePassedDecider> closePassedDecider;
 
     @Override
-    public ExecutionDecision decide(Method testMethod)
-    {
+    public ExecutionDecision decide(Method testMethod) {
         return TestMethodExecutionRegister.resolve(testMethod, provides());
     }
 
     @Override
-    public int precedence()
-    {
+    public int precedence() {
         return 0;
     }
 
     @Override
-    public Class<? extends Annotation> provides()
-    {
+    public Class<? extends Annotation> provides() {
         return Jira.class;
     }
 
-    public void on(@Observes ExecutionDecisionEvent event, JiraGovernorClient jiraGovernorClient)
-    {
-        ExecutionDecision executionDecision = this.executionDecision.get();
+    public void on(@Observes ExecutionDecisionEvent event, JiraGovernorClient jiraGovernorClient) {
+        final ExecutionDecision executionDecision = this.executionDecision.get();
 
-        if (executionDecision == null || executionDecision.getDecision() == Decision.DONT_EXECUTE)
-        {
+        if (executionDecision == null || executionDecision.getDecision() == Decision.DONT_EXECUTE) {
             return;
         }
 
-        if (event.getAnnotation().annotationType() == provides())
-        {
-            Jira jiraIssue = (Jira) event.getAnnotation();
+        if (event.getAnnotation().annotationType() == provides()) {
+            final Jira jiraIssue = (Jira) event.getAnnotation();
 
             this.executionDecision.set(jiraGovernorClient.resolve(jiraIssue));
         }
     }
 
     public void on(@Observes AfterTestLifecycleEvent event,
-        TestResult testResult,
-        GovernorRegistry governorRegistry,
-        JiraGovernorConfiguration jiraGovernorConfiguration)
-    {
+                   TestResult testResult,
+                   GovernorRegistry governorRegistry,
+                   JiraGovernorConfiguration jiraGovernorConfiguration) {
         int count = 0;
-        try
-        {
-            Integer c = lifecycleCountRegister.get(event.getTestMethod());
+        try {
+            final Integer c = lifecycleCountRegister.get(event.getTestMethod());
             count = (c != null ? c.intValue() : 0);
-            if (count == 0)
-            {//skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
+            if (count == 0) { //skip first event - see https://github.com/arquillian/arquillian-governor/pull/16#issuecomment-166590210
                 return;
             }
             final ExecutionDecision decision = TestMethodExecutionRegister.resolve(event.getTestMethod(), provides());
 
             // if we passed some test method annotated with Jira, we may eventually close it
 
-            if (jiraGovernorConfiguration.getClosePassed())
-            {
+            if (jiraGovernorConfiguration.getClosePassed()) {
                 // we decided we run this test method even it has annotation on it
                 if (decision.getDecision() == Decision.EXECUTE
-                    && (JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason()))
-                {
+                        && (JiraGovernorStrategy.FORCING_EXECUTION_REASON_STRING).equals(decision.getReason())) {
 
-                    for (Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet())
-                    {
-                        if (entry.getKey().toString().equals(event.getTestMethod().toString()))
-                        {
-                            for (Annotation annotation : entry.getValue())
-                            {
-                                if (annotation.annotationType() == provides())
-                                {
+                    for (final Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet()) {
+                        if (entry.getKey().toString().equals(event.getTestMethod().toString())) {
+                            for (final Annotation annotation : entry.getValue()) {
+                                if (annotation.annotationType() == provides()) {
                                     closePassedDecider.get().setClosable(annotation, testResult.getStatus() == Status.PASSED);
                                     return;
                                 }
@@ -134,17 +117,16 @@ public class JiraTestExecutionDecider implements TestExecutionDecider, GovernorP
                     }
                 }
             }
-        } finally
-        {
+        } finally {
             lifecycleCountRegister.put(event.getTestMethod(), ++count);
         }
     }
 
     public void on(@Observes AfterSuite event, JiraGovernorClient jiraGovernorClient) {
-        for (Map.Entry<Annotation, Boolean> entry : closePassedDecider.get().get().entrySet()) {
-            Annotation annotation = entry.getKey();
+        for (final Map.Entry<Annotation, Boolean> entry : closePassedDecider.get().get().entrySet()) {
+            final Annotation annotation = entry.getKey();
             if (annotation.annotationType() == provides() && entry.getValue()) {
-                String id = ((Jira) annotation).value();
+                final String id = ((Jira) annotation).value();
                 jiraGovernorClient.close(id);
             }
         }

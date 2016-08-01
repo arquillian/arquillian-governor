@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -17,9 +17,9 @@
 package org.arquillian.extension.governor.jira;
 
 
+import org.arquillian.extension.governor.api.detector.DeciderStrategy;
 import org.arquillian.extension.governor.api.detector.Detectable;
 import org.arquillian.extension.governor.api.detector.Detector;
-import org.arquillian.extension.governor.api.detector.DeciderStrategy;
 import org.arquillian.extension.governor.jira.api.Jira;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.junit.Arquillian;
@@ -38,14 +38,14 @@ public class ITJiraDetectorTest {
     private static final int EXPECTED_TESTS_COUNT = 5;
     private static volatile int TESTS_COUNT = 0;
 
-    @After
-    public void afterTest() {
-        TESTS_COUNT++;
-    }
-
     @AfterClass
     public static void verify() {
         Assert.assertEquals("Not all expected tests were executed", EXPECTED_TESTS_COUNT, TESTS_COUNT);
+    }
+
+    @After
+    public void afterTest() {
+        TESTS_COUNT++;
     }
 
     // Execute
@@ -79,7 +79,7 @@ public class ITJiraDetectorTest {
     // Execute
     @Test
     @Jira(value = RESOLVED_ISSUE,
-            detector = @Detector({ Detectable.True.class, Detectable.False.class })
+            detector = @Detector({Detectable.True.class, Detectable.False.class})
     )
     public void resolvedIssueDetectorsFailedTest() {
         Assert.assertTrue(true);
@@ -88,7 +88,7 @@ public class ITJiraDetectorTest {
     // Execute
     @Test
     @Jira(value = UNRESOLVED_ISSUE,
-            detector = @Detector({ Detectable.True.class, Detectable.False.class })
+            detector = @Detector({Detectable.True.class, Detectable.False.class})
     )
     public void unresolvedIssueDetectorsFailedTest() {
         Assert.assertTrue(true);
@@ -97,7 +97,7 @@ public class ITJiraDetectorTest {
     // Skip
     @Test
     @Jira(value = UNRESOLVED_ISSUE,
-            detector = @Detector({ Detectable.True.class, Detectable.True.class })
+            detector = @Detector({Detectable.True.class, Detectable.True.class})
     )
     public void unresolvedIssueDetectorsPassedTest() {
         Assert.assertTrue(false);
@@ -106,7 +106,7 @@ public class ITJiraDetectorTest {
     // Skip
     @Test
     @Jira(value = UNRESOLVED_ISSUE,
-            detector = @Detector(value = { Detectable.True.class, Detectable.False.class}, strategy = DeciderStrategy.Or.class)
+            detector = @Detector(value = {Detectable.True.class, Detectable.False.class}, strategy = DeciderStrategy.Or.class)
     )
     public void unresolvedIssueDetectorsFailedStrategyOrTest() {
         Assert.assertTrue(true);

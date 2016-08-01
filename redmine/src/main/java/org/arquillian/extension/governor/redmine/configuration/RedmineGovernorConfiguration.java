@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -21,10 +21,8 @@ import org.arquillian.extension.governor.api.GovernorConfigurationException;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
  */
-public class RedmineGovernorConfiguration extends Configuration
-{
+public class RedmineGovernorConfiguration extends Configuration {
     private static final String EMPTY_STRING = "";
 
     private static final String DEFAULT_REDMINE_CLOSING_MESSAGE = "This Redmine issue was automatically closed by %s with Arquillian Governor Redmine extension.";
@@ -42,106 +40,86 @@ public class RedmineGovernorConfiguration extends Configuration
 
     private String closeOrder = resolveCloseOrder();
 
-    private boolean resolveOpenFailed()
-    {
+    private boolean resolveOpenFailed() {
         return Boolean.valueOf(System.getProperty("redmine.governor.openfailed"));
     }
 
-    public String getApiKey()
-    {
+    public String getApiKey() {
         return getProperty("apikey", apiKey);
     }
 
-    public String getCloseOrder()
-    {
-        return getProperty("closeOrder", closeOrder);
-    }
-
-    public void setApiKey(String apiKey)
-    {
+    public void setApiKey(String apiKey) {
         setProperty("apikey", apiKey);
     }
 
-    public String getServer()
-    {
+    public String getCloseOrder() {
+        return getProperty("closeOrder", closeOrder);
+    }
+
+    public String getServer() {
         return getProperty("server", server);
     }
 
-    public void setServer(String server)
-    {
+    public void setServer(String server) {
         setProperty("server", server);
     }
 
-    public void setForce(boolean force)
-    {
-        setProperty("force", Boolean.toString(force));
-    }
-
-    public boolean getForce()
-    {
+    public boolean getForce() {
         return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
     }
 
-    public void setClosePassed(boolean closePassed)
-    {
-        setProperty("closePassed", Boolean.toString(closePassed));
+    public void setForce(boolean force) {
+        setProperty("force", Boolean.toString(force));
     }
 
-    public boolean getClosePassed()
-    {
+    public boolean getClosePassed() {
         return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
     }
 
-    public boolean getOpenFailed()
-    {
+    public void setClosePassed(boolean closePassed) {
+        setProperty("closePassed", Boolean.toString(closePassed));
+    }
+
+    public boolean getOpenFailed() {
         return Boolean.parseBoolean(getProperty("openFailed", Boolean.toString(openFailed)));
     }
 
-    public void setOpenFailed(boolean openFailed)
-    {
+    public void setOpenFailed(boolean openFailed) {
         setProperty("openFailed", Boolean.toString(openFailed));
     }
 
-    public void setClosingMessage(String closingMessage)
-    {
-        setProperty("closingMessage", closingMessage);
-    }
-
-    public String getClosingMessage()
-    {
+    public String getClosingMessage() {
         return getProperty("closingMessage", DEFAULT_REDMINE_CLOSING_MESSAGE);
     }
 
-    public String getOpeningMessage()
-    {
+    public void setClosingMessage(String closingMessage) {
+        setProperty("closingMessage", closingMessage);
+    }
+
+    public String getOpeningMessage() {
         return getProperty("openingMessage", DEFAULT_REDMINE_OPENING_MESSAGE);
     }
 
-    public void setOpeningMessage(String closingMessage)
-    {
+    public void setOpeningMessage(String closingMessage) {
         setProperty("openingMessage", closingMessage);
     }
 
     @Override
-    public void validate() throws GovernorConfigurationException
-    {
-        if (EMPTY_STRING.equals(getServer()))
-        {
+    public void validate() throws GovernorConfigurationException {
+        if (EMPTY_STRING.equals(getServer())) {
             // TODO provide more info on how to set the property
             throw new GovernorConfigurationException("Redmine server is not set.");
         }
 
-        if (EMPTY_STRING.equals(getApiKey()))
-        {
+        if (EMPTY_STRING.equals(getApiKey())) {
             throw new GovernorConfigurationException("Api key is not set.");
         }
 
     }
 
     @Override
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
 
         // password is not here due to security reasons
 
@@ -159,38 +137,31 @@ public class RedmineGovernorConfiguration extends Configuration
 
     // helpers
 
-    private String resolveApiKey()
-    {
+    private String resolveApiKey() {
         final String apiKey = System.getProperty("github.governor.apikey");
 
-        if (apiKey != null && !apiKey.trim().equals(""))
-        {
+        if (apiKey != null && !apiKey.trim().isEmpty()) {
             return apiKey;
         }
 
         return EMPTY_STRING;
     }
 
-    private String resolveCloseOrder()
-    {
+    private String resolveCloseOrder() {
         final String closeOrder = System.getProperty("github.governor.closeOrder");
 
-        if (closeOrder != null && !closeOrder.trim().equals(""))
-        {
+        if (closeOrder != null && !closeOrder.trim().isEmpty()) {
             return closeOrder;
         }
 
         return EMPTY_STRING;
     }
 
-    private String resolveServer()
-    {
+    private String resolveServer() {
         String server = System.getProperty("redmine.governor.server");
 
-        if (server != null && server.length() != 0)
-        {
-            if (server.endsWith("/"))
-            {
+        if (server != null && server.length() != 0) {
+            if (server.endsWith("/")) {
                 server = server.substring(0, server.length() - 1);
             }
             return server;
@@ -199,13 +170,11 @@ public class RedmineGovernorConfiguration extends Configuration
         return EMPTY_STRING;
     }
 
-    private boolean resolveForce()
-    {
+    private boolean resolveForce() {
         return Boolean.valueOf(System.getProperty("redmine.governor.force"));
     }
 
-    private boolean resolveClosePassed()
-    {
+    private boolean resolveClosePassed() {
         return Boolean.valueOf(System.getProperty("redmine.governor.closePassed"));
     }
 

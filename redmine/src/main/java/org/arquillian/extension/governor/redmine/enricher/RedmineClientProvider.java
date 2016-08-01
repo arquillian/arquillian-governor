@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,38 +16,32 @@
  */
 package org.arquillian.extension.governor.redmine.enricher;
 
-import java.lang.annotation.Annotation;
-
+import com.taskadapter.redmineapi.RedmineManager;
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 
-import com.taskadapter.redmineapi.RedmineManager;
+import java.lang.annotation.Annotation;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
  */
-public class RedmineClientProvider implements ResourceProvider
-{
+public class RedmineClientProvider implements ResourceProvider {
 
     @Inject
     private Instance<RedmineManager> redmineManager;
 
     @Override
-    public boolean canProvide(Class<?> type)
-    {
+    public boolean canProvide(Class<?> type) {
         return RedmineManager.class.isAssignableFrom(type);
     }
 
     @Override
-    public Object lookup(ArquillianResource resource, Annotation... qualifiers)
-    {
-        RedmineManager redmineManager = this.redmineManager.get();
+    public Object lookup(ArquillianResource resource, Annotation... qualifiers) {
+        final RedmineManager redmineManager = this.redmineManager.get();
 
-        if (redmineManager == null)
-        {
+        if (redmineManager == null) {
             throw new IllegalStateException("Redmine manager was not found.");
         }
 

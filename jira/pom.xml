@@ -9,8 +9,8 @@
     License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
     OF ANY KIND, either express or implied. See the License for the specific
     language governing permissions and limitations under the License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <!-- Model Version -->
     <modelVersion>4.0.0</modelVersion>
@@ -48,7 +48,7 @@
             <groupId>org.openengsb.wrapped</groupId>
             <artifactId>com.atlassian.jira.rest.client</artifactId>
             <version>${version.atlassian.jira}</version>
-        </dependency>   
+        </dependency>
 
         <!-- Arquillian test dependencies -->
         <dependency>
@@ -74,7 +74,7 @@
             <version>${version.arquillian.core}</version>
             <scope>test</scope>
             <classifier>tests</classifier>
-        </dependency>        
+        </dependency>
 
         <!-- logging -->
         <dependency>

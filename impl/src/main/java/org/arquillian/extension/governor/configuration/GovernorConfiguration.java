@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -22,50 +22,42 @@ import org.jboss.arquillian.core.spi.Validate;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class GovernorConfiguration extends Configuration
-{
+public class GovernorConfiguration extends Configuration {
+
     private boolean ignore = false;
 
     private String ignoreOnly = "";
 
-    public void setIgnore(boolean ignore)
-    {
-        setProperty("ignore", Boolean.toString(ignore));
-    }
-
-    public Boolean getIgnore()
-    {
+    public Boolean getIgnore() {
         return Boolean.valueOf(getProperty("ignore", Boolean.toString(ignore)));
     }
 
-    public void setIgnoreOnly(String ignoreOnly)
-    {
+    public void setIgnore(boolean ignore) {
+        setProperty("ignore", Boolean.toString(ignore));
+    }
+
+    public String getIgnoreOnly() {
+        return getProperty("ignoreOnly", ignoreOnly);
+    }
+
+    public void setIgnoreOnly(String ignoreOnly) {
         Validate.notNullOrEmpty(ignoreOnly, "ignoreOnly property can not be a null object nor an empty String.");
         setProperty("ignoreOnly", ignoreOnly);
     }
 
-    public String getIgnoreOnly()
-    {
-        return getProperty("ignoreOnly", ignoreOnly);
-    }
-
     @Override
-    public void validate() throws GovernorConfigurationException
-    {
-        if (getIgnore() && getIgnoreOnly() != null && getIgnoreOnly().length() != 0)
-        {
+    public void validate() throws GovernorConfigurationException {
+        if (getIgnore() && getIgnoreOnly() != null && getIgnoreOnly().length() != 0) {
             throw new GovernorConfigurationException("You have set 'ignore' property to true and you set 'ignoreOnly' as well. "
-                + "Either set 'ignore' and left ignoreOnly unset or left 'ignore' flag unset "
-                + "and set 'ignoreOnly' property.");
+                    + "Either set 'ignore' and left ignoreOnly unset or left 'ignore' flag unset "
+                    + "and set 'ignoreOnly' property.");
         }
     }
 
     @Override
-    public String toString()
-    {
-        StringBuilder sb = new StringBuilder();
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("%-40s %s\n", "ignore", getIgnore()));
         sb.append(String.format("%-40s %s\n", "ignoreOnly", getIgnoreOnly()));

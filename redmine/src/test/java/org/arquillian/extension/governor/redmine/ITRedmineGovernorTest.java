@@ -13,8 +13,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-public class ITRedmineGovernorTest
-{
+public class ITRedmineGovernorTest {
 
     @ArquillianResource
     RedmineManager redmineManager;
@@ -22,8 +21,7 @@ public class ITRedmineGovernorTest
     @Ignore("Will pass only if you have redmine setup locally")
     @Test
     @Redmine(value = "1", force = true)
-    public void closeIssue()
-    {
+    public void closeIssue() {
         // TODO test using cube and redmine docker image: https://github.com/sameersbn/docker-redmine
         assertThat(redmineManager, notNullValue());
     }
@@ -31,8 +29,7 @@ public class ITRedmineGovernorTest
     @Ignore("Will pass only if you have redmine setup locally")
     @Test
     @Redmine(value = "1", openFailed = true)
-    public void reOpenIssue()
-    {
+    public void reOpenIssue() {
         // TODO test using cube and redmine docker image: https://github.com/sameersbn/docker-redmine
         assertThat(redmineManager, nullValue());
     }
