@@ -17,6 +17,7 @@
 package org.arquillian.extension.governor.github.impl;
 
 import org.arquillian.extension.governor.api.GovernorStrategy;
+import org.arquillian.extension.governor.api.detector.DetectorProcessor;
 import org.eclipse.egit.github.core.Issue;
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
@@ -60,6 +61,11 @@ public class GitHubGovernorStrategy implements GovernorStrategy
     {
         Validate.notNull(gitHubIssue, "GitHub issue must be specified.");
         Validate.notNull(annotation, "Annotation must be specified.");
+
+        // Execute test if detector failed because GitHub issue is not related to specified environment.
+        if (!(new DetectorProcessor().process(annotation))) {
+            return ExecutionDecision.execute();
+        }
 
         String gitHubStatus = gitHubIssue.getState();
 

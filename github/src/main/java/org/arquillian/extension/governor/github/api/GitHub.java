@@ -17,6 +17,8 @@
 package org.arquillian.extension.governor.github.api;
 
 import org.arquillian.extension.governor.api.Governor;
+import org.arquillian.extension.governor.api.detector.Detectable;
+import org.arquillian.extension.governor.api.detector.Detector;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -39,4 +41,6 @@ public @interface GitHub
     String value() default "";
 
     boolean force() default false;
+
+    Detector detector() default @Detector(value = Detectable.True.class);
 }
