@@ -16,13 +16,15 @@
  */
 package org.arquillian.extension.governor.jira.impl;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.arquillian.extension.governor.api.GovernorStrategy;
+import org.arquillian.extension.governor.api.detector.DetectorProcessor;
 import org.arquillian.extension.governor.jira.api.Jira;
 import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
@@ -30,6 +32,8 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
  */
 public class JiraGovernorStrategy implements GovernorStrategy
 {
+    private static final Logger logger = Logger.getLogger(JiraGovernorStrategy.class.getName());
+
     private final JiraGovernorConfiguration jiraGovernorConfiguration;
 
     private Issue jiraIssue;
@@ -67,6 +71,11 @@ public class JiraGovernorStrategy implements GovernorStrategy
     {
         Validate.notNull(jiraIssue, "Jira issue must be specified.");
         Validate.notNull(annotation, "Annotation must be specified.");
+
+        // Execute test if detector failed because Jira is not related to specified environment.
+        if (!(new DetectorProcessor().process(annotation))) {
+            return ExecutionDecision.execute();
+        }
 
         String jiraStatus = jiraIssue.getStatus().getName();
 
