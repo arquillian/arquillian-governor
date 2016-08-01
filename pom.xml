@@ -81,6 +81,7 @@
         <version.hamcrest>1.0.0.0</version.hamcrest>
         <version.maven.animal.sniffer>1.13</version.maven.animal.sniffer>
         <version.signature>1.1</version.signature>
+        <version.commons.lang>3.4</version.commons.lang>
         
         <!-- logging -->
         <versions.log4j>1.2.17</versions.log4j>
@@ -139,6 +140,11 @@
                 <artifactId>hamcrest-junit</artifactId>
                 <version>${version.hamcrest}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${version.commons.lang}</version>
             </dependency>
 
             <!-- logging -->
