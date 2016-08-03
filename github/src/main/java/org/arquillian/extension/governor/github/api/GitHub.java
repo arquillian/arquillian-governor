@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -17,6 +17,8 @@
 package org.arquillian.extension.governor.github.api;
 
 import org.arquillian.extension.governor.api.Governor;
+import org.arquillian.extension.governor.api.detector.Detectable;
+import org.arquillian.extension.governor.api.detector.Detector;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -28,15 +30,15 @@ import java.lang.annotation.Target;
  * Place this annotation on a test method with GitHub issue (e.g. {@literal @GitHub("#1")})
  *
  * @author <a href="mailto:asotobu@gmail.com">Alex Soto</a>
- *
  */
 @Governor
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Documented
-public @interface GitHub
-{
+public @interface GitHub {
     String value() default "";
 
     boolean force() default false;
+
+    Detector detector() default @Detector(value = Detectable.True.class);
 }

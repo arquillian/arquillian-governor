@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -18,11 +18,10 @@ package org.arquillian.extension.governor.redmine.api;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
+ *         <p>
  *         http://demo.redmine.org/issue_statuses.xml
  */
-public enum IssueStatus
-{
+public enum IssueStatus {
     NEW(1),
     IN_PROGRESS(2),
     RESOLVED(3),
@@ -30,18 +29,15 @@ public enum IssueStatus
 
     private final Integer statusCode;
 
-    IssueStatus(int statusCode)
-    {
+    IssueStatus(int statusCode) {
         this.statusCode = statusCode;
     }
 
-    public Integer getStatusCode()
-    {
-        return statusCode;
+    public static boolean isClosed(Integer statusCode) {
+        return CLOSED.getStatusCode().equals(statusCode);
     }
 
-    public static boolean isClosed(Integer statusCode)
-    {
-        return CLOSED.getStatusCode().equals(statusCode);
+    public Integer getStatusCode() {
+        return statusCode;
     }
 }

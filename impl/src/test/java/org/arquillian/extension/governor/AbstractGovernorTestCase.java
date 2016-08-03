@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,8 +16,6 @@
  */
 package org.arquillian.extension.governor;
 
-import java.util.List;
-
 import org.jboss.arquillian.core.spi.Manager;
 import org.jboss.arquillian.core.spi.context.Context;
 import org.jboss.arquillian.core.test.AbstractManagerTestBase;
@@ -28,15 +26,14 @@ import org.jboss.arquillian.test.spi.context.ClassContext;
 import org.jboss.arquillian.test.spi.context.SuiteContext;
 import org.jboss.arquillian.test.spi.context.TestContext;
 
+import java.util.List;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public abstract class AbstractGovernorTestCase extends AbstractManagerTestBase
-{
+public abstract class AbstractGovernorTestCase extends AbstractManagerTestBase {
     @Override
-    protected void addContexts(List<Class<? extends Context>> contexts)
-    {
+    protected void addContexts(List<Class<? extends Context>> contexts) {
         super.addContexts(contexts);
         contexts.add(SuiteContextImpl.class);
         contexts.add(ClassContextImpl.class);
@@ -44,8 +41,7 @@ public abstract class AbstractGovernorTestCase extends AbstractManagerTestBase
     }
 
     @Override
-    protected void startContexts(Manager manager)
-    {
+    protected void startContexts(Manager manager) {
         super.startContexts(manager);
         manager.getContext(SuiteContext.class).activate();
         manager.getContext(ClassContext.class).activate(super.getClass());

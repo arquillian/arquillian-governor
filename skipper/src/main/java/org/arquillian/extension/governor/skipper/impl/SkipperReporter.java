@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,9 +16,6 @@
  */
 package org.arquillian.extension.governor.skipper.impl;
 
-import java.io.File;
-import java.util.List;
-
 import org.arquillian.extension.governor.skipper.api.TestSpec;
 import org.arquillian.extension.governor.skipper.config.SkipperConfiguration;
 import org.arquillian.recorder.reporter.ReporterConfiguration;
@@ -33,9 +30,11 @@ import org.jboss.arquillian.test.spi.event.suite.AfterClass;
 import org.jboss.arquillian.test.spi.event.suite.AfterSuite;
 import org.jboss.arquillian.test.spi.event.suite.BeforeSuite;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class SkipperReporter {
 
@@ -56,12 +55,12 @@ public class SkipperReporter {
     private InstanceProducer<AsciidocExporter> asciiDocExporter;
 
     public void on(@Observes BeforeSuite beforeSuite) {
-        SkipperConfiguration skipperConfiguration = this.skipperConfiguration.get();
-        ReporterConfiguration reporterConfiguration = this.reporterConfiguration.get();
+        final SkipperConfiguration skipperConfiguration = this.skipperConfiguration.get();
+        final ReporterConfiguration reporterConfiguration = this.reporterConfiguration.get();
 
         if (reporterConfiguration == null) {
             throw new IllegalStateException("ReporterConfiguration was not injected. Be sure you have Arquillian Recorder "
-                + "Reporter implementation on class path.");
+                    + "Reporter implementation on class path.");
         }
 
         File adocExportFile = null;
@@ -71,14 +70,14 @@ public class SkipperReporter {
         }
 
         if (adocExportFile != null) {
-            AsciidocExporter asciidocExporter = new AsciidocExporter(adocExportFile);
+            final AsciidocExporter asciidocExporter = new AsciidocExporter(adocExportFile);
             this.asciiDocExporter.set(asciidocExporter);
         }
     }
 
     public void on(@Observes AfterClass afterClass) {
 
-        List<TestSpec> testSpecs = holder.get().getAll();
+        final List<TestSpec> testSpecs = holder.get().getAll();
 
         if (this.asciiDocExporter.get() != null) {
             this.asciiDocExporter.get().append(testSpecs, afterClass.getTestClass().getJavaClass().getCanonicalName());

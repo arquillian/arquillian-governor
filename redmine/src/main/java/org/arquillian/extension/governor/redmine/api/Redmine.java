@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,28 +16,25 @@
  */
 package org.arquillian.extension.governor.redmine.api;
 
+import org.arquillian.extension.governor.api.Governor;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.arquillian.extension.governor.api.Governor;
-
 /**
  * Place this annotation on a test method with Redmine issue (e.g. {@literal @Redmine(1)})
  *
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
  */
 @Governor
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Documented
-public @interface Redmine
-{
+public @interface Redmine {
     /**
-     *
      * @return issue ID number
      */
     String value() default "";
@@ -45,7 +42,6 @@ public @interface Redmine
     boolean force() default false;
 
     /**
-     *
      * @return if TRUE the issue will be reopened if it is closed and test fails.
      */
     boolean openFailed() default false;

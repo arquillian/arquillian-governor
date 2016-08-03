@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,77 +16,69 @@
  */
 package org.arquillian.extension.governor.jira.impl;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.arquillian.extension.governor.api.GovernorStrategy;
+import org.arquillian.extension.governor.api.detector.DetectorProcessor;
 import org.arquillian.extension.governor.jira.api.Jira;
 import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
 import org.jboss.arquillian.core.spi.Validate;
 import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class JiraGovernorStrategy implements GovernorStrategy
-{
+public class JiraGovernorStrategy implements GovernorStrategy {
+    public static final String FORCING_EXECUTION_REASON_STRING = "forcing execution";
+    public static final String SKIPPING_EXECUTION_REASON_STRING = "Skipping %s. Status %s.";
+    public static final String JIRA_CLOSED_STRING = "Closed";
+    public static final String JIRA_RESOLVED_STRING = "Resolved";
+    private static final Logger logger = Logger.getLogger(JiraGovernorStrategy.class.getName());
     private final JiraGovernorConfiguration jiraGovernorConfiguration;
-
     private Issue jiraIssue;
-
     private Jira annotation;
 
-    public static final String FORCING_EXECUTION_REASON_STRING = "forcing execution";
-
-    public static final String SKIPPING_EXECUTION_REASON_STRING = "Skipping %s. Status %s.";
-
-    public static final String JIRA_CLOSED_STRING = "Closed";
-
-    public static final String JIRA_RESOLVED_STRING = "Resolved";
-
-    public JiraGovernorStrategy(JiraGovernorConfiguration jiraGovernorConfiguration)
-    {
+    public JiraGovernorStrategy(JiraGovernorConfiguration jiraGovernorConfiguration) {
         Validate.notNull(jiraGovernorConfiguration, "Jira Governor configuration has to be set.");
         this.jiraGovernorConfiguration = jiraGovernorConfiguration;
     }
 
-    public JiraGovernorStrategy issue(Issue jiraIssue)
-    {
+    public JiraGovernorStrategy issue(Issue jiraIssue) {
         this.jiraIssue = jiraIssue;
         return this;
     }
 
-    public JiraGovernorStrategy annotation(Jira annotation)
-    {
+    public JiraGovernorStrategy annotation(Jira annotation) {
         this.annotation = annotation;
         return this;
     }
 
     @Override
-    public ExecutionDecision resolve()
-    {
+    public ExecutionDecision resolve() {
         Validate.notNull(jiraIssue, "Jira issue must be specified.");
         Validate.notNull(annotation, "Annotation must be specified.");
 
-        String jiraStatus = jiraIssue.getStatus().getName();
-
-        if (jiraStatus == null || jiraStatus.length() == 0)
-        {
+        // Execute test if detector failed because Jira is not related to specified environment.
+        if (!(new DetectorProcessor().process(annotation))) {
             return ExecutionDecision.execute();
         }
 
-        if (annotation.force())
-        {
+        final String jiraStatus = jiraIssue.getStatus().getName();
+
+        if (jiraStatus == null || jiraStatus.length() == 0) {
+            return ExecutionDecision.execute();
+        }
+
+        if (annotation.force()) {
             return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
         }
 
-        if (jiraGovernorConfiguration.getForce())
-        {
+        if (jiraGovernorConfiguration.getForce()) {
             return ExecutionDecision.execute(FORCING_EXECUTION_REASON_STRING);
         }
 
-        if (jiraStatus.equals(JIRA_CLOSED_STRING) || jiraStatus.equals(JIRA_RESOLVED_STRING))
-        {
+        if (jiraStatus.equals(JIRA_CLOSED_STRING) || jiraStatus.equals(JIRA_RESOLVED_STRING)) {
             return ExecutionDecision.execute();
         }
 

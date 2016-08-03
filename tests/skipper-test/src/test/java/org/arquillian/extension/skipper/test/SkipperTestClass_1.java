@@ -1,4 +1,5 @@
 package org.arquillian.extension.skipper.test;
+
 import org.arquillian.extension.governor.skipper.api.Status;
 import org.arquillian.extension.governor.skipper.api.TestSpec;
 import org.junit.Assert;
@@ -6,7 +7,7 @@ import org.junit.Test;
 
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -23,68 +24,67 @@ import org.junit.Test;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class SkipperTestClass_1 extends AbstractArquillianClass {
 
     @Test
     @TestSpec(
-        author = "Stefan Miklosovic",
-        assertion = "this test should pass",
-        feature = "tests if true returns true",
-        issue = "ARQ-1",
-        prerequisites = "have java",
-        status = Status.AUTOMATED,
-        test = "tests stuff"
-        )
+            author = "Stefan Miklosovic",
+            assertion = "this test should pass",
+            feature = "tests if true returns true",
+            issue = "ARQ-1",
+            prerequisites = "have java",
+            status = Status.AUTOMATED,
+            test = "tests stuff"
+    )
     public void someTest() {
         Assert.assertTrue(true);
     }
 
     @Test
     @TestSpec(
-        author = "Stefan Miklosovic",
-        assertion = "this test should pass",
-        feature = "tests if true returns true tests if true returns true "
-            + "tests if true returns true tests if true returns true "
-            + "tests if true returns true tests if true returns true "
-            + "tests if true returns true tests if true returns true",
-        issue = "ARQ-2",
-        prerequisites = "have java",
-        status = Status.MANUAL,
-        steps = { "some step", "another step", "final step" },
-        test = "tests stuff"
-        )
+            author = "Stefan Miklosovic",
+            assertion = "this test should pass",
+            feature = "tests if true returns true tests if true returns true "
+                    + "tests if true returns true tests if true returns true "
+                    + "tests if true returns true tests if true returns true "
+                    + "tests if true returns true tests if true returns true",
+            issue = "ARQ-2",
+            prerequisites = "have java",
+            status = Status.MANUAL,
+            steps = {"some step", "another step", "final step"},
+            test = "tests stuff"
+    )
     public void someTest2() {
         Assert.assertTrue(true);
     }
 
     @Test
     @TestSpec(
-        author = "Stefan Miklosovic",
-        assertion = "this test should pass",
-        feature = "tests if true returns true",
-        issue = "ARQ-3",
-        prerequisites = "have java",
-        status = Status.AUTOMATED,
-        steps = { "this issue", "have four", "execution", "steps" },
-        test = "tests stuff"
-        )
+            author = "Stefan Miklosovic",
+            assertion = "this test should pass",
+            feature = "tests if true returns true",
+            issue = "ARQ-3",
+            prerequisites = "have java",
+            status = Status.AUTOMATED,
+            steps = {"this issue", "have four", "execution", "steps"},
+            test = "tests stuff"
+    )
     public void someTest3() {
         Assert.assertTrue(true);
     }
 
     @Test
     @TestSpec(
-        author = "Stefan Miklosovic",
-        assertion = "this test should pass",
-        feature = "tests if true returns true",
-        issue = "ARQ-4",
-        prerequisites = "have java",
-        status = Status.MANUAL,
-        steps = { "long step 1 long step 1 long step 1 long step 1", "long step 2 long step 2 long step 2 long step 2", },
-        test = "tests stuff"
-        )
+            author = "Stefan Miklosovic",
+            assertion = "this test should pass",
+            feature = "tests if true returns true",
+            issue = "ARQ-4",
+            prerequisites = "have java",
+            status = Status.MANUAL,
+            steps = {"long step 1 long step 1 long step 1 long step 1", "long step 2 long step 2 long step 2 long step 2",},
+            test = "tests stuff"
+    )
     public void someTest4() {
         Assert.assertTrue(true);
     }

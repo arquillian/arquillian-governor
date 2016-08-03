@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -30,13 +30,10 @@ import java.util.List;
 
 /**
  * @author <a href="mailto:rmpestano@gmail.com">Rafael Pestano</a>
- *
  */
-public abstract class AbstractGovernorTestCase extends AbstractManagerTestBase
-{
+public abstract class AbstractGovernorTestCase extends AbstractManagerTestBase {
     @Override
-    protected void addContexts(List<Class<? extends Context>> contexts)
-    {
+    protected void addContexts(List<Class<? extends Context>> contexts) {
         super.addContexts(contexts);
         contexts.add(SuiteContextImpl.class);
         contexts.add(ClassContextImpl.class);
@@ -44,8 +41,7 @@ public abstract class AbstractGovernorTestCase extends AbstractManagerTestBase
     }
 
     @Override
-    protected void startContexts(Manager manager)
-    {
+    protected void startContexts(Manager manager) {
         super.startContexts(manager);
         manager.getContext(SuiteContext.class).activate();
         manager.getContext(ClassContext.class).activate(super.getClass());

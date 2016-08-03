@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -15,21 +15,6 @@
  * limitations under the License.
  */
 package org.arquillian.extension.governor.jira;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.configuration.GovernorConfiguration;
@@ -63,17 +48,30 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 /**
  * This test is ignored by default, it needs your credentials provided as 'jira.governor.password' and 'jira.governor.username'
  * to your JIRA account, by default on 'https://issues.jboss.org'. Server can be overriden by 'jira.governor.address' property.
  *
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 @RunWith(MockitoJUnitRunner.class)
 @Ignore
-public class JiraGovernorTestCase extends AbstractGovernorTestCase
-{
+public class JiraGovernorTestCase extends AbstractGovernorTestCase {
     private static final String DEFAULT_JIRA_SERVER_ADDRESS = "https://issues.jboss.org";
 
     private static String JIRA_SERVER_ADDRESS;
@@ -95,18 +93,63 @@ public class JiraGovernorTestCase extends AbstractGovernorTestCase
 
     private Manager manager;
 
-    private GovernorProvider governorProvider = new GovernorProvider()
-    {
+    private GovernorProvider governorProvider = new GovernorProvider() {
         @Override
-        public Class<? extends Annotation> provides()
-        {
+        public Class<? extends Annotation> provides() {
             return Jira.class;
         }
     };
 
+    @org.junit.BeforeClass
+    public static void setupClass() throws Exception {
+        JIRA_SERVER_ADDRESS = resolveJiraServerAddress();
+        USERNAME = getUsername();
+        PASSWORD = getPassword();
+    }
+
+    private static String resolveJiraServerAddress() {
+        final String jiraServerAddressProperty = System.getProperty("jira.governor.address");
+
+        if (jiraServerAddressProperty == null || jiraServerAddressProperty.isEmpty()) {
+            return DEFAULT_JIRA_SERVER_ADDRESS;
+        }
+
+        try {
+            new URI(jiraServerAddressProperty);
+            new URL(jiraServerAddressProperty);
+        } catch (URISyntaxException ex) {
+            return DEFAULT_JIRA_SERVER_ADDRESS;
+        } catch (MalformedURLException ex) {
+            return DEFAULT_JIRA_SERVER_ADDRESS;
+        }
+
+        return jiraServerAddressProperty;
+    }
+
+    private static String getPassword() throws Exception {
+        final String password = System.getProperty("jira.governor.password");
+
+        if (password == null || password.length() == 0) {
+            throw new Exception("You have to provide your JIRA password as system property 'jira.governor.password' to this test.");
+        }
+
+        return password;
+    }
+
+    private static String getUsername() throws Exception {
+        final String username = System.getProperty("jira.governor.username");
+
+        if (username == null || username.length() == 0) {
+            throw new Exception("You have to provide your JIRA username as system property 'jira.governor.username' to this test.");
+        }
+
+        return username;
+    }
+
+    // utils
+
     @Override
-    public void addExtensions(List<Class<?>> extensions)
-    {
+    public void addExtensions(List<Class<?>> extensions) {
         extensions.add(JiraGovernorConfigurator.class);
         extensions.add(JiraTestExecutionDecider.class);
         extensions.add(GovernorTestClassScanner.class);
@@ -114,21 +157,14 @@ public class JiraGovernorTestCase extends AbstractGovernorTestCase
         extensions.add(GovernorConfigurator.class);
     }
 
-    @org.junit.BeforeClass
-    public static void setupClass() throws Exception
-    {
-        JIRA_SERVER_ADDRESS = resolveJiraServerAddress();
-        USERNAME = getUsername();
-        PASSWORD = getPassword();
-    }
+    // helpers
 
     @Before
-    public void setup() throws Exception
-    {
+    public void setup() throws Exception {
 
         serviceProducer.set(serviceLoader);
 
-        List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
+        final List<GovernorProvider> governorProviders = new ArrayList<GovernorProvider>();
         governorProviders.add(governorProvider);
 
         Mockito.when(serviceLoader.all(GovernorProvider.class)).thenReturn(governorProviders);
@@ -146,102 +182,47 @@ public class JiraGovernorTestCase extends AbstractGovernorTestCase
 
         bind(ApplicationScoped.class, JiraGovernorConfiguration.class, jiraGovernorConfiguration);
 
-        JiraGovernorClient jiraGovernorClient = new JiraGovernorClientFactory().build(jiraGovernorConfiguration);
+        final JiraGovernorClient jiraGovernorClient = new JiraGovernorClientFactory().build(jiraGovernorConfiguration);
         bind(ApplicationScoped.class, JiraGovernorClient.class, jiraGovernorClient);
     }
 
     @Test
-    public void jiraGovernorTest()
-    {
+    public void jiraGovernorTest() {
         fire(new BeforeClass(FakeTestClass.class));
 
         assertEventFired(BeforeClass.class, 1);
         assertEventFired(DecideMethodExecutions.class, 1);
 
-        GovernorRegistry governorRegistry = manager.getContext(ClassContext.class).getObjectStore().get(GovernorRegistry.class);
+        final GovernorRegistry governorRegistry = manager.getContext(ClassContext.class).getObjectStore().get(GovernorRegistry.class);
         assertThat(governorRegistry, is(not(nullValue())));
 
-        GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
+        final GovernorConfiguration configuration = manager.getContext(ApplicationContext.class).getObjectStore().get(GovernorConfiguration.class);
         assertThat(configuration, is(not(nullValue())));
 
-        JiraGovernorConfiguration jiraConfiguration = manager.getContext(ApplicationContext.class).getObjectStore().get(JiraGovernorConfiguration.class);
+        final JiraGovernorConfiguration jiraConfiguration = manager.getContext(ApplicationContext.class).getObjectStore().get(JiraGovernorConfiguration.class);
         assertThat(jiraConfiguration, is(not(nullValue())));
 
-        List<Method> jiraMethods = governorRegistry.getMethodsForAnnotation(Jira.class);
+        final List<Method> jiraMethods = governorRegistry.getMethodsForAnnotation(Jira.class);
         assertEquals(1, jiraMethods.size());
 
         // for every method and for every Governor annotation of that method
         assertEventFired(ExecutionDecisionEvent.class, 1);
 
-        ExecutionDecision decision = manager.getContext(ClassContext.class).getObjectStore().get(ExecutionDecision.class);
+        final ExecutionDecision decision = manager.getContext(ClassContext.class).getObjectStore().get(ExecutionDecision.class);
 
         assertThat(decision, is(not(nullValue())));
         assertEquals(decision.getDecision(), Decision.EXECUTE);
     }
 
-    // utils
-
-    private static final class FakeTestClass
-    {
+    private static final class FakeTestClass {
         @Test
         @Jira("ARQ-1")
-        public void fakeTest()
-        {
+        public void fakeTest() {
             // this will be run becase it is Closed
         }
 
         @Test
-        public void someTestMethod()
-        {
+        public void someTestMethod() {
         }
-    }
-
-    // helpers
-
-    private static String resolveJiraServerAddress()
-    {
-        String jiraServerAddressProperty = System.getProperty("jira.governor.address");
-
-        if (jiraServerAddressProperty == null || jiraServerAddressProperty.isEmpty())
-        {
-            return DEFAULT_JIRA_SERVER_ADDRESS;
-        }
-
-        try
-        {
-            new URI(jiraServerAddressProperty);
-            new URL(jiraServerAddressProperty);
-        } catch (URISyntaxException ex)
-        {
-            return DEFAULT_JIRA_SERVER_ADDRESS;
-        } catch (MalformedURLException ex) {
-            return DEFAULT_JIRA_SERVER_ADDRESS;
-        }
-
-        return jiraServerAddressProperty;
-    }
-
-    private static String getPassword() throws Exception
-    {
-        String password = System.getProperty("jira.governor.password");
-
-        if (password == null || password.length() == 0)
-        {
-            throw new Exception("You have to provide your JIRA password as system property 'jira.governor.password' to this test.");
-        }
-
-        return password;
-    }
-
-    private static String getUsername() throws Exception
-    {
-        String username = System.getProperty("jira.governor.username");
-
-        if (username == null || username.length() == 0)
-        {
-            throw new Exception("You have to provide your JIRA username as system property 'jira.governor.username' to this test.");
-        }
-
-        return username;
     }
 }

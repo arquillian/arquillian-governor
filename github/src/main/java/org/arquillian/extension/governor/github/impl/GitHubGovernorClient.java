@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -31,10 +31,8 @@ import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:asotobu@gmail.com">Alex Soto</a>
- *
  */
-public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovernorStrategy>
-{
+public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovernorStrategy> {
     private static final Logger logger = Logger.getLogger(GitHubGovernorClient.class.getName());
 
     private GitHubClient gitHubClient;
@@ -48,23 +46,20 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
     }
 
     @Override
-    public ExecutionDecision resolve(GitHub annotation)
-    {
+    public ExecutionDecision resolve(GitHub annotation) {
         Validate.notNull(gitHubClient, "GitHub REST client must be specified.");
         Validate.notNull(gitHubGovernorStrategy, "Governor strategy must be specified. Have you already called setGovernorStrategy()?");
 
         final String gitHubIssueKey = annotation.value();
 
-        if (gitHubIssueKey == null || gitHubIssueKey.length() == 0)
-        {
+        if (gitHubIssueKey == null || gitHubIssueKey.length() == 0) {
             return ExecutionDecision.execute();
         }
 
         final Issue gitHubIssue = getIssue(gitHubIssueKey);
 
         // when there is some error while we are getting the issue, we execute that test
-        if (gitHubIssue == null)
-        {
+        if (gitHubIssue == null) {
             logger.warning(String.format("GitHub Issue %s couldn't be retrieved from configured repository.", gitHubIssueKey));
             return ExecutionDecision.execute();
         }
@@ -73,22 +68,19 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
     }
 
     @Override
-    public void close(String issueId)
-    {
+    public void close(String issueId) {
         Validate.notNull(gitHubClient, "GitHub REST client must be specified.");
 
         Comment comment = null;
 
-        try
-        {
-            Issue issue = getIssue(issueId);
+        try {
+            final Issue issue = getIssue(issueId);
             issue.setState(IssueService.STATE_CLOSED);
             comment =
-                this.issueService.createComment(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issueId,
-                    getClosingMessage());
+                    this.issueService.createComment(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issueId,
+                            getClosingMessage());
             this.issueService.editIssue(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issue);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             if (comment != null) {
                 deleteComment(comment);
             }
@@ -105,25 +97,21 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
     }
 
     @Override
-    public void setGovernorStrategy(GitHubGovernorStrategy strategy)
-    {
+    public void setGovernorStrategy(GitHubGovernorStrategy strategy) {
         Validate.notNull(strategy, "GitHub Governor strategy must be specified.");
         this.gitHubGovernorStrategy = strategy;
     }
 
-    public GitHubClient getGitHubClient()
-    {
+    public GitHubClient getGitHubClient() {
         return gitHubClient;
     }
 
-    private void setConfiguration(GitHubGovernorConfiguration gitHubGovernorConfiguration)
-    {
+    private void setConfiguration(GitHubGovernorConfiguration gitHubGovernorConfiguration) {
         Validate.notNull(gitHubGovernorConfiguration, "GitHub Governor configuration must be specified.");
         this.gitHubGovernorConfiguration = gitHubGovernorConfiguration;
     }
 
-    private void initializeGitHubClient(final GitHubClient gitHubClient)
-    {
+    private void initializeGitHubClient(final GitHubClient gitHubClient) {
         Validate.notNull(gitHubClient, "GitHub client must be specified.");
         this.gitHubClient = gitHubClient;
 
@@ -131,18 +119,15 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
     }
 
     private Issue getIssue(String issueNumber) {
-        try
-        {
+        try {
             return this.issueService.getIssue(this.gitHubGovernorConfiguration.getRepositoryUser(), this.gitHubGovernorConfiguration.getRepository(), issueNumber);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             logger.warning(String.format("An exception has occured while getting the issue %s. Exception: %s", issueNumber, e.getMessage()));
             return null;
         }
     }
 
-    private String getClosingMessage()
-    {
+    private String getClosingMessage() {
         Validate.notNull(gitHubGovernorConfiguration, "GitHub Governor configuration must be set.");
 
         String username = gitHubGovernorConfiguration.getUsername();
@@ -150,7 +135,7 @@ public class GitHubGovernorClient implements GovernorClient<GitHub, GitHubGovern
         if (username == null || username.isEmpty()) {
             username = "unknown";
         }
-        
+
         return String.format(gitHubGovernorConfiguration.getClosingMessage(), username);
     }
 

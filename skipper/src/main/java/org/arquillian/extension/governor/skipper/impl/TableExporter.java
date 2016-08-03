@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,34 +16,33 @@
  */
 package org.arquillian.extension.governor.skipper.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.arquillian.extension.governor.skipper.api.Status;
 import org.arquillian.extension.governor.skipper.api.TestSpec;
 import org.arquillian.recorder.reporter.model.entry.table.TableCellEntry;
 import org.arquillian.recorder.reporter.model.entry.table.TableEntry;
 import org.arquillian.recorder.reporter.model.entry.table.TableRowEntry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class TableExporter {
 
     public TableEntry constructReportTable(List<TestSpec> testSpecs) {
-        TableEntry tableEntry = new TableEntry();
+        final TableEntry tableEntry = new TableEntry();
 
-        TableRowEntry pendingRow = constructPendingRow(testSpecs);
+        final TableRowEntry pendingRow = constructPendingRow(testSpecs);
 
         tableEntry.getTableBody().addRow(pendingRow);
 
         // manual first
 
-        for (TestSpec testSpec : testSpecs) {
+        for (final TestSpec testSpec : testSpecs) {
             if (testSpec.status() == Status.MANUAL) {
-                for (TableRowEntry row : constructReportRows(testSpec)) {
+                for (final TableRowEntry row : constructReportRows(testSpec)) {
                     tableEntry.getTableBody().addRow(row);
                 }
 
@@ -53,9 +52,9 @@ public class TableExporter {
 
         // automated after
 
-        for (TestSpec testSpec : testSpecs) {
+        for (final TestSpec testSpec : testSpecs) {
             if (testSpec.status() == Status.AUTOMATED) {
-                for (TableRowEntry row : constructReportRows(testSpec)) {
+                for (final TableRowEntry row : constructReportRows(testSpec)) {
                     tableEntry.getTableBody().addRow(row);
                 }
 
@@ -67,18 +66,18 @@ public class TableExporter {
     }
 
     private void addDummyRow(TableEntry tableEntry) {
-        TableRowEntry dummyRow = new TableRowEntry();
+        final TableRowEntry dummyRow = new TableRowEntry();
         dummyRow.addCell(new TableCellEntry("---------------"));
         dummyRow.addCell(new TableCellEntry("---------------"));
         tableEntry.getTableBody().addRow(dummyRow); // dummy row to separate reports
     }
 
     private TableRowEntry constructPendingRow(List<TestSpec> testSpecs) {
-        TableRowEntry row = new TableRowEntry();
+        final TableRowEntry row = new TableRowEntry();
 
         int pending = 0;
 
-        for (TestSpec testSpec : testSpecs) {
+        for (final TestSpec testSpec : testSpecs) {
             if (testSpec.status() == Status.MANUAL) {
                 pending++;
             }
@@ -90,43 +89,43 @@ public class TableExporter {
     }
 
     private List<TableRowEntry> constructReportRows(TestSpec testSpec) {
-        List<TableRowEntry> rows = new ArrayList<TableRowEntry>();
+        final List<TableRowEntry> rows = new ArrayList<TableRowEntry>();
 
-        TableRowEntry featureRow = new TableRowEntry();
+        final TableRowEntry featureRow = new TableRowEntry();
         featureRow.addCells(new TableCellEntry("feature"), new TableCellEntry(testSpec.feature()));
 
-        TableRowEntry testRow = new TableRowEntry();
+        final TableRowEntry testRow = new TableRowEntry();
         testRow.addCells(new TableCellEntry("test"), new TableCellEntry(testSpec.test()));
 
-        TableRowEntry prerequisities = new TableRowEntry();
+        final TableRowEntry prerequisities = new TableRowEntry();
         prerequisities.addCells(new TableCellEntry("prerequisities"), new TableCellEntry(testSpec.prerequisites()));
 
-        List<TableRowEntry> stepRows = new ArrayList<TableRowEntry>();
+        final List<TableRowEntry> stepRows = new ArrayList<TableRowEntry>();
 
-        List<String> stepsList = new ArrayList<String>(Arrays.asList(testSpec.steps()));
+        final List<String> stepsList = new ArrayList<String>(Arrays.asList(testSpec.steps()));
 
         if (!stepsList.isEmpty() && !stepsList.get(0).isEmpty()) {
-            TableRowEntry stepRow = new TableRowEntry();
+            final TableRowEntry stepRow = new TableRowEntry();
             stepRow.addCells(new TableCellEntry("steps"), new TableCellEntry(stepsList.get(0)));
             stepRows.add(stepRow);
             stepsList.remove(0);
-            for (String step : stepsList) {
-                TableRowEntry stepRowEntry = new TableRowEntry();
+            for (final String step : stepsList) {
+                final TableRowEntry stepRowEntry = new TableRowEntry();
                 stepRowEntry.addCells(new TableCellEntry(""), new TableCellEntry(step));
                 stepRows.add(stepRowEntry);
             }
         }
 
-        TableRowEntry assertion = new TableRowEntry();
+        final TableRowEntry assertion = new TableRowEntry();
         assertion.addCells(new TableCellEntry("assertion"), new TableCellEntry(testSpec.assertion()));
 
-        TableRowEntry issue = new TableRowEntry();
+        final TableRowEntry issue = new TableRowEntry();
         issue.addCells(new TableCellEntry("issue"), new TableCellEntry(testSpec.issue()));
 
-        TableRowEntry status = new TableRowEntry();
+        final TableRowEntry status = new TableRowEntry();
         status.addCells(new TableCellEntry("status"), new TableCellEntry(testSpec.status().toString()));
 
-        TableRowEntry author = new TableRowEntry();
+        final TableRowEntry author = new TableRowEntry();
         author.addCells(new TableCellEntry("author"), new TableCellEntry(testSpec.author()));
 
         rows.add(featureRow);

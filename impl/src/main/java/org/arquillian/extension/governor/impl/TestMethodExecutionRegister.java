@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,58 +16,51 @@
  */
 package org.arquillian.extension.governor.impl;
 
+import org.arquillian.extension.governor.configuration.GovernorConfiguration;
+import org.jboss.arquillian.core.spi.Validate;
+import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.arquillian.extension.governor.configuration.GovernorConfiguration;
-import org.jboss.arquillian.core.spi.Validate;
-import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
-
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public final class TestMethodExecutionRegister
-{
-    private static final List<MethodExecutionDecision> methodExecutionDecisions = new ArrayList<TestMethodExecutionRegister.MethodExecutionDecision>();
+public final class TestMethodExecutionRegister {
 
+    private static final List<MethodExecutionDecision> methodExecutionDecisions = new ArrayList<TestMethodExecutionRegister.MethodExecutionDecision>();
+    private static final ExecutionDecision DEFAULT_EXECUTION_DECISION = ExecutionDecision.execute("default execution");
     private static GovernorConfiguration governorConfiguration;
 
-    private static ExecutionDecision DEFAULT_EXECUTION_DECISION = ExecutionDecision.execute("default execution");
+    private TestMethodExecutionRegister() {
+    }
 
-    public static void clear()
-    {
+    public static void clear() {
         methodExecutionDecisions.clear();
     }
 
-    public static void put(String testMethod, Class<? extends Annotation> annotation, ExecutionDecision executionDecision)
-    {
-        MethodExecutionDecision methodExecutionDecision = new MethodExecutionDecision(testMethod, annotation, executionDecision);
+    public static void put(String testMethod, Class<? extends Annotation> annotation, ExecutionDecision executionDecision) {
+        final MethodExecutionDecision methodExecutionDecision = new MethodExecutionDecision(testMethod, annotation, executionDecision);
 
         methodExecutionDecisions.add(methodExecutionDecision);
     }
 
-    public static List<MethodExecutionDecision> getAll()
-    {
+    public static List<MethodExecutionDecision> getAll() {
         return Collections.unmodifiableList(methodExecutionDecisions);
     }
 
-    public static ExecutionDecision resolve(Method testMethod, Class<? extends Annotation> annotation)
-    {
-        String annotationName = annotation.getName();
+    public static ExecutionDecision resolve(Method testMethod, Class<? extends Annotation> annotation) {
+        final String annotationName = annotation.getName();
 
-        if (annotationName.equals(TestMethodExecutionRegister.governorConfiguration.getIgnoreOnly()))
-        {
+        if (annotationName.equals(TestMethodExecutionRegister.governorConfiguration.getIgnoreOnly())) {
             return DEFAULT_EXECUTION_DECISION;
         }
 
-        for (final MethodExecutionDecision methodExecutionDecision : methodExecutionDecisions)
-        {
-            if (methodExecutionDecision.getTestMethod().equals(testMethod.toString()) && methodExecutionDecision.getAnnotation() == annotation)
-            {
+        for (final MethodExecutionDecision methodExecutionDecision : methodExecutionDecisions) {
+            if (methodExecutionDecision.getTestMethod().equals(testMethod.toString()) && methodExecutionDecision.getAnnotation() == annotation) {
                 return methodExecutionDecision.getExecutionDecision();
             }
         }
@@ -75,8 +68,13 @@ public final class TestMethodExecutionRegister
         return DEFAULT_EXECUTION_DECISION;
     }
 
-    public static final class MethodExecutionDecision
-    {
+    public static void setConfigration(GovernorConfiguration governorConfiguration) {
+        Validate.notNull(governorConfiguration, "GovernorConfiguration must be specified.");
+        TestMethodExecutionRegister.governorConfiguration = governorConfiguration;
+    }
+
+    public static final class MethodExecutionDecision {
+
         private final String testMethod;
 
         private final Class<? extends Annotation> annotation;
@@ -93,25 +91,16 @@ public final class TestMethodExecutionRegister
             this.executionDecision = executionDecision;
         }
 
-        public String getTestMethod()
-        {
+        public String getTestMethod() {
             return testMethod;
         }
 
-        public Class<? extends Annotation> getAnnotation()
-        {
+        public Class<? extends Annotation> getAnnotation() {
             return annotation;
         }
 
-        public ExecutionDecision getExecutionDecision()
-        {
+        public ExecutionDecision getExecutionDecision() {
             return executionDecision;
         }
-    }
-
-    public static void setConfigration(GovernorConfiguration governorConfiguration)
-    {
-        Validate.notNull(governorConfiguration, "GovernorConfiguration must be specified.");
-        TestMethodExecutionRegister.governorConfiguration = governorConfiguration;
     }
 }

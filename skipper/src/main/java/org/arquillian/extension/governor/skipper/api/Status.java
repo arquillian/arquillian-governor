@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -17,9 +17,7 @@
 package org.arquillian.extension.governor.skipper.api;
 
 /**
- *
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public enum Status {
 
@@ -31,5 +29,5 @@ public enum Status {
     /**
      * Test method is supposed to be executed normally.
      */
-    AUTOMATED;
+    AUTOMATED
 }

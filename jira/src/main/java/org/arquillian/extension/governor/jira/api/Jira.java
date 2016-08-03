@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,27 +16,30 @@
  */
 package org.arquillian.extension.governor.jira.api;
 
+import org.arquillian.extension.governor.api.Governor;
+import org.arquillian.extension.governor.api.detector.Detectable;
+import org.arquillian.extension.governor.api.detector.Detector;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.arquillian.extension.governor.api.Governor;
-
 /**
  * Place this annotation on a test method with JIRA issue (e.g. {@literal @Jira("ARQ-1")})
  *
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 @Governor
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Target({ElementType.METHOD, ElementType.TYPE})
 @Documented
-public @interface Jira
-{
+public @interface Jira {
+
     String value() default "";
 
     boolean force() default false;
+
+    Detector detector() default @Detector(value = Detectable.True.class);
 }

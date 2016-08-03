@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,58 +16,51 @@
  */
 package org.arquillian.extension.governor.skipper.api;
 
+import org.arquillian.extension.governor.api.Governor;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.arquillian.extension.governor.api.Governor;
-
 /**
  * Information from this annotation will be passed to resulting report.
  *
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 @Governor
 @Retention(RetentionPolicy.RUNTIME)
-@Target( ElementType.METHOD )
+@Target(ElementType.METHOD)
 @Documented
 public @interface TestSpec {
 
     /**
-     *
      * @return feature to which this test belongs to
      */
     String feature() default "";
 
     /**
-     *
      * @return brief description of test
      */
     String test() default "";
 
     /**
-     *
      * @return what is required to do or set up before executing this test
      */
     String prerequisites() default "";
 
     /**
-     *
      * @return detailed steps in order to consider this test to be successful
      */
     String[] steps() default "";
 
     /**
-     *
      * @return what is the expected result of the test
      */
     String assertion() default "";
 
     /**
-     *
      * @return link to issue on an issue tracker
      */
     String issue() default "";
@@ -80,7 +73,6 @@ public @interface TestSpec {
     Status status() default Status.MANUAL;
 
     /**
-     *
      * @return who is responsible for this, name, preferably e-mail address
      */
     String author() default "";

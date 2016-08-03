@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,15 +16,6 @@
  */
 package org.arquillian.extension.governor.jira.impl;
 
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.arquillian.extension.governor.api.GovernorClient;
-import org.arquillian.extension.governor.jira.api.Jira;
-import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
-import org.jboss.arquillian.core.spi.Validate;
-import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
-
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -33,43 +24,55 @@ import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldVal
 import com.atlassian.jira.rest.client.api.domain.input.FieldInput;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import com.atlassian.jira.rest.client.internal.ServerVersionConstants;
+import org.arquillian.extension.governor.api.GovernorClient;
+import org.arquillian.extension.governor.jira.api.Jira;
+import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
+import org.jboss.arquillian.core.spi.Validate;
+import org.jboss.arquillian.test.spi.execution.ExecutionDecision;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStrategy>
-{
+public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStrategy> {
     private JiraRestClient restClient;
     private JiraGovernorStrategy jiraGovernorStrategy;
     private JiraGovernorConfiguration jiraGovernorConfiguration;
 
-    private int JIRA_BUILD_NUMBER = 0;
+    private int jiraBuildNumber = 0;
 
-    public void setConfiguration(JiraGovernorConfiguration jiraGovernorConfiguration)
-    {
+    private static Transition getTransitionByName(Iterable<Transition> transitions, String transitionName) {
+        for (final Transition transition : transitions) {
+            if (transition.getName().equals(transitionName)) {
+                return transition;
+            }
+        }
+
+        return null;
+    }
+
+    public void setConfiguration(JiraGovernorConfiguration jiraGovernorConfiguration) {
         Validate.notNull(jiraGovernorConfiguration, "Jira Governor configuration must be specified.");
         this.jiraGovernorConfiguration = jiraGovernorConfiguration;
     }
 
     @Override
-    public ExecutionDecision resolve(final Jira annotation)
-    {
+    public ExecutionDecision resolve(final Jira annotation) {
         Validate.notNull(restClient, "Jira REST client must be specified.");
         Validate.notNull(jiraGovernorStrategy, "Governor strategy must be specified. Have you already called setGovernorStrategy()?");
 
         final String jiraIssueKey = annotation.value();
 
-        if (jiraIssueKey == null || jiraIssueKey.length() == 0)
-        {
+        if (jiraIssueKey == null || jiraIssueKey.length() == 0) {
             return ExecutionDecision.execute();
         }
 
         final Issue jiraIssue = getIssue(jiraIssueKey);
 
         // when there is some error while we are getting the issue, we execute that test
-        if (jiraIssue == null)
-        {
+        if (jiraIssue == null) {
             return ExecutionDecision.execute();
         }
 
@@ -77,12 +80,10 @@ public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStra
     }
 
     @Override
-    public void close(String id)
-    {
+    public void close(String id) {
         Validate.notNull(restClient, "Jira REST client must be specified.");
 
-        try
-        {
+        try {
             final Issue issue = restClient.getIssueClient().getIssue(id).get();
 
             final Iterable<Transition> transitions = restClient.getIssueClient().getTransitions(issue.getTransitionsUri()).claim();
@@ -90,8 +91,7 @@ public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStra
 
             final Collection<FieldInput> fieldInputs;
 
-            if (JIRA_BUILD_NUMBER > ServerVersionConstants.BN_JIRA_5)
-            {
+            if (jiraBuildNumber > ServerVersionConstants.BN_JIRA_5) {
                 fieldInputs = Arrays.asList(new FieldInput("resolution", ComplexIssueInputFieldValue.with("name", "Done")));
             } else {
                 fieldInputs = Arrays.asList(new FieldInput("resolution", "Done"));
@@ -101,57 +101,37 @@ public class JiraGovernorClient implements GovernorClient<Jira, JiraGovernorStra
             final TransitionInput transitionInput = new TransitionInput(resolveIssueTransition.getId(), fieldInputs, closingMessage);
 
             restClient.getIssueClient().transition(issue.getTransitionsUri(), transitionInput).claim();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             // error while getting Issue to close, doing nothing
         }
     }
 
+    // not publicly visible helpers
+
     @Override
-    public void setGovernorStrategy(JiraGovernorStrategy jiraGovernorStrategy)
-    {
+    public void setGovernorStrategy(JiraGovernorStrategy jiraGovernorStrategy) {
         Validate.notNull(jiraGovernorStrategy, "Jira Governor strategy must be specified.");
         this.jiraGovernorStrategy = jiraGovernorStrategy;
     }
 
-    // not publicly visible helpers
+    // private helpers
 
-    void initializeRestClient(final JiraRestClient restClient) throws Exception
-    {
+    void initializeRestClient(final JiraRestClient restClient) throws Exception {
         Validate.notNull(restClient, "Jira REST client must be specified.");
         this.restClient = restClient;
 
-        JIRA_BUILD_NUMBER = this.restClient.getMetadataClient().getServerInfo().claim().getBuildNumber();
+        jiraBuildNumber = this.restClient.getMetadataClient().getServerInfo().claim().getBuildNumber();
     }
 
-    // private helpers
-
-    private static Transition getTransitionByName(Iterable<Transition> transitions, String transitionName)
-    {
-        for (Transition transition : transitions)
-        {
-            if (transition.getName().equals(transitionName))
-            {
-                return transition;
-            }
-        }
-
-        return null;
-    }
-
-    private Issue getIssue(String key)
-    {
-        try
-        {
+    private Issue getIssue(String key) {
+        try {
             return restClient.getIssueClient().getIssue(key).get();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             return null;
         }
     }
 
-    private String getClosingMessage()
-    {
+    private String getClosingMessage() {
         Validate.notNull(jiraGovernorConfiguration, "Jira Governor configuration must be set.");
 
         return String.format(jiraGovernorConfiguration.getClosingMessage(), jiraGovernorConfiguration.getUsername());

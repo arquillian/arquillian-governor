@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -15,16 +15,6 @@
  * limitations under the License.
  */
 package org.arquillian.extension.governor.impl;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.arquillian.extension.governor.api.ClosePassedDecider;
 import org.arquillian.extension.governor.api.Governor;
@@ -44,12 +34,21 @@ import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.event.suite.BeforeClass;
 import org.jboss.arquillian.test.spi.event.suite.BeforeSuite;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class GovernorTestClassScanner
-{
+public class GovernorTestClassScanner {
+
     @Inject
     @ApplicationScoped
     private InstanceProducer<GovernorRegistry> governorRegistry;
@@ -71,13 +70,11 @@ public class GovernorTestClassScanner
         closePassedDecider.set(new ClosePassedDeciderImpl());
     }
 
-    public void onBeforeClass(@Observes BeforeClass event)
-    {
+    public void onBeforeClass(@Observes BeforeClass event) {
         TestMethodExecutionRegister.setConfigration(governorConfiguration.get());
         TestMethodExecutionRegister.clear();
 
-        if (governorConfiguration.get().getIgnore())
-        {
+        if (governorConfiguration.get().getIgnore()) {
             return;
         }
 
@@ -87,47 +84,42 @@ public class GovernorTestClassScanner
 
         final Map<Method, List<Annotation>> scannedTestMethods = scanTestMethods(event.getTestClass(), Governor.class);
 
-        GovernorRegistryImpl governorRegistry = new GovernorRegistryImpl();
+        final GovernorRegistryImpl governorRegistry = new GovernorRegistryImpl();
         governorRegistry.put(scannedTestMethods);
         this.governorRegistry.set(governorRegistry);
 
         decideMethodExecution.fire(new DecideMethodExecutions());
     }
 
-    private void checkGovernorProviderUniqueness(final Collection<GovernorProvider> governorProviders)
-    {
+    private void checkGovernorProviderUniqueness(final Collection<GovernorProvider> governorProviders) {
         final Set<Class<? extends Annotation>> uniqueProviders = new HashSet<Class<? extends Annotation>>();
 
-        for (final GovernorProvider governorProvider : governorProviders)
-        {
-            Class<? extends Annotation> governorClass = governorProvider.provides();
+        for (final GovernorProvider governorProvider : governorProviders) {
+            final Class<? extends Annotation> governorClass = governorProvider.provides();
 
             if (governorClass == null) {
                 throw new IllegalStateException(
-                    String.format("Governor provider's provides() method (%s) returns null object.",
-                        governorProvider.getClass().getName()));
+                        String.format("Governor provider's provides() method (%s) returns null object.",
+                                governorProvider.getClass().getName()));
             }
 
-            Governor governorAnnotation = governorClass.getAnnotation(Governor.class);
+            final Governor governorAnnotation = governorClass.getAnnotation(Governor.class);
 
-            if (governorAnnotation == null)
-            {
+            if (governorAnnotation == null) {
                 throw new IllegalStateException(
-                    String.format("Governor provider (%s) does not provide annotation annotated by Governor class.",
-                        governorProvider.getClass().getName()));
+                        String.format("Governor provider (%s) does not provide annotation annotated by Governor class.",
+                                governorProvider.getClass().getName()));
             }
 
-            if (!uniqueProviders.add(governorClass))
-            {
+            if (!uniqueProviders.add(governorClass)) {
                 throw new IllegalStateException(
-                    String.format("You have put on class path providers which provide the same governor annotation (%s).",
-                        governorAnnotation.annotationType()));
+                        String.format("You have put on class path providers which provide the same governor annotation (%s).",
+                                governorAnnotation.annotationType()));
             }
         }
     }
 
-    private Map<Method, List<Annotation>> scanTestMethods(TestClass testClass, Class<? extends Annotation> governorAnnotation)
-    {
+    private Map<Method, List<Annotation>> scanTestMethods(TestClass testClass, Class<? extends Annotation> governorAnnotation) {
         Validate.notNull(testClass, "Test class to scan must be specified.");
 
         final Map<Method, List<Annotation>> methodAnnotationsMap = new HashMap<Method, List<Annotation>>();
@@ -136,25 +128,21 @@ public class GovernorTestClassScanner
 
         final Method[] methods = testClass.getJavaClass().getMethods();
 
-        for (final Method method : methods)
-        {
+        for (final Method method : methods) {
             if (!isTestMethod(method)) {
                 continue;
             }
 
-            List<Annotation> methodAnnotations = new ArrayList<Annotation>();
+            final List<Annotation> methodAnnotations = new ArrayList<Annotation>();
 
-            for (final Annotation annotation : method.getAnnotations())
-            {
-                if (annotation.annotationType().isAnnotationPresent(governorAnnotation))
-                {
+            for (final Annotation annotation : method.getAnnotations()) {
+                if (annotation.annotationType().isAnnotationPresent(governorAnnotation)) {
                     methodAnnotations.add(annotation);
                 }
             }
 
             for (final Annotation cAnnotation : classAnnotations) {
-                if (cAnnotation.annotationType().isAnnotationPresent(governorAnnotation))
-                {
+                if (cAnnotation.annotationType().isAnnotationPresent(governorAnnotation)) {
                     if (methodAnnotations.isEmpty()) {
                         methodAnnotations.add(cAnnotation);
                     } else {
@@ -167,8 +155,7 @@ public class GovernorTestClassScanner
                 }
             }
 
-            if (!methodAnnotations.isEmpty())
-            {
+            if (!methodAnnotations.isEmpty()) {
                 methodAnnotationsMap.put(method, methodAnnotations);
             }
 
@@ -178,9 +165,8 @@ public class GovernorTestClassScanner
     }
 
     private boolean isTestMethod(Method method) {
-        for (Annotation annotation : method.getAnnotations())
-        {
-            for (TestFramework tf : TestFramework.values()) {
+        for (final Annotation annotation : method.getAnnotations()) {
+            for (final TestFramework tf : TestFramework.values()) {
                 if (tf.getClassName().equals(annotation.annotationType().getName())) {
                     return true;
                 }

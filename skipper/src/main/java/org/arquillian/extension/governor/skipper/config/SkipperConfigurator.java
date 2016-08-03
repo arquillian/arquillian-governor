@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,9 +16,6 @@
  */
 package org.arquillian.extension.governor.skipper.config;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.arquillian.extension.governor.skipper.impl.SkipperReportHolder;
 import org.arquillian.extension.governor.spi.event.GovernorExtensionConfigured;
 import org.jboss.arquillian.config.descriptor.api.ArquillianDescriptor;
@@ -30,9 +27,11 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class SkipperConfigurator {
 
@@ -52,7 +51,7 @@ public class SkipperConfigurator {
     private InstanceProducer<SkipperReportHolder> skipperReportHolder;
 
     public void onGovernorExtensionConfigured(@Observes GovernorExtensionConfigured event, ArquillianDescriptor arquillianDescriptor) throws Exception {
-        SkipperConfiguration skipperConfiguration = new SkipperConfiguration();
+        final SkipperConfiguration skipperConfiguration = new SkipperConfiguration();
 
         for (final ExtensionDef extension : arquillianDescriptor.getExtensions()) {
             if (extension.getExtensionName().equals(EXTENSION_NAME)) {

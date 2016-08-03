@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -20,22 +20,21 @@ import org.arquillian.extension.governor.api.Configuration;
 import org.arquillian.extension.governor.api.GovernorConfigurationException;
 
 /**
- *
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class SkipperConfiguration extends Configuration {
 
+    public String getPlainAdoc() {
+        return getProperty("plainAdoc", "");
+    }
+
     /**
      * When set, there will be simple adoc table with the report.
+     *
      * @param plainAdoc
      */
     public void setPlainAdoc(String plainAdoc) {
         setProperty("plainAdoc", plainAdoc);
-    }
-
-    public String getPlainAdoc() {
-        return getProperty("plainAdoc", "");
     }
 
     @Override
@@ -44,7 +43,7 @@ public class SkipperConfiguration extends Configuration {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("%-40s %s\n", "plainAdoc", getPlainAdoc()));
 

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -17,12 +17,11 @@
 package org.arquillian.extension.governor.impl;
 
 import org.arquillian.extension.governor.api.ClosePassedDecider;
+import org.arquillian.extension.governor.utils.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -41,11 +40,11 @@ public class ClosePassedDeciderImpl implements ClosePassedDecider {
 
     @Override
     public void setClosable(Annotation annotation, boolean closeable) {
-        for (Map.Entry<Annotation, Boolean> entry : closableAnnotationMap.entrySet()) {
-            Annotation oldAnnotation = entry.getKey();
+        for (final Map.Entry<Annotation, Boolean> entry : closableAnnotationMap.entrySet()) {
+            final Annotation oldAnnotation = entry.getKey();
             if (oldAnnotation.annotationType().equals(annotation.annotationType())) {
-                String oldId = getAnnotationValue(oldAnnotation);
-                String id = getAnnotationValue(annotation);
+                final String oldId = ReflectionUtils.getAnnotationValue(oldAnnotation);
+                final String id = ReflectionUtils.getAnnotationValue(annotation);
                 if (oldId != null && oldId.equals(id)) {
                     closableAnnotationMap.put(oldAnnotation, entry.getValue().booleanValue() & closeable);
                     return;
@@ -58,18 +57,5 @@ public class ClosePassedDeciderImpl implements ClosePassedDecider {
     @Override
     public boolean isCloseable(Annotation annotation) {
         return closableAnnotationMap.get(annotation);
-    }
-
-    private String getAnnotationValue(Annotation annotation) {
-        for (Method method : annotation.annotationType().getDeclaredMethods()) {
-            if ("value".equals(method.getName())) {
-                try {
-                    return (String) method.invoke(annotation);
-                } catch (Exception e) {
-                    logger.log(Level.WARNING, "Annotation {0} does not contain field \"value\"", annotation.annotationType().getName());
-                }
-            }
-        }
-        return null;
     }
 }

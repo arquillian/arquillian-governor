@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,20 +16,24 @@
  */
 package org.arquillian.extension.governor.api;
 
+import org.jboss.arquillian.core.spi.Validate;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jboss.arquillian.core.spi.Validate;
-
 /**
- *
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public abstract class Configuration
-{
+public abstract class Configuration {
 
     private Map<String, String> configuration = new HashMap<String, String>();
+
+    /**
+     * @return configuration of extension
+     */
+    public Map<String, String> getConfiguration() {
+        return this.configuration;
+    }
 
     /**
      * Gets configuration from Arquillian descriptor and creates instance of it.
@@ -38,44 +42,31 @@ public abstract class Configuration
      * @return this
      * @throws IllegalArgumentException if {@code configuration} is a null object
      */
-    public Configuration setConfiguration(Map<String, String> configuration)
-    {
+    public Configuration setConfiguration(Map<String, String> configuration) {
         Validate.notNull(configuration, "Properties for configuration of Arquillian Governor extension can not be a null object!");
         this.configuration = configuration;
         return this;
     }
 
     /**
-     *
-     * @return configuration of extension
-     */
-    public Map<String, String> getConfiguration()
-    {
-        return this.configuration;
-    }
-
-    /**
      * Gets value of {@code name} property. In case a value for such name does not exist or is a null object or an empty string,
      * {@code defaultValue} is returned.
      *
-     * @param name name of a property you want to get the value of
+     * @param name         name of a property you want to get the value of
      * @param defaultValue value returned in case {@code name} is a null string or it is empty
      * @return value of a {@code name} property of {@code defaultValue} when {@code name} is null or empty string
      * @throws IllegalArgumentException if {@code name} is a null object or an empty string or if {@code defaultValue} is a null
-     *         object
+     *                                  object
      */
-    public String getProperty(String name, String defaultValue) throws IllegalStateException
-    {
+    public String getProperty(String name, String defaultValue) throws IllegalStateException {
         Validate.notNullOrEmpty(name, "Unable to get the configuration value of null or empty configuration key");
         Validate.notNull(defaultValue, "Unable to set configuration value of " + name + " to null object.");
 
-        String found = getConfiguration().get(name);
+        final String found = getConfiguration().get(name);
 
-        if (found == null || found.isEmpty())
-        {
+        if (found == null || found.isEmpty()) {
             return defaultValue;
-        } else
-        {
+        } else {
             return found;
         }
     }
@@ -83,12 +74,11 @@ public abstract class Configuration
     /**
      * Sets some property.
      *
-     * @param name acts as a key
+     * @param name  acts as a key
      * @param value
      * @throws IllegalArgumentException if {@code name} is null or empty or {@code value} is null
      */
-    public void setProperty(String name, String value)
-    {
+    public void setProperty(String name, String value) {
         Validate.notNullOrEmpty(name, "Name of property can not be a null object nor an empty string!");
         Validate.notNull(value, "Value of property can not be a null object!");
 

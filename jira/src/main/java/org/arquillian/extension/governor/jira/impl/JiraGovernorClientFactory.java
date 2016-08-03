@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -16,30 +16,26 @@
  */
 package org.arquillian.extension.governor.jira.impl;
 
-import java.net.URI;
-
-import org.arquillian.extension.governor.api.GovernorClientFactory;
-import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
-import org.jboss.arquillian.core.spi.Validate;
-
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.auth.AnonymousAuthenticationHandler;
 import com.atlassian.jira.rest.client.auth.BasicHttpAuthenticationHandler;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
+import org.arquillian.extension.governor.api.GovernorClientFactory;
+import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
+import org.jboss.arquillian.core.spi.Validate;
+
+import java.net.URI;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
-public class JiraGovernorClientFactory implements GovernorClientFactory<JiraGovernorConfiguration, JiraGovernorClient>
-{
+public class JiraGovernorClientFactory implements GovernorClientFactory<JiraGovernorConfiguration, JiraGovernorClient> {
 
     private JiraGovernorConfiguration jiraGovernorConfiguration = null;
 
     @Override
-    public JiraGovernorClient build(JiraGovernorConfiguration jiraGovernorConfiguration) throws Exception
-    {
+    public JiraGovernorClient build(JiraGovernorConfiguration jiraGovernorConfiguration) throws Exception {
         Validate.notNull(jiraGovernorConfiguration, "Jira governor configuration has to be set.");
         this.jiraGovernorConfiguration = jiraGovernorConfiguration;
 
@@ -49,7 +45,7 @@ public class JiraGovernorClientFactory implements GovernorClientFactory<JiraGove
 
         final AsynchronousJiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
 
-        AuthenticationHandler authHandler;
+        final AuthenticationHandler authHandler;
 
         if (username == null || username.isEmpty()) {
             authHandler = new AnonymousAuthenticationHandler();

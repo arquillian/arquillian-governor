@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2015, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -17,7 +17,6 @@
 package org.arquillian.extension.governor.configuration;
 
 import org.arquillian.extension.governor.api.GovernorConfigurationException;
-import org.arquillian.extension.governor.configuration.GovernorConfiguration;
 import org.hamcrest.junit.ExpectedException;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,20 +25,17 @@ import org.junit.runners.JUnit4;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 @RunWith(JUnit4.class)
-public class GovernorConfigurationTest
-{
+public class GovernorConfigurationTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void testGovernorConfiguration() throws Exception
-    {
+    public void testGovernorConfiguration() throws Exception {
         exception.expect(GovernorConfigurationException.class);
 
-        GovernorConfiguration configuration = new GovernorConfiguration();
+        final GovernorConfiguration configuration = new GovernorConfiguration();
 
         configuration.setIgnore(true);
         configuration.setIgnoreOnly("some.governor.annotation.class.name");

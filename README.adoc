@@ -159,6 +159,34 @@ public class AutomaticClosingTestCase
 }
 ----
 
+=== Detectors for environment related to JIRA issues
+JIRA issues can be related to some specific environments, e.g. operation system, java implementation, timezone...
+In that case you can create your custom detectors which are necessary to reproduce the specified issue.
+If those detectors are not met then this issue will not force the test method to be skipped.
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class IssuesWithConditionalTestCases
+{
+    @Test
+    @Jira(value = "ARQ-1000", detector = @Detector(Windows.class))
+    public void conditionalTest()
+    {
+        // This test case will be executed on all operation systems except for Windows.
+        // If the current OS is Windows then the status of JIRA issue will be checked.
+    }
+
+    @Test
+    @Jira(value = "ARQ-2000",
+            detector = @Detector(value = { OpenJDK.class, Java_7.class }, strategy = And.class)
+    )
+    public void multipleConditionsAndStrategyTest()
+    {
+        // This is similar example with more detectors and merging strategy.
+    }
+}
+----
 
 == Arquillian GitHub Governor Extension
 
@@ -268,6 +296,35 @@ public class AutomaticClosingTestCase
     public void automaticClosingTest)
     {
         // ...
+    }
+}
+----
+
+=== Detectors for environment related to GitHub issues
+GitHub issues can be related to some specific environments, e.g. operation system, java implementation, timezone...
+In that case you can create your custom detectors which are necessary to reproduce the specified issue.
+If those detectors are not met then this issue will not force the test method to be skipped.
+
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class IssuesWithConditionalTestCases
+{
+    @Test
+    @GitHub(value = "100", detector = @Detector(Windows.class))
+    public void conditionalTest()
+    {
+        // This test case will be executed on all operation systems except for Windows.
+        // If the current OS is Windows then the status of GitHub issue will be checked.
+    }
+
+    @Test
+    @GitHub(value = "200",
+            detector = @Detector(value = { OpenJDK.class, Java_7.class }, strategy = And.class)
+    )
+    public void multipleConditionsAndStrategyTest()
+    {
+        // This is similar example with more detectors and merging strategy.
     }
 }
 ----
