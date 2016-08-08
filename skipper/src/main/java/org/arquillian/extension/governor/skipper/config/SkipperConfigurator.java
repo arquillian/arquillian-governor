@@ -64,9 +64,7 @@ public class SkipperConfigurator {
         this.skipperReportHolder.set(new SkipperReportHolder());
         this.skipperConfiguration.set(skipperConfiguration);
 
-        if (logger.isLoggable(Level.INFO)) {
-            System.out.println("Configuration of Arquillian Skipper extension: ");
-            System.out.println(skipperConfiguration.toString());
-        }
+        logger.log(Level.CONFIG, "Configuration of Arquillian Skipper extension:");
+        logger.log(Level.CONFIG, skipperConfiguration.toString());
     }
 }

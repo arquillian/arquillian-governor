@@ -73,9 +73,7 @@ public class GitHubGovernorConfigurator {
         this.gitHubGovernorClient.set(gitHubGovernorClient);
         this.gitHubClient.set(gitHubGovernorClient.getGitHubClient());
 
-        if (logger.isLoggable(Level.INFO)) {
-            System.out.println("Configuration of Arquillian GitHub extension: ");
-            System.out.println(gitHubGovernorConfiguration.toString());
-        }
+        logger.log(Level.CONFIG, "Configuration of Arquillian GitHub extension:");
+        logger.log(Level.CONFIG, gitHubGovernorConfiguration.toString());
     }
 }
