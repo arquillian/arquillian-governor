@@ -1,5 +1,9 @@
 language: java
 
 script:
-  - mvn clean install
-  - mvn checkstyle:check
+  - mvn -fae clean install
+  - mvn -fae checkstyle:check
+
+cache:
+  directories:
+    - $HOME/.m2
