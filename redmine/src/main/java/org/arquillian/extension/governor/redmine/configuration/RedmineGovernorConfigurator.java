@@ -73,9 +73,7 @@ public class RedmineGovernorConfigurator {
         this.redmineGovernorClient.set(redmineGovernorClient);
         this.redmineManager.set(redmineGovernorClient.getRedmineManager());
 
-        if (logger.isLoggable(Level.INFO)) {
-            System.out.println("Configuration of Arquillian Redmine extension: ");
-            System.out.println(this.redmineGovernorConfiguration.get().toString());
-        }
+        logger.log(Level.CONFIG, "Configuration of Arquillian Redmine extension:");
+        logger.log(Level.CONFIG, this.redmineGovernorConfiguration.get().toString());
     }
 }

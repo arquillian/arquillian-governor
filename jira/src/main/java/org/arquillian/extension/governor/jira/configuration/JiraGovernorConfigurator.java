@@ -67,9 +67,7 @@ public class JiraGovernorConfigurator {
 
         this.jiraGovernorClient.set(jiraGovernorClient);
 
-        if (logger.isLoggable(Level.INFO)) {
-            System.out.println("Configuration of Arquillian JIRA extension: ");
-            System.out.println(jiraGovernorConfiguration.toString());
-        }
+        logger.log(Level.CONFIG, "Configuration of Arquillian JIRA extension:");
+        logger.log(Level.CONFIG, jiraGovernorConfiguration.toString());
     }
 }

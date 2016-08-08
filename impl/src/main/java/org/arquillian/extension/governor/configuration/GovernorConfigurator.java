@@ -59,10 +59,8 @@ public class GovernorConfigurator {
 
         this.governorConfiguration.set(governorConfiguration);
 
-        if (logger.isLoggable(Level.INFO)) {
-            System.out.println("Configuration of Arquillian Governor extension: ");
-            System.out.println(governorConfiguration.toString());
-        }
+        logger.log(Level.CONFIG, "Configuration of Arquillian Governor extension:");
+        logger.log(Level.CONFIG, governorConfiguration.toString());
 
         governorExtensionConfiguredEvent.fire(new GovernorExtensionConfigured());
     }
