@@ -27,6 +27,8 @@ public class GitHubGovernorConfiguration extends Configuration {
 
     private static final String DEFAULT_GITHUB_CLOSING_MESSAGE = "This GitHub issue was automatically closed by %s with Arquillian Governor GitHub extension.";
 
+    private String defaultGithubURL = "https://github.com";
+
     private String username = resolveUsername();
 
     private String password = resolvePassword();
@@ -103,6 +105,14 @@ public class GitHubGovernorConfiguration extends Configuration {
 
     public void setClosingMessage(String closingMessage) {
         setProperty("closingMessage", closingMessage);
+    }
+
+    public String getDefaultGithubURL() {
+        return defaultGithubURL;
+    }
+
+    public void setDefaultGithubURL(String defaultGithubURL) {
+        this.defaultGithubURL = defaultGithubURL;
     }
 
     @Override
