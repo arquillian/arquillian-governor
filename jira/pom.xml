@@ -106,6 +106,16 @@
             <artifactId>hamcrest-junit</artifactId>
             <version>${version.hamcrest}</version>
         </dependency>
+        <dependency>
+            <groupId>org.arquillian.extension</groupId>
+            <artifactId>arquillian-recorder-reporter-spi</artifactId>
+            <version>${version.arquillian.recorder}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.arquillian.extension</groupId>
+            <artifactId>arquillian-recorder-reporter-api</artifactId>
+            <version>${version.arquillian.recorder}</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -82,6 +82,9 @@
         <version.signature>1.1</version.signature>
         <version.commons.lang>3.4</version.commons.lang>
 
+        <!-- Arquillian Recorder Reporter -->
+        <version.arquillian.recorder>1.1.2.Final</version.arquillian.recorder>
+
         <!-- logging -->
         <versions.log4j>1.2.17</versions.log4j>
         <versions.slf4j>1.7.13</versions.slf4j>
@@ -160,6 +163,17 @@
                 <scope>test</scope>
             </dependency>
 
+            <!-- Arquillian recorder reporter -->
+            <dependency>
+                <groupId>org.arquillian.extension</groupId>
+                <artifactId>arquillian-recorder-reporter-spi</artifactId>
+                <version>${version.arquillian.recorder}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.arquillian.extension</groupId>
+                <artifactId>arquillian-recorder-reporter-api</artifactId>
+                <version>${version.arquillian.recorder}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

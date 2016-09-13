@@ -18,6 +18,7 @@ package org.arquillian.extension.governor.jira;
 
 import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfigurator;
 import org.arquillian.extension.governor.jira.impl.JiraTestExecutionDecider;
+import org.arquillian.extension.governor.jira.impl.reporter.JiraGovernorRecorder;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
 
@@ -32,6 +33,11 @@ public class JiraGovernorExtension implements LoadableExtension {
         builder.observer(JiraGovernorConfigurator.class);
 
         builder.service(TestExecutionDecider.class, JiraTestExecutionDecider.class);
+
+        //Only if recorder-reporter is in classpath we should provide reporting capabilities.
+      if (Validate.classExists("org.arquillian.recorder.reporter.ReporterExtension")) {
+            builder.observer(JiraGovernorRecorder.class);
+        }
     }
 
 }
