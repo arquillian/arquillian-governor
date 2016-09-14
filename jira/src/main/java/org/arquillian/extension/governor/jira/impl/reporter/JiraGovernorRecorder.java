@@ -34,11 +34,11 @@ public class JiraGovernorRecorder {
     @Inject
     Event<PropertyReportEvent> propertyReportEvent;
 
-    public void jiraReportEntries(@Observes After event, GovernorRegistry governorRegistry) throws GovernorConfigurationException {
+    public void jiraReportEntries(@Observes After event, GovernorRegistry governorRegistry) {
 
         Method testMethod = event.getTestMethod();
         TestClass testClass = event.getTestClass();
-        String jiraURL = jira.get().getServer();
+        String jiraServer = jira.get().getServer();
 
         if (testMethod.isAnnotationPresent(Jira.class) || testClass.isAnnotationPresent(Jira.class)) {
             Jira jiraValue = testMethod.getAnnotation(Jira.class);
@@ -52,37 +52,45 @@ public class JiraGovernorRecorder {
                 }
             }
 
-            String issueURL = jiraURL + "/browse/" + jiraValue.value();
+            if (jiraValue != null) {
+                String issueURL = constructJiraURL(jiraServer,jiraValue.value());
 
-            Class<? extends Detectable>[] detectables = jiraValue.detector().value();
-            TreeSet<String> uniqDetectables = new TreeSet<String>();
+                Class<? extends Detectable>[] detectables = jiraValue.detector().value();
+                TreeSet<String> uniqDetectables = new TreeSet<String>();
 
-            for (Class<? extends Detectable> detectable : detectables) {
-                uniqDetectables.add(detectable.getSimpleName());
+                for (Class<? extends Detectable> detectable : detectables) {
+                    uniqDetectables.add(detectable.getSimpleName());
+                }
+
+                String detectablesName = "";
+                for (String detectable : uniqDetectables
+                        ) {
+                    detectablesName += (detectablesName == "" ? "" : ",") + detectable;
+                }
+
+                TableEntry jiraDetector = new TableEntry();
+                jiraDetector.setTableName("JiraOptions");
+                jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("force"), new TableCellEntry("Detector Value"), new TableCellEntry("Detector Strategy"));
+
+                TableRowEntry row = new TableRowEntry();
+
+                row.addCells(new TableCellEntry(String.valueOf(jiraValue.force())),
+                        new TableCellEntry(String.valueOf(jiraValue.detector().strategy().getSimpleName())),
+                        new TableCellEntry(detectablesName)
+                );
+                jiraDetector.getTableBody().addRow(row);
+
+                propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("JIRA URL", issueURL)));
+                propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
             }
-
-           String detectablesName = "";
-           for (String detectable: uniqDetectables
-                ) {
-               detectablesName += (detectablesName == "" ? "" : ",")+ detectable ;
-           }
-
-           TableEntry jiraDetector = new TableEntry();
-           jiraDetector.setTableName("JiraOptions");
-           jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("force"),new TableCellEntry("Detector Value"),new TableCellEntry("Detector Strategy"));
-
-           TableRowEntry row = new TableRowEntry();
-
-           row.addCells(new TableCellEntry(String.valueOf(jiraValue.force())),
-                   new TableCellEntry(String.valueOf(jiraValue.detector().strategy().getSimpleName())),
-                   new TableCellEntry(detectablesName)
-                   );
-           jiraDetector.getTableBody().addRow(row);
-
-            propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("JIRA URL", issueURL)));
-            propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
-
         }
     }
 
+    public String constructJiraURL(String server, String issueId){
+        if (!server.endsWith("/")){
+            server += "/";
+        }
+        String issueURL = server + "browse/" + issueId;
+        return issueURL;
+    }
 }
