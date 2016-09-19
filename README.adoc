@@ -190,8 +190,7 @@ public class IssuesWithConditionalTestCases
 
 ==== How to get Jira Issues & detectors in arquillian reports.
 
-In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your
-Arquillian maven test.
+In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian maven test.
 
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
@@ -342,8 +341,7 @@ public class IssuesWithConditionalTestCases
 
 ==== How to get GitHub Issues & detectors in arquillian reports.
 
-In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your
-Arquillian maven test.
+In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian maven test.
 
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
@@ -583,12 +581,11 @@ added into the tree of Arquillian Report output file in every case.
 
 ==== How to get Redmine Issues & detectors in arquillian reports.
 
-In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your
-Arquillian maven test.
+In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian maven test.
 
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
-You will get Redmine's all issues & detector information located in target/arquillian-report.xml.
+You will get Redmine's all issues & detector information located in target/arquillian-report.xml report.
 
 ----
 
