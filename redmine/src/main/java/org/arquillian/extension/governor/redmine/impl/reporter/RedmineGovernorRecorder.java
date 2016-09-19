@@ -17,8 +17,6 @@
 
 package org.arquillian.extension.governor.redmine.impl.reporter;
 
-import org.arquillian.extension.governor.api.GovernorConfigurationException;
-import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.redmine.api.Redmine;
 import org.arquillian.extension.governor.redmine.configuration.RedmineGovernorConfiguration;
 import org.arquillian.recorder.reporter.event.PropertyReportEvent;
@@ -33,10 +31,7 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.event.suite.After;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author <a href="mailto:dpawar@redhat.com">Dipak Pawar</a>
@@ -65,7 +60,7 @@ public class RedmineGovernorRecorder {
         final TestClass testClass = event.getTestClass();
         final String redmineServerURL = redmineGovernorConfigurationInstance.get().getServer();
 
-        Redmine redmineValue = getRedmineValue(testMethod, testClass);
+        final Redmine redmineValue = getRedmineValue(testMethod, testClass);
         if (redmineValue != null) {
             final String issueURL = constructRedmineIssueURL(redmineServerURL, redmineValue.value());
 

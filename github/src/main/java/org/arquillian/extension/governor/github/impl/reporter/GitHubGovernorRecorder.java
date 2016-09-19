@@ -17,7 +17,6 @@
 
 package org.arquillian.extension.governor.github.impl.reporter;
 
-import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.api.detector.Detectable;
 import org.arquillian.extension.governor.github.api.GitHub;
 import org.arquillian.extension.governor.github.configuration.GitHubGovernorConfiguration;
@@ -32,12 +31,9 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.event.suite.After;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import java.util.TreeSet;
-import java.util.logging.Logger;
+
 
 /**
  * @author <a href="mailto:dpawar@redhat.com">Dipak Pawar</a>
@@ -63,7 +59,7 @@ public class GitHubGovernorRecorder {
         final Method testMethod = event.getTestMethod();
         final TestClass testClass = event.getTestClass();
 
-        GitHub gitHubValue = getGitHubValue(testMethod, testClass);
+        final GitHub gitHubValue = getGitHubValue(testMethod, testClass);
 
         if (gitHubValue != null) {
             final GitHubGovernorConfiguration configuration = gitHubGovernorConfigurationInstance.get();
