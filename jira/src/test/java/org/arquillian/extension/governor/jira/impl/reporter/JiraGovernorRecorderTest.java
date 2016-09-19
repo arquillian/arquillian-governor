@@ -158,10 +158,3 @@ public class JiraGovernorRecorderTest {
         }
     }
 }
-
-
-
-
-
-
-

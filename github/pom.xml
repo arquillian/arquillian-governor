@@ -100,12 +100,14 @@
         <dependency>
             <groupId>org.arquillian.extension</groupId>
             <artifactId>arquillian-recorder-reporter-spi</artifactId>
-             <version>${version.arquillian.recorder}</version>
+            <version>${version.arquillian.recorder}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.arquillian.extension</groupId>
             <artifactId>arquillian-recorder-reporter-api</artifactId>
             <version>${version.arquillian.recorder}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
