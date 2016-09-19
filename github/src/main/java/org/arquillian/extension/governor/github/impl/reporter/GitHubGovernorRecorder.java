@@ -1,3 +1,20 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors by the @authors tag. See the copyright.txt in the
+ * distribution for a full listing of individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.arquillian.extension.governor.github.impl.reporter;
 
 import org.arquillian.extension.governor.api.GovernorRegistry;
@@ -20,6 +37,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:dpawar@redhat.com">Dipak Pawar</a>
@@ -28,75 +46,74 @@ import java.util.TreeSet;
 public class GitHubGovernorRecorder {
 
     @Inject
-    private Instance<GitHubGovernorConfiguration> gitHub;
+    private Instance<GitHubGovernorConfiguration> gitHubGovernorConfigurationInstance;
 
     @Inject
-    Event<PropertyReportEvent> propertyReportEvent;
+    private Event<PropertyReportEvent> propertyReportEvent;
 
-    public void gitHubReportEntries(@Observes After event, GovernorRegistry governorRegistry) {
+    public void setGitHubGovernorConfigurationInstance(Instance<GitHubGovernorConfiguration> gitHubGovernorConfigurationInstance) {
+        this.gitHubGovernorConfigurationInstance = gitHubGovernorConfigurationInstance;
+    }
 
-        Method testMethod = event.getTestMethod();
-        TestClass testClass = event.getTestClass();
+    public void setPropertyReportEvent(Event<PropertyReportEvent> propertyReportEvent) {
+        this.propertyReportEvent = propertyReportEvent;
+    }
 
-        if (testMethod.isAnnotationPresent(GitHub.class) || testClass.isAnnotationPresent(GitHub.class)) {
-            GitHub gitHubValue = testMethod.getAnnotation(GitHub.class);
-            for (final Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet()) {
-                if (entry.getKey().toString().equals(testMethod.toString())) {
-                    for (Annotation annotation : entry.getValue()) {
-                        if (annotation.annotationType() == GitHub.class) {
-                            gitHubValue = ((GitHub) annotation);
-                        }
-                    }
-                }
+    public void gitHubReportEntries(@Observes After event) {
+        final Method testMethod = event.getTestMethod();
+        final TestClass testClass = event.getTestClass();
+
+        GitHub gitHubValue = getGitHubValue(testMethod, testClass);
+
+        if (gitHubValue != null) {
+            final GitHubGovernorConfiguration configuration = gitHubGovernorConfigurationInstance.get();
+
+            final String gitHubIssueURL = contructGitHubIssueURL(configuration, gitHubValue);
+
+            final Class<? extends Detectable>[] detectables = gitHubValue.detector().value();
+            final TreeSet<String> uniqDetectables = new TreeSet<String>();
+
+            for (final Class<? extends Detectable> detectable : detectables) {
+                uniqDetectables.add(detectable.getSimpleName());
             }
 
-            if (gitHubValue != null) {
-                GitHubGovernorConfiguration configuration = gitHub.get();
-
-                String gitHubIssueURL = contructGitHubIssueURL(configuration, gitHubValue);
-
-                Class<? extends Detectable>[] detectables = gitHubValue.detector().value();
-                TreeSet<String> uniqDetectables = new TreeSet<String>();
-
-                for (Class<? extends Detectable> detectable : detectables) {
-                    uniqDetectables.add(detectable.getSimpleName());
-                }
-
-                String detectablesName = "";
-                for (String detectable : uniqDetectables
-                        ) {
-                    detectablesName += (detectablesName == "" ? "" : ",") + detectable;
-                }
-
-                TableEntry jiraDetector = new TableEntry();
-                jiraDetector.setTableName("GitHubOptions");
-                jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("Force"), new TableCellEntry("Detector Value"), new TableCellEntry("Detector Strategy"));
-
-                TableRowEntry row = new TableRowEntry();
-
-                row.addCells(new TableCellEntry(String.valueOf(gitHubValue.force())),
-                        new TableCellEntry(String.valueOf(gitHubValue.detector().strategy().getSimpleName())),
-                        new TableCellEntry(detectablesName)
-                );
-                jiraDetector.getTableBody().addRow(row);
-
-                propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("GitHub URL", gitHubIssueURL)));
-                propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
+            String detectablesName = "";
+            for (final String detectable : uniqDetectables) {
+                detectablesName += (detectablesName == "" ? "" : ",") + detectable;
             }
+
+            final TableEntry gitHubDetector = new TableEntry();
+            gitHubDetector.setTableName("GitHubOptions");
+            gitHubDetector.getTableHead().getRow().addCells(new TableCellEntry("Force"), new TableCellEntry("Detector Value"), new TableCellEntry("Detector Strategy"));
+
+            final TableRowEntry row = new TableRowEntry();
+            row.addCells(new TableCellEntry(String.valueOf(gitHubValue.force())), new TableCellEntry(String.valueOf(gitHubValue.detector().strategy().getSimpleName())), new TableCellEntry(detectablesName));
+            gitHubDetector.getTableBody().addRow(row);
+
+            propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("GitHub URL", gitHubIssueURL)));
+            propertyReportEvent.fire(new PropertyReportEvent(gitHubDetector));
         }
     }
 
-    public String contructGitHubIssueURL(GitHubGovernorConfiguration configuration, GitHub gitHub){
+    private String contructGitHubIssueURL(GitHubGovernorConfiguration configuration, GitHub gitHub) {
         String url = configuration.getDefaultGithubURL();
         if (configuration.getRepositoryUser() != "") {
             url += ("/" + configuration.getRepositoryUser());
         }
-        if (configuration.getRepository() != ""){
+        if (configuration.getRepository() != "") {
             url +=  ("/" + configuration.getRepository());
         }
-        if (gitHub.value() != ""){
+        if (gitHub.value() != "") {
             url += ("/issues/" + gitHub.value());
         }
         return url;
+    }
+
+    private GitHub getGitHubValue(Method method, TestClass testClass) {
+        GitHub gitHub =  method.getAnnotation(GitHub.class);
+        if (gitHub == null) {
+            gitHub = testClass.getAnnotation(GitHub.class);
+        }
+        return gitHub;
     }
 }

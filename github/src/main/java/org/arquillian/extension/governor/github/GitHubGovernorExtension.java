@@ -16,7 +16,6 @@
  */
 package org.arquillian.extension.governor.github;
 
-import org.arquillian.extension.governor.github.api.GitHub;
 import org.arquillian.extension.governor.github.configuration.GitHubGovernorConfigurator;
 import org.arquillian.extension.governor.github.enricher.GitHubClientProvider;
 import org.arquillian.extension.governor.github.impl.GitHubTestExecutionDecider;

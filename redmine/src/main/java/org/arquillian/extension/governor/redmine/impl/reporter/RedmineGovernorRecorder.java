@@ -1,3 +1,20 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors by the @authors tag. See the copyright.txt in the
+ * distribution for a full listing of individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.arquillian.extension.governor.redmine.impl.reporter;
 
 import org.arquillian.extension.governor.api.GovernorConfigurationException;
@@ -25,56 +42,61 @@ import java.util.Map;
  * @author <a href="mailto:dpawar@redhat.com">Dipak Pawar</a>
  */
 
+
 public class RedmineGovernorRecorder {
 
     @Inject
-    private Instance<RedmineGovernorConfiguration> redmine;
+    private Instance<RedmineGovernorConfiguration> redmineGovernorConfigurationInstance;
 
     @Inject
-    Event<PropertyReportEvent> propertyReportEvent;
+    private Event<PropertyReportEvent> propertyReportEvent;
 
-    public void redmineReportEntries(@Observes After event, GovernorRegistry governorRegistry) throws GovernorConfigurationException {
+    public void setRedmineGovernorConfigurationInstance(Instance<RedmineGovernorConfiguration> redmineGovernorConfigurationInstance) {
+        this.redmineGovernorConfigurationInstance = redmineGovernorConfigurationInstance;
+    }
 
-        Method testMethod = event.getTestMethod();
-        TestClass testClass = event.getTestClass();
-        String redmineServerURL = redmine.get().getServer();
+    public void setPropertyReportEvent(Event<PropertyReportEvent> propertyReportEvent) {
+        this.propertyReportEvent = propertyReportEvent;
+    }
 
-        if (testMethod.isAnnotationPresent(Redmine.class) || testClass.isAnnotationPresent(Redmine.class)) {
-            Redmine redmineValue = testMethod.getAnnotation(Redmine.class);
-            for (final Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet()) {
-                if (entry.getKey().toString().equals(testMethod.toString())) {
-                    for (Annotation annotation : entry.getValue()) {
-                        if (annotation.annotationType() == Redmine.class) {
-                            redmineValue = ((Redmine) annotation);
-                        }
-                    }
-                }
-            }
+    public void redmineReportEntries(@Observes After event) {
 
-            if (redmineValue != null) {
-                String issueURL = constructURL(redmineServerURL,redmineValue.value());
+        final Method testMethod = event.getTestMethod();
+        final TestClass testClass = event.getTestClass();
+        final String redmineServerURL = redmineGovernorConfigurationInstance.get().getServer();
 
-                TableEntry jiraDetector = new TableEntry();
-                jiraDetector.setTableName("RedmineOptions");
-                jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("force"));
+        Redmine redmineValue = getRedmineValue(testMethod, testClass);
+        if (redmineValue != null) {
+            final String issueURL = constructRedmineIssueURL(redmineServerURL, redmineValue.value());
 
-                TableRowEntry row = new TableRowEntry();
+            final TableEntry jiraDetector = new TableEntry();
+            jiraDetector.setTableName("RedmineOptions");
+            jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("Force"));
 
-                row.addCells(new TableCellEntry(String.valueOf(redmineValue.force())));
-                jiraDetector.getTableBody().addRow(row);
+            final TableRowEntry row = new TableRowEntry();
 
-                propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("Redmine URL", issueURL)));
-                propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
-            }
+            row.addCells(new TableCellEntry(String.valueOf(redmineValue.force())));
+            jiraDetector.getTableBody().addRow(row);
 
+            propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("Redmine URL", issueURL)));
+            propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
         }
     }
 
-    public String constructURL(String server, String issueId){
-        if (!server.endsWith("/")){
+    private String constructRedmineIssueURL(String server, String issueId) {
+        if (!server.endsWith("/")) {
             server += "/";
         }
-        String issueURL = server + "issues/" + issueId;
+        final String issueURL = server + "issues/" + issueId;
         return issueURL;
+    }
+
+
+    private Redmine getRedmineValue(Method method, TestClass testClass) {
+        Redmine redmine =  method.getAnnotation(Redmine.class);
+        if (redmine == null) {
+            redmine = testClass.getAnnotation(Redmine.class);
+        }
+        return redmine;
     }
 }

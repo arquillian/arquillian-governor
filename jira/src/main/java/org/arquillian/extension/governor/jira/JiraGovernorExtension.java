@@ -35,7 +35,7 @@ public class JiraGovernorExtension implements LoadableExtension {
         builder.service(TestExecutionDecider.class, JiraTestExecutionDecider.class);
 
         //Only if recorder-reporter is in classpath we should provide reporting capabilities.
-      if (Validate.classExists("org.arquillian.recorder.reporter.ReporterExtension")) {
+        if (Validate.classExists("org.arquillian.recorder.reporter.ReporterExtension")) {
             builder.observer(JiraGovernorRecorder.class);
         }
     }

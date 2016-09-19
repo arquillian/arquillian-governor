@@ -1,8 +1,22 @@
+/*
+ * JBoss, Home of Professional Open Source
+ * Copyright 2016, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors by the @authors tag. See the copyright.txt in the
+ * distribution for a full listing of individual contributors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.arquillian.extension.governor.jira.impl.reporter;
 
-
-import org.arquillian.extension.governor.api.GovernorConfigurationException;
-import org.arquillian.extension.governor.api.GovernorRegistry;
 import org.arquillian.extension.governor.api.detector.Detectable;
 import org.arquillian.extension.governor.jira.api.Jira;
 import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
@@ -18,9 +32,8 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.event.suite.After;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.TreeSet;
 
 
 /**
@@ -29,68 +42,71 @@ import java.util.*;
 public class JiraGovernorRecorder {
 
     @Inject
-    private Instance<JiraGovernorConfiguration> jira;
+    private Instance<JiraGovernorConfiguration> jiraGovernorConfigurationInstance;
+
+    public void setJiraGovernorConfigurationInstance(Instance<JiraGovernorConfiguration> jiraGovernorConfigurationInstance) {
+        this.jiraGovernorConfigurationInstance = jiraGovernorConfigurationInstance;
+    }
 
     @Inject
-    Event<PropertyReportEvent> propertyReportEvent;
+    private Event<PropertyReportEvent> propertyReportEvent;
 
-    public void jiraReportEntries(@Observes After event, GovernorRegistry governorRegistry) {
+    public void setPropertyReportEvent(Event<PropertyReportEvent> propertyReportEvent) {
+        this.propertyReportEvent = propertyReportEvent;
+    }
 
-        Method testMethod = event.getTestMethod();
-        TestClass testClass = event.getTestClass();
-        String jiraServer = jira.get().getServer();
+    public void jiraReportEntries(@Observes After event) {
+        final Method method = event.getTestMethod();
 
-        if (testMethod.isAnnotationPresent(Jira.class) || testClass.isAnnotationPresent(Jira.class)) {
-            Jira jiraValue = testMethod.getAnnotation(Jira.class);
-            for (final Map.Entry<Method, List<Annotation>> entry : governorRegistry.get().entrySet()) {
-                if (entry.getKey().toString().equals(testMethod.toString())) {
-                    for (Annotation annotation : entry.getValue()) {
-                        if (annotation.annotationType() == Jira.class) {
-                            jiraValue = ((Jira) annotation);
-                         }
-                    }
-                }
+        final TestClass testClass = event.getTestClass();
+        final String jiraServer = jiraGovernorConfigurationInstance.get().getServer();
+
+        final Jira jira = getJiraValue(method, testClass);
+        if (jira != null) {
+            final String issueURL = constructJiraIssueURL(jiraServer, jira.value());
+
+            final Class<? extends Detectable>[] detectables = jira.detector().value();
+            final TreeSet<String> uniqDetectables = new TreeSet<String>();
+
+            for (final Class<? extends Detectable> detectable : detectables) {
+                uniqDetectables.add(detectable.getSimpleName());
             }
 
-            if (jiraValue != null) {
-                String issueURL = constructJiraURL(jiraServer,jiraValue.value());
-
-                Class<? extends Detectable>[] detectables = jiraValue.detector().value();
-                TreeSet<String> uniqDetectables = new TreeSet<String>();
-
-                for (Class<? extends Detectable> detectable : detectables) {
-                    uniqDetectables.add(detectable.getSimpleName());
-                }
-
-                String detectablesName = "";
-                for (String detectable : uniqDetectables
-                        ) {
-                    detectablesName += (detectablesName == "" ? "" : ",") + detectable;
-                }
-
-                TableEntry jiraDetector = new TableEntry();
-                jiraDetector.setTableName("JiraOptions");
-                jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("force"), new TableCellEntry("Detector Value"), new TableCellEntry("Detector Strategy"));
-
-                TableRowEntry row = new TableRowEntry();
-
-                row.addCells(new TableCellEntry(String.valueOf(jiraValue.force())),
-                        new TableCellEntry(String.valueOf(jiraValue.detector().strategy().getSimpleName())),
-                        new TableCellEntry(detectablesName)
-                );
-                jiraDetector.getTableBody().addRow(row);
-
-                propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("JIRA URL", issueURL)));
-                propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
+            String detectablesName = "";
+            for (final String detectable : uniqDetectables) {
+                detectablesName += (detectablesName == "" ? "" : ",") + detectable;
             }
+
+            final TableEntry jiraDetector = new TableEntry();
+            jiraDetector.setTableName("JiraOptions");
+            jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("Force"), new TableCellEntry("Detector Value"), new TableCellEntry("Detector Strategy"));
+
+            final TableRowEntry row = new TableRowEntry();
+
+            row.addCells(new TableCellEntry(String.valueOf(jira.force())),
+                    new TableCellEntry(String.valueOf(jira.detector().strategy().getSimpleName())),
+                    new TableCellEntry(detectablesName)
+            );
+            jiraDetector.getTableBody().addRow(row);
+
+            propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("JIRA URL", issueURL)));
+            propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
         }
     }
 
-    public String constructJiraURL(String server, String issueId){
-        if (!server.endsWith("/")){
+    private String constructJiraIssueURL(String server, String issueId) {
+        if (!server.endsWith("/")) {
             server += "/";
         }
-        String issueURL = server + "browse/" + issueId;
+        final String issueURL = server + "browse/" + issueId;
         return issueURL;
+    }
+
+    private Jira getJiraValue(Method method, TestClass testClass) {
+        Jira jira =  method.getAnnotation(Jira.class);
+        if (jira == null) {
+            jira = testClass.getAnnotation(Jira.class);
+        }
+        return jira;
     }
 }
