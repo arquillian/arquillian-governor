@@ -188,9 +188,21 @@ public class IssuesWithConditionalTestCases
 }
 ----
 
-==== How to get Jira Issues & detectors in arquillian reports.
+==== Arquillian Recorder Integration with Arquillian Jira Governor Extension
+
+How to get Jira issues,force values, detector & it's strategy for environment  in arquillian reports?
 
 In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian maven test.
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-recorder-reporter-impl</artifactId>
+    <version>${version.arquillian.recorder}</version>
+    <scope>test</scope>
+</dependency>
+----
 
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
@@ -339,13 +351,25 @@ public class IssuesWithConditionalTestCases
 }
 ----
 
-==== How to get GitHub Issues & detectors in arquillian reports.
+==== Arquillian Recorder Integration with Arquillian GitHub Governor Extension
 
+How to get GitHub issues,force values, detector & it's strategy for environment  in arquillian reports?
+ 
 In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian maven test.
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-recorder-reporter-impl</artifactId>
+    <version>${version.arquillian.recorder}</version>
+    <scope>test</scope>
+</dependency>
+----
 
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
-You will get github's all issues & detector information located in target/arquillian-report.xml report.
+You will get github's all issues & detectors information located in target/arquillian-report.xml report.
 
 ----
 
@@ -579,13 +603,25 @@ added into the tree of Arquillian Report output file in every case.
 
 |===
 
-==== How to get Redmine Issues & detectors in arquillian reports.
+==== Arquillian Recorder Integration with Arquillian Redmine Governor Extension
 
-In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian maven test.
+How to get Redmine issues,force value in arquillian reports?
+
+In order to see all issues & force value in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian maven test.
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.extension</groupId>
+    <artifactId>arquillian-recorder-reporter-impl</artifactId>
+    <version>${version.arquillian.recorder}</version>
+    <scope>test</scope>
+</dependency>
+----
 
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
-You will get Redmine's all issues & detector information located in target/arquillian-report.xml report.
+You will get Redmine's all issues & force values i.e. true or false information located in target/arquillian-report.xml report.
 
 ----
 
