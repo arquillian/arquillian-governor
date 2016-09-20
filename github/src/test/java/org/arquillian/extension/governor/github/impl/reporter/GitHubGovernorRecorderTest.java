@@ -19,7 +19,6 @@ package org.arquillian.extension.governor.github.impl.reporter;
 
 import org.arquillian.extension.governor.github.api.GitHub;
 import org.arquillian.extension.governor.github.configuration.GitHubGovernorConfiguration;
-import org.arquillian.recorder.reporter.PropertyEntry;
 import org.arquillian.recorder.reporter.event.PropertyReportEvent;
 import org.arquillian.recorder.reporter.model.entry.KeyValueEntry;
 import org.arquillian.recorder.reporter.model.entry.table.TableCellEntry;
@@ -36,17 +35,15 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -80,61 +77,47 @@ public class GitHubGovernorRecorderTest {
     }
 
     @Test
-    public void shouldReportGitHubGovernorParamsForMethod() throws NoSuchMethodException {
+    public void shouldReportGitHubGovernorParamsForMethod() {
 
-        After after = new After(new FakeTestClass(), FakeTestClass.class.getMethod("dummyTest"));
+        After after = new After(new FakeTestClass(), getMethod("dummyTest"));
         gitHubGovernorRecorder.gitHubReportEntries(after);
 
         verify(propertyReportEvent, times(2)).fire(propertyReportEventArgumentCaptor.capture());
+
         List<PropertyReportEvent> propertyReportEvents = propertyReportEventArgumentCaptor.getAllValues();
-        assertEquals(propertyReportEvents.size(), 2);
-        PropertyEntry keyValueEntry = propertyReportEvents.get(0).getPropertyEntry();
 
-        assertThat(keyValueEntry, instanceOf(KeyValueEntry.class));
-        KeyValueEntry gitHubURL = (KeyValueEntry) keyValueEntry;
-        assertTrue(gitHubURL.equals(new KeyValueEntry("GitHub URL","https://github.com/dipak-pawar/governor-recorder-test/issues/2")));
-
-        PropertyEntry tableEntry = propertyReportEvents.get(1).getPropertyEntry();
-        assertThat(tableEntry, instanceOf(TableEntry.class));
-        TableEntry detectors = (TableEntry) tableEntry;
+        KeyValueEntry gitHubURL = new KeyValueEntry("GitHub URL","https://github.com/dipak-pawar/governor-recorder-test/issues/2");
 
         LinkedHashMap<String, String> tableOptions = new LinkedHashMap<String, String>();
         tableOptions.put("Force", "false");
         tableOptions.put("Detector Value", "And");
         tableOptions.put("Detector Strategy", "True");
 
-        assertTrue(detectors.equals(getTableEntry("GitHubOptions", tableOptions)));
+        assertThat(propertyReportEvents).hasSize(2).extracting("propertyEntry.class").contains(KeyValueEntry.class, TableEntry.class);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", KeyValueEntry.class).contains(gitHubURL);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", TableEntry.class) .contains(getTableEntry("GitHubOptions", tableOptions));
+
     }
 
     @Test
     public void sholdReportGitHubGovernorParamsForClass(){
-        try {
-            After after = new After(new FakeTestClass(), FakeTestClass.class.getMethod("someTestMethod"));
-            gitHubGovernorRecorder.gitHubReportEntries(after);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        After after = new After(new FakeTestClass(), getMethod("someTestMethod"));
+        gitHubGovernorRecorder.gitHubReportEntries(after);
 
         verify(propertyReportEvent, times(2)).fire(propertyReportEventArgumentCaptor.capture());
 
         List<PropertyReportEvent> propertyReportEvents = propertyReportEventArgumentCaptor.getAllValues();
-        assertEquals(propertyReportEvents.size(), 2);
-        PropertyEntry keyValueEntry = propertyReportEvents.get(0).getPropertyEntry();
 
-        assertThat(keyValueEntry, instanceOf(KeyValueEntry.class));
-        KeyValueEntry gitHubURL = (KeyValueEntry) keyValueEntry;
-        assertTrue(gitHubURL.equals(new KeyValueEntry("GitHub URL","https://github.com/dipak-pawar/governor-recorder-test/issues/1")));
-
-        PropertyEntry tableEntry = propertyReportEvents.get(1).getPropertyEntry();
-        assertThat(tableEntry, instanceOf(TableEntry.class));
-        TableEntry detectors = (TableEntry) tableEntry;
+        KeyValueEntry gitHubURL = new KeyValueEntry("GitHub URL","https://github.com/dipak-pawar/governor-recorder-test/issues/1");
 
         LinkedHashMap<String, String> tableOptions = new LinkedHashMap<String, String>();
         tableOptions.put("Force", "true");
         tableOptions.put("Detector Value", "And");
         tableOptions.put("Detector Strategy", "True");
 
-        assertTrue(detectors.equals(getTableEntry("GitHubOptions", tableOptions)));
+        assertThat(propertyReportEvents).hasSize(2).extracting("propertyEntry.class").contains(KeyValueEntry.class, TableEntry.class);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", KeyValueEntry.class).contains(gitHubURL);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", TableEntry.class) .contains(getTableEntry("GitHubOptions", tableOptions));
     }
 
     private TableEntry getTableEntry(String tableName, LinkedHashMap<String, String> tableOptions){
@@ -157,6 +140,16 @@ public class GitHubGovernorRecorderTest {
         return row;
     }
 
+    private Method getMethod(String methodName) {
+        Method method = null;
+        try {
+            method = FakeTestClass.class.getMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return method;
+    }
+
     @GitHub(value = "1",  force = true)
     private static final class FakeTestClass {
         @Test
@@ -168,4 +161,5 @@ public class GitHubGovernorRecorderTest {
         public void someTestMethod() {
         }
     }
+
 }

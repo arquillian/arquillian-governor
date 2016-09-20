@@ -4,7 +4,6 @@ import org.arquillian.extension.governor.api.detector.Detector;
 import org.arquillian.extension.governor.api.detector.utils.OS;
 import org.arquillian.extension.governor.jira.api.Jira;
 import org.arquillian.extension.governor.jira.configuration.JiraGovernorConfiguration;
-import org.arquillian.recorder.reporter.PropertyEntry;
 import org.arquillian.recorder.reporter.event.PropertyReportEvent;
 import org.arquillian.recorder.reporter.model.entry.KeyValueEntry;
 import org.arquillian.recorder.reporter.model.entry.table.TableCellEntry;
@@ -21,17 +20,14 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraGovernorRecorderTest {
@@ -64,66 +60,44 @@ public class JiraGovernorRecorderTest {
     @Test
     public void shouldReportJiraGovernorParamsForMethod() {
 
-        try {
-            After after = new After(FakeTestClass.class, FakeTestClass.class.getMethod("dummyTest"));
-              jiraGovernorRecorder.jiraReportEntries(after);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        After after = new After(new FakeTestClass(), getMethod("dummyTest"));
+        jiraGovernorRecorder.jiraReportEntries(after);
 
         verify(propertyReportEvent, times(2)).fire(propertyReportEventArgumentCaptor.capture());
 
         List <PropertyReportEvent> propertyReportEvents = propertyReportEventArgumentCaptor.getAllValues();
-        assertEquals(propertyReportEvents.size(), 2);
-        PropertyEntry keyValueEntry = propertyReportEvents.get(0).getPropertyEntry();
 
-        assertThat(keyValueEntry, instanceOf(KeyValueEntry.class));
-        KeyValueEntry jiraURL = (KeyValueEntry) keyValueEntry;
-        assertTrue(jiraURL.equals(new KeyValueEntry("JIRA URL","https://jboss.issues.org/browse/ARQ-123")));
-
-        PropertyEntry tableEntry = propertyReportEvents.get(1).getPropertyEntry();
-        assertThat(tableEntry, instanceOf(TableEntry.class));
-
-        TableEntry detectors = (TableEntry) tableEntry;
+        KeyValueEntry keyValueEntry = new KeyValueEntry("JIRA URL","https://jboss.issues.org/browse/ARQ-123");
 
         LinkedHashMap<String, String> tableOptions = new LinkedHashMap<String, String>();
         tableOptions.put("Force", "true");
         tableOptions.put("Detector Value", "And");
         tableOptions.put("Detector Strategy", "Unix");
 
-        assertTrue(detectors.equals(getTableEntry("JiraOptions", tableOptions)));
+        assertThat(propertyReportEvents).hasSize(2).extracting("propertyEntry.class").contains(KeyValueEntry.class, TableEntry.class);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", KeyValueEntry.class).contains(keyValueEntry);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", TableEntry.class) .contains(getTableEntry("JiraOptions", tableOptions));
     }
 
     @Test
     public void sholdReportJiraGovernorParamsForClass(){
-        try {
-            After after = new After(new FakeTestClass(), FakeTestClass.class.getMethod("someTestMethod"));
-            jiraGovernorRecorder.jiraReportEntries(after);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        After after = new After(new FakeTestClass(), getMethod("someTestMethod"));
+        jiraGovernorRecorder.jiraReportEntries(after);
 
         verify(propertyReportEvent, times(2)).fire(propertyReportEventArgumentCaptor.capture());
 
         List <PropertyReportEvent> propertyReportEvents = propertyReportEventArgumentCaptor.getAllValues();
-        assertEquals(propertyReportEvents.size(), 2);
-        PropertyEntry keyValueEntry = propertyReportEvents.get(0).getPropertyEntry();
 
-        assertThat(keyValueEntry, instanceOf(KeyValueEntry.class));
-        KeyValueEntry jiraURL = (KeyValueEntry) keyValueEntry;
-        assertTrue(jiraURL.equals(new KeyValueEntry("JIRA URL","https://jboss.issues.org/browse/ARQ-234")));
-
-        PropertyEntry tableEntry = propertyReportEvents.get(1).getPropertyEntry();
-        assertThat(tableEntry, instanceOf(TableEntry.class));
-
-        TableEntry detectors = (TableEntry) tableEntry;
+        KeyValueEntry jiraURL = new KeyValueEntry("JIRA URL","https://jboss.issues.org/browse/ARQ-234");
 
         LinkedHashMap<String, String> tableOptions = new LinkedHashMap<String, String>();
         tableOptions.put("Force", "false");
         tableOptions.put("Detector Value", "And");
         tableOptions.put("Detector Strategy", "Windows");
 
-        assertTrue(detectors.equals(getTableEntry("JiraOptions", tableOptions)));
+        assertThat(propertyReportEvents).hasSize(2).extracting("propertyEntry.class").contains(KeyValueEntry.class, TableEntry.class);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", KeyValueEntry.class).contains(jiraURL);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", TableEntry.class) .contains(getTableEntry("JiraOptions", tableOptions));
     }
 
     private TableEntry getTableEntry(String tableName, LinkedHashMap<String, String> tableOptions){
@@ -144,6 +118,16 @@ public class JiraGovernorRecorderTest {
             row.addCell(new TableCellEntry(cellContent));
         }
         return row;
+    }
+
+    private Method getMethod(String methodName) {
+        Method method = null;
+        try {
+             method = FakeTestClass.class.getMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return method;
     }
 
     @Jira(value = "ARQ-234",  detector = @Detector(value = OS.Windows.class))

@@ -37,7 +37,6 @@ import java.lang.reflect.Method;
  * @author <a href="mailto:dpawar@redhat.com">Dipak Pawar</a>
  */
 
-
 public class RedmineGovernorRecorder {
 
     @Inject
@@ -64,17 +63,17 @@ public class RedmineGovernorRecorder {
         if (redmineValue != null) {
             final String issueURL = constructRedmineIssueURL(redmineServerURL, redmineValue.value());
 
-            final TableEntry jiraDetector = new TableEntry();
-            jiraDetector.setTableName("RedmineOptions");
-            jiraDetector.getTableHead().getRow().addCells(new TableCellEntry("Force"));
+            final TableEntry redmineDetector = new TableEntry();
+            redmineDetector.setTableName("RedmineOptions");
+            redmineDetector.getTableHead().getRow().addCells(new TableCellEntry("Force"));
 
             final TableRowEntry row = new TableRowEntry();
 
             row.addCells(new TableCellEntry(String.valueOf(redmineValue.force())));
-            jiraDetector.getTableBody().addRow(row);
+            redmineDetector.getTableBody().addRow(row);
 
             propertyReportEvent.fire(new PropertyReportEvent(new KeyValueEntry("Redmine URL", issueURL)));
-            propertyReportEvent.fire(new PropertyReportEvent(jiraDetector));
+            propertyReportEvent.fire(new PropertyReportEvent(redmineDetector));
         }
     }
 

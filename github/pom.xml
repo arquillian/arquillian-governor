@@ -109,6 +109,13 @@
             <version>${version.arquillian.recorder}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!--AssertJ for assertion -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${version.assertj}</version>
+        </dependency>
     </dependencies>
 
 </project>

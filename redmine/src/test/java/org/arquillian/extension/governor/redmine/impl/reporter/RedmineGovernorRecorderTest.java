@@ -2,7 +2,6 @@ package org.arquillian.extension.governor.redmine.impl.reporter;
 
 import org.arquillian.extension.governor.redmine.api.Redmine;
 import org.arquillian.extension.governor.redmine.configuration.RedmineGovernorConfiguration;
-import org.arquillian.recorder.reporter.PropertyEntry;
 import org.arquillian.recorder.reporter.event.PropertyReportEvent;
 import org.arquillian.recorder.reporter.model.entry.KeyValueEntry;
 import org.arquillian.recorder.reporter.model.entry.table.TableCellEntry;
@@ -19,23 +18,16 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.logging.Logger;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-/**
- * Created by dipak on 9/19/16.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class RedmineGovernorRecorderTest {
 
@@ -67,58 +59,41 @@ public class RedmineGovernorRecorderTest {
     @Test
     public void shouldReportRedmineGovernorParamsForMethod() {
 
-        try {
-            After after = new After(new FakeTestClass(), FakeTestClass.class.getMethod("dummyTest"));
-            redmineGovernorRecorder.redmineReportEntries(after);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        After after = new After(new FakeTestClass(), getMethod("dummyTest"));
+        redmineGovernorRecorder.redmineReportEntries(after);
 
         verify(propertyReportEvent, times(2)).fire(propertyReportEventArgumentCaptor.capture());
 
         List<PropertyReportEvent> propertyReportEvents = propertyReportEventArgumentCaptor.getAllValues();
-        assertEquals(propertyReportEvents.size(), 2);
 
-        PropertyEntry keyValueEntry = propertyReportEvents.get(0).getPropertyEntry();
-        assertThat(keyValueEntry, instanceOf(KeyValueEntry.class));
-        KeyValueEntry redmineURL = (KeyValueEntry) keyValueEntry;
-        assertTrue(redmineURL.equals(new KeyValueEntry("Redmine URL","http://redmine.test/issues/2")));
-
-        PropertyEntry tableEntry = propertyReportEvents.get(1).getPropertyEntry();
-        assertThat(tableEntry, instanceOf(TableEntry.class));
-        TableEntry detectors = (TableEntry) tableEntry;
+        KeyValueEntry redmineURL = new KeyValueEntry("Redmine URL","http://redmine.test/issues/2");
 
         LinkedHashMap<String, String> tableOptions = new LinkedHashMap<String, String>();
         tableOptions.put("Force","false");
 
-        assertTrue(detectors.equals(getTableEntry("RedmineOptions", tableOptions)));
+        assertThat(propertyReportEvents).hasSize(2).extracting("propertyEntry.class").contains(KeyValueEntry.class, TableEntry.class);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", KeyValueEntry.class).contains(redmineURL);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", TableEntry.class) .contains(getTableEntry("RedmineOptions", tableOptions));
     }
 
     @Test
     public void sholdReportRedmineGovernorParamsForClass(){
-        try {
-            After after = new After(new FakeTestClass(), FakeTestClass.class.getMethod("someTestMethod"));
-            redmineGovernorRecorder.redmineReportEntries(after);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
+        After after = new After(new FakeTestClass(), getMethod("someTestMethod"));
+        redmineGovernorRecorder.redmineReportEntries(after);
 
         verify(propertyReportEvent, times(2)).fire(propertyReportEventArgumentCaptor.capture());
 
         List <PropertyReportEvent> propertyReportEvents = propertyReportEventArgumentCaptor.getAllValues();
-        assertEquals(propertyReportEvents.size(), 2);
-        PropertyEntry keyValueEntry = propertyReportEvents.get(0).getPropertyEntry();
 
-        assertThat(keyValueEntry, instanceOf(KeyValueEntry.class));
-        KeyValueEntry redmineURL = (KeyValueEntry) keyValueEntry;
-        assertTrue(redmineURL.equals(new KeyValueEntry("Redmine URL","http://redmine.test/issues/1")));
+        KeyValueEntry redmineURL = new KeyValueEntry("Redmine URL","http://redmine.test/issues/1");
 
-        PropertyEntry tableEntry = propertyReportEvents.get(1).getPropertyEntry();
-        assertThat(tableEntry, instanceOf(TableEntry.class));
-        TableEntry detectors = (TableEntry) tableEntry;
         LinkedHashMap<String, String> tableOptions = new LinkedHashMap<String, String>();
         tableOptions.put("Force","true");
-        assertTrue(detectors.equals(getTableEntry("RedmineOptions",tableOptions)));
+
+        assertThat(propertyReportEvents).hasSize(2).extracting("propertyEntry.class").contains(KeyValueEntry.class, TableEntry.class);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", KeyValueEntry.class).contains(redmineURL);
+        assertThat(propertyReportEvents).extracting("propertyEntry").filteredOn("class", TableEntry.class) .contains(getTableEntry("RedmineOptions", tableOptions));
+
     }
 
     private TableEntry getTableEntry(String tableName, LinkedHashMap<String, String> tableOptions){
@@ -139,6 +114,16 @@ public class RedmineGovernorRecorderTest {
             row.addCell(new TableCellEntry(cellContent));
         }
         return row;
+    }
+
+    private Method getMethod(String methodName) {
+        Method method = null;
+        try {
+            method = FakeTestClass.class.getMethod(methodName);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return method;
     }
 
     @Redmine(value = "1",  force = true)
