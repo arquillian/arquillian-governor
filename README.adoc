@@ -208,8 +208,6 @@ Configure arquillian-recorder-reporter as your requirement. Follow steps from he
 
 You will get jira's all issues & detector information located in target/arquillian-report.xml report.
 
-----
-
 == Arquillian GitHub Governor Extension
 
 In order to use GitHub Governor extension, you have to put this dependency into your Arquillian test Maven build:
@@ -370,8 +368,6 @@ In order to see all issues & detectors in arquillian reports, you have to put ar
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
 You will get github's all issues & detectors information located in target/arquillian-report.xml report.
-
-----
 
 == Arquillian Redmine Governor Extension
 
@@ -622,8 +618,6 @@ In order to see all issues & force value in arquillian reports, you have to put 
 Configure arquillian-recorder-reporter as your requirement. Follow steps from here - https://github.com/arquillian/arquillian-recorder/wiki/Reporter
 
 You will get Redmine's all issues & force value information located in target/arquillian-report.xml report.
-
-----
 
 == Arquillian Governor Ignore extension
 
