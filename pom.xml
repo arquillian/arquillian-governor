@@ -82,6 +82,9 @@
         <version.signature>1.1</version.signature>
         <version.commons.lang>3.4</version.commons.lang>
 
+        <!-- Arquillian Recorder Reporter -->
+        <version.arquillian.recorder>1.1.4.Final</version.arquillian.recorder>
+
         <!-- logging -->
         <versions.log4j>1.2.17</versions.log4j>
         <versions.slf4j>1.7.13</versions.slf4j>
@@ -91,6 +94,9 @@
 
         <maven.compiler.argument.target>1.6</maven.compiler.argument.target>
         <maven.compiler.argument.source>1.6</maven.compiler.argument.source>
+
+        <!-- Assertion -->
+        <version.assertj>2.5.0</version.assertj>
     </properties>
 
     <!-- Modules -->
@@ -160,6 +166,27 @@
                 <scope>test</scope>
             </dependency>
 
+            <!-- Arquillian recorder reporter -->
+            <dependency>
+                <groupId>org.arquillian.extension</groupId>
+                <artifactId>arquillian-recorder-reporter-spi</artifactId>
+                <version>${version.arquillian.recorder}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.arquillian.extension</groupId>
+                <artifactId>arquillian-recorder-reporter-api</artifactId>
+                <version>${version.arquillian.recorder}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- assertj dependency for assetion -->
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.assertj}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

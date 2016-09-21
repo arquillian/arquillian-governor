@@ -19,6 +19,7 @@ package org.arquillian.extension.governor.redmine;
 import org.arquillian.extension.governor.redmine.configuration.RedmineGovernorConfigurator;
 import org.arquillian.extension.governor.redmine.enricher.RedmineClientProvider;
 import org.arquillian.extension.governor.redmine.impl.RedmineTestExecutionDecider;
+import org.arquillian.extension.governor.redmine.impl.reporter.RedmineGovernorRecorder;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
@@ -35,6 +36,11 @@ public class RedmineGovernorExtension implements LoadableExtension {
 
         builder.service(TestExecutionDecider.class, RedmineTestExecutionDecider.class);
         builder.service(ResourceProvider.class, RedmineClientProvider.class);
+
+        //Only if recorder-reporter is in classpath we should provide reporting capabilities.
+        if (Validate.classExists("org.arquillian.recorder.reporter.ReporterExtension")) {
+            builder.observer(RedmineGovernorRecorder.class);
+        }
     }
 
 }

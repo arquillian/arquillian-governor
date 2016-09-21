@@ -29,7 +29,6 @@
     <!-- Properties -->
     <properties>
         <version.hamcrest>1.0.0.0</version.hamcrest>
-        <version.recorder>1.1.0.Alpha1</version.recorder>
     </properties>
 
     <!-- Dependencies -->
@@ -70,7 +69,12 @@
         <dependency>
             <groupId>org.arquillian.extension</groupId>
             <artifactId>arquillian-recorder-reporter-spi</artifactId>
-            <version>${version.recorder}</version>
+            <version>${version.arquillian.recorder}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.arquillian.extension</groupId>
+            <artifactId>arquillian-recorder-reporter-api</artifactId>
+            <version>${version.arquillian.recorder}</version>
         </dependency>
 
         <!-- External test dependencies -->

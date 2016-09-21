@@ -19,6 +19,7 @@ package org.arquillian.extension.governor.github;
 import org.arquillian.extension.governor.github.configuration.GitHubGovernorConfigurator;
 import org.arquillian.extension.governor.github.enricher.GitHubClientProvider;
 import org.arquillian.extension.governor.github.impl.GitHubTestExecutionDecider;
+import org.arquillian.extension.governor.github.impl.reporter.GitHubGovernorRecorder;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 import org.jboss.arquillian.test.spi.execution.TestExecutionDecider;
@@ -35,6 +36,11 @@ public class GitHubGovernorExtension implements LoadableExtension {
 
         builder.service(TestExecutionDecider.class, GitHubTestExecutionDecider.class);
         builder.service(ResourceProvider.class, GitHubClientProvider.class);
+
+        //Only if recorder-reporter is in classpath we should provide reporting capabilities.
+        if (Validate.classExists("org.arquillian.recorder.reporter.ReporterExtension")) {
+            builder.observer(GitHubGovernorRecorder.class);
+        }
     }
 
 }
