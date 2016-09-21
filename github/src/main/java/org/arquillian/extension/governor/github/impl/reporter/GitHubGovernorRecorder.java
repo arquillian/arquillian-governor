@@ -32,6 +32,7 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.event.suite.After;
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.TreeSet;
 
 
@@ -65,9 +66,8 @@ public class GitHubGovernorRecorder {
             final GitHubGovernorConfiguration configuration = gitHubGovernorConfigurationInstance.get();
 
             final String gitHubIssueURL = contructGitHubIssueURL(configuration, gitHubValue);
-
             final Class<? extends Detectable>[] detectables = gitHubValue.detector().value();
-            final TreeSet<String> uniqDetectables = new TreeSet<String>();
+            final Set<String> uniqDetectables = new TreeSet<String>();
 
             for (final Class<? extends Detectable> detectable : detectables) {
                 uniqDetectables.add(detectable.getSimpleName());
@@ -93,15 +93,16 @@ public class GitHubGovernorRecorder {
 
     private String contructGitHubIssueURL(GitHubGovernorConfiguration configuration, GitHub gitHub) {
         String url = configuration.getDefaultGithubURL();
-        if (configuration.getRepositoryUser() != "") {
-            url += ("/" + configuration.getRepositoryUser());
+        if (!configuration.getRepositoryUser().isEmpty()) {
+            url += "/" + configuration.getRepositoryUser();
         }
         if (configuration.getRepository() != "") {
-            url +=  ("/" + configuration.getRepository());
+            url +=  "/" + configuration.getRepository();
         }
         if (gitHub.value() != "") {
-            url += ("/issues/" + gitHub.value());
+            url += "/issues/" + gitHub.value();
         }
+
         return url;
     }
 

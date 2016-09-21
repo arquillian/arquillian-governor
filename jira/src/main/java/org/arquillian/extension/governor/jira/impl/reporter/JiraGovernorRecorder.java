@@ -33,6 +33,7 @@ import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.event.suite.After;
 
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.TreeSet;
 
 
@@ -66,7 +67,7 @@ public class JiraGovernorRecorder {
             final String issueURL = constructJiraIssueURL(jiraServer, jira.value());
 
             final Class<? extends Detectable>[] detectables = jira.detector().value();
-            final TreeSet<String> uniqDetectables = new TreeSet<String>();
+            final Set<String> uniqDetectables = new TreeSet<String>();
 
             for (final Class<? extends Detectable> detectable : detectables) {
                 uniqDetectables.add(detectable.getSimpleName());
