@@ -607,7 +607,7 @@ added into the tree of Arquillian Report output file in every case.
 
 How to get Redmine issues,force value in arquillian reports?
 
-In order to see all issues & force value in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquilliantest Maven build.
+In order to see all issues & force value in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian test Maven build.
 
 [source,xml]
 ----
