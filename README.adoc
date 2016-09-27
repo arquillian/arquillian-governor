@@ -731,10 +731,13 @@ In order to release new version, execute following Maven command:
 
 Then:
 
-. Run test projects in `tests` directory and bump version of governor dependency in them to the to-be-released one
+. Run test projects in `tests` directory and 
+.. Bump version of governor dependency to the to-be-released one
+.. Bump other dependencies if needed
+.. For `jira-test` project provide your credentials and jira server using environment variables
 . Verify the build from staging repository
 . Make sure all JIRAs are closed
 . Release version in JIRA and create next version if not available
 . Promote the build to the stable Maven repository
-. Push commits and tag created by +maven-release-plugin+ to the repository.
+. Push commits and tag created by `maven-release-plugin` to the repository.
 
