@@ -24,9 +24,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <version.arquillian.core>1.1.9.Final</version.arquillian.core>
-        <version.arquillian.decoder>1.0.0.Alpha3-SNAPSHOT</version.arquillian.decoder>
-        <version.recorder>1.1.0.Alpha1</version.recorder>
+        <version.arquillian.core>1.1.11.Final</version.arquillian.core>
+        <version.arquillian.governor>1.0.4.Final</version.arquillian.governor>
+        <version.arquillian.recorder>1.1.4.Final</version.arquillian.recorder>
         <version.junit>4.12</version.junit>
 
         <maven.compiler.source>1.6</maven.compiler.source>
@@ -47,13 +47,13 @@
             <dependency>
                 <groupId>org.arquillian.extension</groupId>
                 <artifactId>arquillian-governor-skipper</artifactId>
-                <version>${version.arquillian.decoder}</version>
+                <version>${version.arquillian.governor}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.arquillian.extension</groupId>
                 <artifactId>arquillian-recorder-reporter-impl</artifactId>
-                <version>${version.recorder}</version>
+                <version>${version.arquillian.recorder}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
@@ -113,7 +113,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.18</version>
+                <version>2.19.1</version>
             </plugin>
         </plugins>
         <!-- for filtering properties from this pom into arquillian.xml -->
