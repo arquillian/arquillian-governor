@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.arquillian.extension</groupId>
         <artifactId>arquillian-governor-parent</artifactId>
-        <version>1.0.4.Final</version>
+        <version>1.0.5.Final-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
