@@ -20,14 +20,5 @@
     <extension qualifier="governor-jira">
         <property name="closePassed">false</property>
         <property name="force">false</property>
-
-        <!-- your jira username -->
-        <property name="username">kwintesencja</property>
-
-        <!-- your jira password -->
-        <property name="password">bigboss666</property>
-
-        <!-- your jira instance, e.g https://issues.jenkins-ci.org -->
-        <!--property name="server"></property-->
     </extension>
 </arquillian>
