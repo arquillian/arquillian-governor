@@ -24,7 +24,7 @@ into `arquillian.xml` like this:
 </extension>
 ----
 
-Possible properties for `governor` extension:
+Available properties for `governor` extension:
 
 |===
 |Configuration property|Description|Default value|Possible values
@@ -42,7 +42,7 @@ Possible properties for `governor` extension:
 
 == Arquillian JIRA Governor Extension
 
-In order to use JIRA Governor extension, you have to put this dependency into your Arquillian test Maven build:
+In order to use JIRA Governor extension, you have to include following dependency (example for Maven):
 
 [source,xml]
 ----
@@ -65,7 +65,7 @@ Arquillian JIRA Governor extension is configured by putting the following extens
 </extension>
 ----
 
-Possible properties for `governor-jira` extension:
+Available properties for `governor-jira` extension:
 
 |===
 |Configuration property|Description|Default value|Possible values
@@ -97,15 +97,15 @@ Possible properties for `governor-jira` extension:
 
 |===
 
-Due to security reasons, when you do not specify `server` and `username` or `password` properties in `arquillian.xml` 
+If you do not specify `server`, `username` or `password` properties in `arquillian.xml` 
 for JIRA Governor, this extension looks for system properties `jira.governor.server`, `jira.governor.username` and 
 `jira.governor.password` respectively.
 
-You can set properties `force` and `closePassed` by system properties `jira.governor.force` and `jira.governor.closepassed` by setting them to "true" or "false".
+You can also set properties `force` and `closePassed` by system properties `jira.governor.force` and `jira.governor.closepassed`.
 
 === Usage
 
-Let's have this test case:
+Using Governer JIRA extension in your tests is as simple as this:
 
 [source,java]
 ----
@@ -147,7 +147,7 @@ automatically marked as `Done` on JIRA server.
 public class AutomaticClosingTestCase
 {
     @Test
-    @Jira("ARQ-5000", force = true)
+    @Jira(value = "ARQ-5000", force = true)
     public void automaticClosingTest)
     {   
         // when this JIRA exists and its status is 'Unresolved' / 'Open'
@@ -190,7 +190,7 @@ public class IssuesWithConditionalTestCases
 
 ==== Arquillian Recorder Integration with Arquillian Jira Governor Extension
 
-How to get Jira issue, force value, detector & it's strategy for environment in arquillian reports?
+How to get Jira issue, force value, detector and it's strategy for environment in arquillian reports?
 
 In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian test Maven build.
 
@@ -210,7 +210,7 @@ You will get jira's all issues & detector information located in target/arquilli
 
 == Arquillian GitHub Governor Extension
 
-In order to use GitHub Governor extension, you have to put this dependency into your Arquillian test Maven build:
+In order to use GitHub Governor extension, you have to include this dependency:
 
 [source,xml]
 ----
@@ -273,11 +273,11 @@ Possible properties for `governor-github` extension:
 
 |===
 
-Due to security reasons, when you do not specify `server` and `username` or `password` properties in `arquillian.xml`
+If you do not specify `server` and `username` or `password` properties in `arquillian.xml`
 for GitHub Governor, this extension looks for system properties `github.governor.repository`, `github.governor.repositoryuser`, `github.governor.token`, `github.governor.username` and
 `github.governor.password` respectively.
 
-You can set properties `force` and `closePassed` by system properties `github.governor.force` and `github.governor.closepassed` by setting them to "true" or "false".
+You can also set properties `force` and `closePassed` by system properties `github.governor.force` and `github.governor.closepassed` by setting them to "true" or "false".
 
 === Usage
 
@@ -353,7 +353,7 @@ public class IssuesWithConditionalTestCases
 
 How to get GitHub issue, force value, detector & it's strategy for environment in arquillian reports?
  
-In order to see all issues & detectors in arquillian reports, you have to put arquillian-recorder-reporter dependency in your Arquillian test Maven build.
+In order to see all issues & detectors in arquillian reports, you have to include following dependency:
 
 [source,xml]
 ----
@@ -440,14 +440,13 @@ Possible properties for `governor-redmine` extension:
 
 |===
 
-Due to security reasons, when you do not specify `server` and `apikey` properties in `arquillian.xml`
-for Redmine Governor, this extension looks for system properties `redmine.governor.server` and `redmine.governor.apikey`.
+If you do not specify `server` and `apikey` properties in `arquillian.xml` for Redmine Governor, this extension looks for system properties `redmine.governor.server` and `redmine.governor.apikey`.
 
 You can set properties `force`, `closePassed` and `openFailed` by system properties `redmine.governor.force`, `redmine.governor.closepassed` and `redmine.governor.openFailed` by setting them to "true" or "false".
 
 === Usage
 
-Let's have this test case:
+In order to make your tests dependent on the statuses of corresponding issues in Redmine, simply add following annotation:
 
 [source,java]
 ----
@@ -458,7 +457,7 @@ public class TestCase
     @Redmine("1")
     public void test()
     {
-        //...
+        // test code
     }
 
 }
@@ -656,7 +655,7 @@ Glad you asked. Because of Arquillian Governor base extension, you are welcome t
 your own test method execution resolver as we did with Arquillian JIRA governor extension.
 
 The governor annotation you want to put on your test method (as we did with `@Jira`) have 
-to be annotated with +@Governor+ annotation. `@Jira` annotation looks like this:
+to be annotated with `@Governor` annotation. `@Jira` annotation looks like this:
 
 [source,java]
 ----
@@ -679,7 +678,7 @@ Once you have your governor annotation in your extension, you have to write your
 
 [source,java]
 ----
-public class MyLoadableExtension implements LoadableExtension
+public class BugzillaLoadableExtension implements LoadableExtension
 {
     @Override
     public void register(ExtensionBuilder builder)
@@ -718,7 +717,7 @@ This is the minimal scenario. Of course, your resolution can be done in a comple
 
 [source,bash]
 ----
-$ mvn clean install
+$ ./mvnw clean install
 ----
 
 == Releasing new version
@@ -727,15 +726,15 @@ In order to release new version, execute following Maven command:
 
 [source,bash]
 ----
-mvn clean release:prepare release:perform
+./mvnw clean release:prepare release:perform
 ----
 
 Then:
 
-0. Run test projects in `tests` directory and bump version of governor dependency in them to the to-be-released one
-1. Verify the build from staging repository
-2. Make sure all JIRAs are closed
-3. Release version in JIRA and create next version if not available
-4. Promote the build to the stable Maven repository
-5. Push commits and tag created by +maven-release-plugin+ to the repository.
+. Run test projects in `tests` directory and bump version of governor dependency in them to the to-be-released one
+. Verify the build from staging repository
+. Make sure all JIRAs are closed
+. Release version in JIRA and create next version if not available
+. Promote the build to the stable Maven repository
+. Push commits and tag created by +maven-release-plugin+ to the repository.
 
