@@ -44,7 +44,11 @@ public class GitHubGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        return getProperty("username", username);
+        if (!username.equals(EMPTY_STRING)){
+            return username;
+        }else {
+            return getProperty("username", EMPTY_STRING);
+        }
     }
 
     public void setUsername(String username) {
@@ -52,7 +56,11 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        return getProperty("password", password);
+        if (!password.equals(EMPTY_STRING)){
+            return password;
+        }else {
+            return getProperty("password", EMPTY_STRING);
+        }
     }
 
     public void setPassword(String password) {
@@ -60,7 +68,11 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getToken() {
-        return getProperty("token", token);
+        if (!token.equals(EMPTY_STRING)){
+            return token;
+        }else {
+            return getProperty("token", EMPTY_STRING);
+        }
     }
 
     public void setToken(String token) {
@@ -68,7 +80,11 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepositoryUser() {
-        return getProperty("repositoryUser", repositoryUser);
+        if (!repositoryUser.equals(EMPTY_STRING)){
+            return repositoryUser;
+        }else {
+            return getProperty("repositoryUser", EMPTY_STRING);
+        }
     }
 
     public void setRepositoryUser(String repositoryUser) {
@@ -76,7 +92,11 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepository() {
-        return getProperty("repository", repository);
+        if (!repository.equals(EMPTY_STRING)){
+            return repository;
+        }else {
+            return getProperty("repository", EMPTY_STRING);
+        }
     }
 
     public void setRepository(String repository) {
@@ -84,7 +104,11 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
+        if (force == true){
+            return force;
+        }else {
+            return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
+        }
     }
 
     public void setForce(boolean force) {
@@ -92,9 +116,12 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
+        if (closePassed == true) {
+            return closePassed;
+        } else {
+            return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
+        }
     }
-
     public void setClosePassed(boolean closePassed) {
         setProperty("closePassed", Boolean.toString(closePassed));
     }

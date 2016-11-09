@@ -45,7 +45,11 @@ public class JiraGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        return getProperty("username", username);
+        if (!username.equals(EMPTY_STRING)){
+            return username;
+        }else {
+            return getProperty("username", EMPTY_STRING);
+        }
     }
 
     public void setUsername(String username) {
@@ -53,7 +57,11 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        return getProperty("password", password);
+        if (!password.equals(EMPTY_STRING)){
+            return password;
+        }else {
+            return getProperty("password", EMPTY_STRING);
+        }
     }
 
     public void setPassword(String password) {
@@ -61,7 +69,11 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getServer() {
-        return getProperty("server", server);
+        if (!server.equals(DEFAULT_JIRA_SERVER_ADDRESS)){
+            return server;
+        }else {
+            return getProperty("server", DEFAULT_JIRA_SERVER_ADDRESS);
+        }
     }
 
     public void setServer(String server) {
@@ -69,7 +81,11 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
+        if (force == true){
+            return force;
+        }else {
+            return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
+        }
     }
 
     public void setForce(boolean force) {
@@ -77,7 +93,11 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
+        if (closePassed == true){
+            return closePassed;
+        }else {
+            return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
+        }
     }
 
     public void setClosePassed(boolean closePassed) {

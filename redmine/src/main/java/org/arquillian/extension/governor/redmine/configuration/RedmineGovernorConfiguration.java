@@ -45,7 +45,11 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getApiKey() {
-        return getProperty("apikey", apiKey);
+        if (!apiKey.equals(EMPTY_STRING)){
+            return apiKey;
+        }else {
+            return getProperty("apikey", EMPTY_STRING);
+        }
     }
 
     public void setApiKey(String apiKey) {
@@ -53,11 +57,19 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getCloseOrder() {
-        return getProperty("closeOrder", closeOrder);
+        if (!closeOrder.equals(EMPTY_STRING)){
+            return closeOrder;
+        }else {
+            return getProperty("closeOrder", EMPTY_STRING);
+        }
     }
 
     public String getServer() {
-        return getProperty("server", server);
+        if (!server.equals(EMPTY_STRING)){
+            return server;
+        }else {
+            return getProperty("server", EMPTY_STRING);
+        }
     }
 
     public void setServer(String server) {
@@ -65,7 +77,11 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
+        if (force == true){
+            return force;
+        }else {
+            return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
+        }
     }
 
     public void setForce(boolean force) {
@@ -73,7 +89,11 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
+        if (closePassed == true){
+            return closePassed;
+        }else {
+            return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
+        }
     }
 
     public void setClosePassed(boolean closePassed) {
@@ -81,7 +101,11 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getOpenFailed() {
-        return Boolean.parseBoolean(getProperty("openFailed", Boolean.toString(openFailed)));
+        if (openFailed == true){
+            return openFailed;
+        }else {
+            return Boolean.parseBoolean(getProperty("openFailed", Boolean.toString(openFailed)));
+        }
     }
 
     public void setOpenFailed(boolean openFailed) {
