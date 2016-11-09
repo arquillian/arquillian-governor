@@ -45,9 +45,9 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getApiKey() {
-        if (!apiKey.equals(EMPTY_STRING)){
+        if (!apiKey.equals(EMPTY_STRING)) {
             return apiKey;
-        }else {
+        } else {
             return getProperty("apikey", EMPTY_STRING);
         }
     }
@@ -57,17 +57,17 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getCloseOrder() {
-        if (!closeOrder.equals(EMPTY_STRING)){
+        if (!closeOrder.equals(EMPTY_STRING)) {
             return closeOrder;
-        }else {
+        } else {
             return getProperty("closeOrder", EMPTY_STRING);
         }
     }
 
     public String getServer() {
-        if (!server.equals(EMPTY_STRING)){
+        if (!server.equals(EMPTY_STRING)) {
             return server;
-        }else {
+        } else {
             return getProperty("server", EMPTY_STRING);
         }
     }
@@ -77,9 +77,9 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        if (force == true){
+        if (force) {
             return force;
-        }else {
+        } else {
             return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
         }
     }
@@ -89,9 +89,9 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        if (closePassed == true){
+        if (closePassed) {
             return closePassed;
-        }else {
+        } else {
             return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
         }
     }
@@ -101,9 +101,9 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getOpenFailed() {
-        if (openFailed == true){
+        if (openFailed) {
             return openFailed;
-        }else {
+        } else {
             return Boolean.parseBoolean(getProperty("openFailed", Boolean.toString(openFailed)));
         }
     }

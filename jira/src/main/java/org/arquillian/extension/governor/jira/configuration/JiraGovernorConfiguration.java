@@ -45,9 +45,9 @@ public class JiraGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        if (!username.equals(EMPTY_STRING)){
+        if (!username.equals(EMPTY_STRING)) {
             return username;
-        }else {
+        } else {
             return getProperty("username", EMPTY_STRING);
         }
     }
@@ -57,9 +57,9 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        if (!password.equals(EMPTY_STRING)){
+        if (!password.equals(EMPTY_STRING)) {
             return password;
-        }else {
+        } else {
             return getProperty("password", EMPTY_STRING);
         }
     }
@@ -69,9 +69,9 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getServer() {
-        if (!server.equals(DEFAULT_JIRA_SERVER_ADDRESS)){
+        if (!server.equals(DEFAULT_JIRA_SERVER_ADDRESS)) {
             return server;
-        }else {
+        } else {
             return getProperty("server", DEFAULT_JIRA_SERVER_ADDRESS);
         }
     }
@@ -81,9 +81,9 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        if (force == true){
+        if (force) {
             return force;
-        }else {
+        } else {
             return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
         }
     }
@@ -93,9 +93,9 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        if (closePassed == true){
+        if (closePassed) {
             return closePassed;
-        }else {
+        } else {
             return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
         }
     }

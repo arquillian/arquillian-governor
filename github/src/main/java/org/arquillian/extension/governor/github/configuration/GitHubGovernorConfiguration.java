@@ -44,9 +44,9 @@ public class GitHubGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        if (!username.equals(EMPTY_STRING)){
+        if (!username.equals(EMPTY_STRING)) {
             return username;
-        }else {
+        } else {
             return getProperty("username", EMPTY_STRING);
         }
     }
@@ -56,9 +56,9 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        if (!password.equals(EMPTY_STRING)){
+        if (!password.equals(EMPTY_STRING)) {
             return password;
-        }else {
+        } else {
             return getProperty("password", EMPTY_STRING);
         }
     }
@@ -68,9 +68,9 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getToken() {
-        if (!token.equals(EMPTY_STRING)){
+        if (!token.equals(EMPTY_STRING)) {
             return token;
-        }else {
+        } else {
             return getProperty("token", EMPTY_STRING);
         }
     }
@@ -80,9 +80,9 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepositoryUser() {
-        if (!repositoryUser.equals(EMPTY_STRING)){
+        if (!repositoryUser.equals(EMPTY_STRING)) {
             return repositoryUser;
-        }else {
+        } else {
             return getProperty("repositoryUser", EMPTY_STRING);
         }
     }
@@ -92,9 +92,9 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepository() {
-        if (!repository.equals(EMPTY_STRING)){
+        if (!repository.equals(EMPTY_STRING)) {
             return repository;
-        }else {
+        } else {
             return getProperty("repository", EMPTY_STRING);
         }
     }
@@ -104,9 +104,9 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        if (force == true){
+        if (force) {
             return force;
-        }else {
+        } else {
             return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
         }
     }
@@ -116,7 +116,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        if (closePassed == true) {
+        if (closePassed) {
             return closePassed;
         } else {
             return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
