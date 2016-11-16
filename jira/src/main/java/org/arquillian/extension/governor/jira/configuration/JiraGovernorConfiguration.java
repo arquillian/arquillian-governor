@@ -45,11 +45,7 @@ public class JiraGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        if (!username.equals(EMPTY_STRING)) {
-            return username;
-        } else {
-            return getProperty("username", EMPTY_STRING);
-        }
+        return resolveSystemProperties(username, "username", EMPTY_STRING);
     }
 
     public void setUsername(String username) {
@@ -57,11 +53,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        if (!password.equals(EMPTY_STRING)) {
-            return password;
-        } else {
-            return getProperty("password", EMPTY_STRING);
-        }
+        return resolveSystemProperties(password, "password", EMPTY_STRING);
     }
 
     public void setPassword(String password) {
@@ -69,11 +61,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getServer() {
-        if (!server.equals(DEFAULT_JIRA_SERVER_ADDRESS)) {
-            return server;
-        } else {
-            return getProperty("server", DEFAULT_JIRA_SERVER_ADDRESS);
-        }
+        return resolveSystemProperties(server, "server", DEFAULT_JIRA_SERVER_ADDRESS);
     }
 
     public void setServer(String server) {
@@ -81,11 +69,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        if (force) {
-            return force;
-        } else {
-            return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
-        }
+        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(force), "force", "false"));
     }
 
     public void setForce(boolean force) {
@@ -93,11 +77,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        if (closePassed) {
-            return closePassed;
-        } else {
-            return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
-        }
+        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(closePassed), "closePassed", "false"));
     }
 
     public void setClosePassed(boolean closePassed) {
@@ -162,6 +142,14 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     // helpers
+
+    private String resolveSystemProperties(String property, String propertName, String defaultValue) {
+        if (!property.equals(defaultValue)) {
+            return property;
+        } else {
+            return getProperty(propertName, defaultValue);
+        }
+    }
 
     private String resolveServer() {
         final String server = System.getProperty("jira.governor.server");

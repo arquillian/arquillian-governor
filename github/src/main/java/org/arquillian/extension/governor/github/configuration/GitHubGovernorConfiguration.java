@@ -44,11 +44,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        if (!username.equals(EMPTY_STRING)) {
-            return username;
-        } else {
-            return getProperty("username", EMPTY_STRING);
-        }
+        return resolveSystemProperties(username, "username", EMPTY_STRING);
     }
 
     public void setUsername(String username) {
@@ -56,11 +52,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        if (!password.equals(EMPTY_STRING)) {
-            return password;
-        } else {
-            return getProperty("password", EMPTY_STRING);
-        }
+        return resolveSystemProperties(password, "password", EMPTY_STRING);
     }
 
     public void setPassword(String password) {
@@ -68,11 +60,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getToken() {
-        if (!token.equals(EMPTY_STRING)) {
-            return token;
-        } else {
-            return getProperty("token", EMPTY_STRING);
-        }
+        return resolveSystemProperties(token, "token", EMPTY_STRING);
     }
 
     public void setToken(String token) {
@@ -80,11 +68,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepositoryUser() {
-        if (!repositoryUser.equals(EMPTY_STRING)) {
-            return repositoryUser;
-        } else {
-            return getProperty("repositoryUser", EMPTY_STRING);
-        }
+        return resolveSystemProperties(repositoryUser, "repositoryUser", EMPTY_STRING);
     }
 
     public void setRepositoryUser(String repositoryUser) {
@@ -92,11 +76,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepository() {
-        if (!repository.equals(EMPTY_STRING)) {
-            return repository;
-        } else {
-            return getProperty("repository", EMPTY_STRING);
-        }
+        return resolveSystemProperties(repository, "repository", EMPTY_STRING);
     }
 
     public void setRepository(String repository) {
@@ -104,11 +84,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        if (force) {
-            return force;
-        } else {
-            return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
-        }
+        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(force), "force", "false"));
     }
 
     public void setForce(boolean force) {
@@ -116,12 +92,9 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        if (closePassed) {
-            return closePassed;
-        } else {
-            return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
-        }
+        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(closePassed), "closePassed", "false"));
     }
+
     public void setClosePassed(boolean closePassed) {
         setProperty("closePassed", Boolean.toString(closePassed));
     }
@@ -147,7 +120,6 @@ public class GitHubGovernorConfiguration extends Configuration {
         if (EMPTY_STRING.equals(getRepositoryUser()) || EMPTY_STRING.equals(getRepository())) {
             throw new GovernorConfigurationException("Repository user or repository name are not set - it is an empty String.");
         }
-
     }
 
     @Override
@@ -167,6 +139,13 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     // helpers
+    private String resolveSystemProperties(String property, String propertName, String defaultValue) {
+        if (!property.equals(defaultValue)) {
+            return property;
+        } else {
+            return getProperty(propertName, defaultValue);
+        }
+    }
 
     private String resolvePassword() {
         final String password = System.getProperty("github.governor.password");
