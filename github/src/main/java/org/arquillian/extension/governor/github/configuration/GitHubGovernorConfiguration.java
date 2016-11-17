@@ -44,7 +44,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        return resolveSystemProperties(username, "username", EMPTY_STRING);
+        return getSystemProperty("username", username, EMPTY_STRING);
     }
 
     public void setUsername(String username) {
@@ -52,7 +52,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        return resolveSystemProperties(password, "password", EMPTY_STRING);
+        return getSystemProperty("password", password, EMPTY_STRING);
     }
 
     public void setPassword(String password) {
@@ -60,7 +60,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getToken() {
-        return resolveSystemProperties(token, "token", EMPTY_STRING);
+        return getSystemProperty("token", token, EMPTY_STRING);
     }
 
     public void setToken(String token) {
@@ -68,7 +68,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepositoryUser() {
-        return resolveSystemProperties(repositoryUser, "repositoryUser", EMPTY_STRING);
+        return getSystemProperty("repositoryUser", repositoryUser, EMPTY_STRING);
     }
 
     public void setRepositoryUser(String repositoryUser) {
@@ -76,7 +76,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public String getRepository() {
-        return resolveSystemProperties(repository, "repository", EMPTY_STRING);
+        return getSystemProperty("repository", repository, EMPTY_STRING);
     }
 
     public void setRepository(String repository) {
@@ -84,7 +84,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(force), "force", "false"));
+        return Boolean.parseBoolean(getSystemProperty("force", Boolean.toString(force), "false"));
     }
 
     public void setForce(boolean force) {
@@ -92,7 +92,7 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(closePassed), "closePassed", "false"));
+        return Boolean.parseBoolean(getSystemProperty("closePassed", Boolean.toString(closePassed), "false"));
     }
 
     public void setClosePassed(boolean closePassed) {
@@ -139,14 +139,6 @@ public class GitHubGovernorConfiguration extends Configuration {
     }
 
     // helpers
-    private String resolveSystemProperties(String property, String propertName, String defaultValue) {
-        if (!property.equals(defaultValue)) {
-            return property;
-        } else {
-            return getProperty(propertName, defaultValue);
-        }
-    }
-
     private String resolvePassword() {
         final String password = System.getProperty("github.governor.password");
 

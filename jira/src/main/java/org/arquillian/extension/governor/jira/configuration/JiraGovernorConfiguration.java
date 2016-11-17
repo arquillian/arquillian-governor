@@ -45,7 +45,7 @@ public class JiraGovernorConfiguration extends Configuration {
     private boolean closePassed = resolveClosePassed();
 
     public String getUsername() {
-        return resolveSystemProperties(username, "username", EMPTY_STRING);
+        return getSystemProperty("username", username, EMPTY_STRING);
     }
 
     public void setUsername(String username) {
@@ -53,7 +53,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getPassword() {
-        return resolveSystemProperties(password, "password", EMPTY_STRING);
+        return getSystemProperty("password", password, EMPTY_STRING);
     }
 
     public void setPassword(String password) {
@@ -61,7 +61,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public String getServer() {
-        return resolveSystemProperties(server, "server", DEFAULT_JIRA_SERVER_ADDRESS);
+        return getSystemProperty("server", server, DEFAULT_JIRA_SERVER_ADDRESS);
     }
 
     public void setServer(String server) {
@@ -69,7 +69,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(force), "force", "false"));
+        return Boolean.parseBoolean(getSystemProperty("force", Boolean.toString(force), "false"));
     }
 
     public void setForce(boolean force) {
@@ -77,7 +77,7 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(closePassed), "closePassed", "false"));
+        return Boolean.parseBoolean(getSystemProperty("closePassed", Boolean.toString(closePassed), "false"));
     }
 
     public void setClosePassed(boolean closePassed) {
@@ -142,14 +142,6 @@ public class JiraGovernorConfiguration extends Configuration {
     }
 
     // helpers
-
-    private String resolveSystemProperties(String property, String propertName, String defaultValue) {
-        if (!property.equals(defaultValue)) {
-            return property;
-        } else {
-            return getProperty(propertName, defaultValue);
-        }
-    }
 
     private String resolveServer() {
         final String server = System.getProperty("jira.governor.server");

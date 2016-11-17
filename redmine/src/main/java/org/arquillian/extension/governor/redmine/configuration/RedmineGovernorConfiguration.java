@@ -45,7 +45,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getApiKey() {
-        return resolveSystemProperties(apiKey, "apikey", EMPTY_STRING);
+        return getSystemProperty("apikey", apiKey, EMPTY_STRING);
     }
 
     public void setApiKey(String apiKey) {
@@ -53,11 +53,11 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getCloseOrder() {
-        return resolveSystemProperties(closeOrder, "closeOrder", EMPTY_STRING);
+        return getSystemProperty("closeOrder", closeOrder, EMPTY_STRING);
     }
 
     public String getServer() {
-        return resolveSystemProperties(server, "server", EMPTY_STRING);
+        return getSystemProperty("server", server, EMPTY_STRING);
     }
 
     public void setServer(String server) {
@@ -65,7 +65,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(force), "force", "false"));
+        return Boolean.parseBoolean(getSystemProperty(Boolean.toString(force), "force", "false"));
     }
 
     public void setForce(boolean force) {
@@ -73,7 +73,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(closePassed), "closePassed", "false"));
+        return Boolean.parseBoolean(getSystemProperty("closePassed", Boolean.toString(closePassed), "false"));
     }
 
     public void setClosePassed(boolean closePassed) {
@@ -81,7 +81,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getOpenFailed() {
-        return Boolean.parseBoolean(resolveSystemProperties(Boolean.toString(openFailed), "openFailed", "false"));
+        return Boolean.parseBoolean(getSystemProperty("openFailed", Boolean.toString(openFailed), "false"));
     }
 
     public void setOpenFailed(boolean openFailed) {
@@ -136,15 +136,6 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     // helpers
-
-    private String resolveSystemProperties(String property, String propertName, String defaultValue) {
-        if (!property.equals(defaultValue)) {
-            return property;
-        } else {
-            return getProperty(propertName, defaultValue);
-        }
-    }
-
     private String resolveApiKey() {
         final String apiKey = System.getProperty("github.governor.apikey");
 
