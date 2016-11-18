@@ -45,7 +45,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getApiKey() {
-        return getProperty("apikey", apiKey);
+        return getSystemProperty("apikey", apiKey, EMPTY_STRING);
     }
 
     public void setApiKey(String apiKey) {
@@ -53,11 +53,11 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public String getCloseOrder() {
-        return getProperty("closeOrder", closeOrder);
+        return getSystemProperty("closeOrder", closeOrder, EMPTY_STRING);
     }
 
     public String getServer() {
-        return getProperty("server", server);
+        return getSystemProperty("server", server, EMPTY_STRING);
     }
 
     public void setServer(String server) {
@@ -65,7 +65,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getForce() {
-        return Boolean.parseBoolean(getProperty("force", Boolean.toString(force)));
+        return Boolean.parseBoolean(getSystemProperty(Boolean.toString(force), "force", "false"));
     }
 
     public void setForce(boolean force) {
@@ -73,7 +73,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getClosePassed() {
-        return Boolean.parseBoolean(getProperty("closePassed", Boolean.toString(closePassed)));
+        return Boolean.parseBoolean(getSystemProperty("closePassed", Boolean.toString(closePassed), "false"));
     }
 
     public void setClosePassed(boolean closePassed) {
@@ -81,7 +81,7 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     public boolean getOpenFailed() {
-        return Boolean.parseBoolean(getProperty("openFailed", Boolean.toString(openFailed)));
+        return Boolean.parseBoolean(getSystemProperty("openFailed", Boolean.toString(openFailed), "false"));
     }
 
     public void setOpenFailed(boolean openFailed) {
@@ -136,7 +136,6 @@ public class RedmineGovernorConfiguration extends Configuration {
     }
 
     // helpers
-
     private String resolveApiKey() {
         final String apiKey = System.getProperty("github.governor.apikey");
 

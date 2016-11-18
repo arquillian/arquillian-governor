@@ -8,8 +8,9 @@ by putting your custom annotations on the test methods.
 The resolution of the test method execution is done during the test class 
 execution in `BeforeClass` phase.
 
-Currenly, there are two implementations which use API of the Arquillian 
-Governor extension - Arquillian JIRA Governor extension and Arquillian Skipper extension.
+Currenly, implementations which use API of the Arquillian
+Governor extension are Arquillian JIRA Governor extension, Arquillian GitHub Governor extension,
+Arquillian Redmine Governor extension and Arquillian Skipper extension.
 
 === Configuration of Arquillian Governor extension
 
@@ -97,11 +98,13 @@ Available properties for `governor-jira` extension:
 
 |===
 
-If you do not specify `server`, `username` or `password` properties in `arquillian.xml` 
-for JIRA Governor, this extension looks for system properties `jira.governor.server`, `jira.governor.username` and 
-`jira.governor.password` respectively.
+The extension looks for `server`, `username` or `password` properties specified as system properties `jira.governor.server`,
+`jira.governor.username` and `jira.governor.password` respectively.
+If system properties are not defined, this extension looks for `server`, `username` or `password` properties in `arquillian.xml`
+for JIRA Governor.
 
 You can also set properties `force` and `closePassed` by system properties `jira.governor.force` and `jira.governor.closepassed`.
+System properties take precedence over those defined in `arquillian.xml`.
 
 === Usage
 
@@ -273,11 +276,14 @@ Possible properties for `governor-github` extension:
 
 |===
 
-If you do not specify `server` and `username` or `password` properties in `arquillian.xml`
-for GitHub Governor, this extension looks for system properties `github.governor.repository`, `github.governor.repositoryuser`, `github.governor.token`, `github.governor.username` and
+
+The extension looks for system properties `github.governor.repository`, `github.governor.repositoryuser`, `github.governor.token`, `github.governor.username` and
 `github.governor.password` respectively.
+If system properties are not defined, this extension looks for `repository`, `repositoryuser`, `token`, `username` or `password` properties in `arquillian.xml`
+for GitHub Governor.
 
 You can also set properties `force` and `closePassed` by system properties `github.governor.force` and `github.governor.closepassed` by setting them to "true" or "false".
+System properties take precedence over those defined in `arquillian.xml`.
 
 === Usage
 
@@ -440,9 +446,11 @@ Possible properties for `governor-redmine` extension:
 
 |===
 
-If you do not specify `server` and `apikey` properties in `arquillian.xml` for Redmine Governor, this extension looks for system properties `redmine.governor.server` and `redmine.governor.apikey`.
+The extension looks for system properties `redmine.governor.server` and `redmine.governor.apikey`. If system properties are not specified,
+this extension looks for `server` and `apikey` properties in `arquillian.xml` for Redmine Governor,
 
 You can set properties `force`, `closePassed` and `openFailed` by system properties `redmine.governor.force`, `redmine.governor.closepassed` and `redmine.governor.openFailed` by setting them to "true" or "false".
+System properties take precedence over those defined in `arquillian.xml`.
 
 === Usage
 

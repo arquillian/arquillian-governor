@@ -86,6 +86,24 @@ public abstract class Configuration {
     }
 
     /**
+     * Gets value of {@code name} property as defined in system variable or return to the {@code getProperty} method to
+     * fetch the value from arquillian.xml
+     *
+     * @param name name of a property you want to get the value of
+     * @param value value of a {@code name} property as defined in system variable or {@code defaultValue} in case it is
+     *              null or empty string
+     * @param defaultValue value returned in case {@code name} is a null string or it is empty
+     * @return value of a {@code name} property as defined in system variable or return to {@code getProperty} if none provided
+     */
+    protected String getSystemProperty(String name, String value, String defaultValue) {
+        if (!value.equals(defaultValue)) {
+            return value;
+        } else {
+            return getProperty(name, defaultValue);
+        }
+    }
+
+    /**
      * Validates configuration.
      *
      * @throws GovernorConfigurationException when configuration of the extension is not valid
