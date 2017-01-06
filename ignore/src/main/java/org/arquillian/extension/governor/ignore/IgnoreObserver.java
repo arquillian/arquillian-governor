@@ -82,7 +82,7 @@ public class IgnoreObserver {
             context.proceed();
         } else {
             log.info("Ignore test [" + phase + "]: " + toFqn(context.getEvent()));
-            testResultProducer.set(TestResult.skipped(null));
+            testResultProducer.set(TestResult.skipped());
         }
     }
 
