@@ -80,7 +80,7 @@
         <version.signature>1.1</version.signature>
         <version.commons.lang>3.4</version.commons.lang>
 
-        <version.arquillian.recorder>1.1.4.Final</version.arquillian.recorder>
+        <version.arquillian.recorder>1.1.6.Final</version.arquillian.recorder>
 
         <!-- logging -->
         <versions.log4j>1.2.17</versions.log4j>
