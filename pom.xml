@@ -76,7 +76,7 @@
         <version.junit>4.12</version.junit>
         <version.mockito>1.10.19</version.mockito>
         <version.hamcrest>1.0.0.0</version.hamcrest>
-        <version.maven.animal.sniffer>1.13</version.maven.animal.sniffer>
+        <version.maven.animal.sniffer>1.17</version.maven.animal.sniffer>
         <version.signature>1.1</version.signature>
         <version.commons.lang>3.4</version.commons.lang>
 
