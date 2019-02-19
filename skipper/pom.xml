@@ -28,7 +28,7 @@
 
     <!-- Properties -->
     <properties>
-        <version.hamcrest>1.0.0.0</version.hamcrest>
+        <version.hamcrest>2.0.0.0</version.hamcrest>
     </properties>
 
     <!-- Dependencies -->

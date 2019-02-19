@@ -30,7 +30,7 @@
     <properties>
         <version.atlassian.jira>2.0.0-m31.w2</version.atlassian.jira>
         <version.jersey.client>1.5</version.jersey.client>
-        <version.hamcrest>1.0.0.0</version.hamcrest>
+        <version.hamcrest>2.0.0.0</version.hamcrest>
     </properties>
 
     <!-- Dependencies -->
