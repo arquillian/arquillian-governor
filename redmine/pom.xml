@@ -27,7 +27,7 @@
 
     <!-- Properties -->
     <properties>
-        <version.redmine.java.api>2.6.0</version.redmine.java.api>
+        <version.redmine.java.api>4.0.0.preview.1</version.redmine.java.api>
     </properties>
 
     <!-- Dependencies -->
