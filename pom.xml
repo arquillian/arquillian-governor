@@ -78,7 +78,7 @@
         <version.hamcrest>1.0.0.0</version.hamcrest>
         <version.maven.animal.sniffer>1.13</version.maven.animal.sniffer>
         <version.signature>1.1</version.signature>
-        <version.commons.lang>3.4</version.commons.lang>
+        <version.commons.lang>3.9</version.commons.lang>
 
         <version.arquillian.recorder>1.1.6.Final</version.arquillian.recorder>
 
