@@ -71,7 +71,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-	<version.arquillian.core>1.1.12.Final</version.arquillian.core>
+	<version.arquillian.core>1.5.0.Final</version.arquillian.core>
 
         <version.junit>4.12</version.junit>
         <version.mockito>1.10.19</version.mockito>
