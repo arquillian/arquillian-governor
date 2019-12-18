@@ -84,7 +84,7 @@
 
         <!-- logging -->
         <versions.log4j>1.2.17</versions.log4j>
-        <versions.slf4j>1.7.26</versions.slf4j>
+        <versions.slf4j>1.7.30</versions.slf4j>
 
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.source>1.6</maven.compiler.source>
